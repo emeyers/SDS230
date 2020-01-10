@@ -3,7 +3,7 @@
 download_class_data <- function(file_name){
 
 
-  base_path <- paste0(get_base_url(), "class_data/")
+  base_path <- paste0(get_base_url(), "data/")
 
   full_path <- paste0(base_path, file_name)
 
