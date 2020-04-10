@@ -23,3 +23,21 @@ get_MAD_stat <- function(data, grouping) {
 
 
 } # end of the function
+
+
+
+
+
+
+# A function to get the F-statistic
+get_F_stat <- function(data, grouping) {
+
+  fit <- aov(data ~ grouping)
+  fit_summary <- summary.aov(fit)
+  fit_summary[[1]]$`F value`[1]
+
+}
+
+
+
+
