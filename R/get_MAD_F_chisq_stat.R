@@ -39,5 +39,10 @@ get_F_stat <- function(data, grouping) {
 }
 
 
+# A function to get the chi-squared statistic
+get_chisqr_stat <- function(observed_counts, expected_proportions) {
+  test_output <- chisq.test(observed_counts, p = expected_proportions)
+  test_output$statistic
+}
 
 
