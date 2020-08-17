@@ -1,2 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^README\.Rmd$
+
+
+
+ClassMaterial/*
+class_specific_material/*
+
