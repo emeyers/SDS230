@@ -11,8 +11,7 @@
 #'  \dontrun{download_homework(1)}
 #'
 #' @export
-
-download_homework <- function(homework_number){
+download_homework <- function(homework_number) {
 
   base_path <- paste0(get_base_url(), "homework/")
   file_name <- paste0("homework_", sprintf("%02d", homework_number), ".Rmd")
@@ -22,6 +21,10 @@ download_homework <- function(homework_number){
   check_file_exists(file_name)
 
   full_path <- paste0(base_path, file_name)
+
+  # check the file exists on GitHub and if not throw and error
+  check_github_file_exists("homework", file_name)
+
   download.file(full_path, file_name)
 
 }
@@ -46,18 +49,29 @@ download_class_code <- function(class_number) {
 
   base_path <- paste0(get_base_url(), "class_code/")
 
+ file_names <- paste0("class_", sprintf("%02d", class_number), c(".Rmd", ".R"))
+
   result = tryCatch({
 
-    file_name <- paste0("class_", sprintf("%02d", class_number), ".Rmd")
+    file_name <- file_names[1]
     full_path <- paste0(base_path, file_name)
 
-  },  warning = function(w) {
+    # check the file exists on GitHub and if not throw and error
+    check_github_file_exists("class_code", file_name)
 
-    file.remove(file_name)
-    file_name <- paste0("class_", sprintf("%02d", class_number), ".R")
+  }, error = function(e) {
+
+    file_name <- file_names[2]
     full_path <- paste0(base_path, file_name)
 
-  }, finally = {
+    # check the file exists on GitHub and if not throw and error
+    check_github_file_exists("class_code", file_name)
+
+  }, error = function(e) {
+
+    stop(paste("Neither of the files", paste(file_names, collapse = " nor "),
+               "exist on the class GitHub repository."))
+
   })
 
 
@@ -93,6 +107,9 @@ download_data <- function(file_name) {
   #  but instead give an error message
   check_file_exists(file_name)
 
+  # check the file exists on GitHub and if not throw and error
+  check_github_file_exists("data", file_name)
+
   # if the file does not already exist, download it
   download.file(full_path, file_name)
 
@@ -119,6 +136,9 @@ download_image <- function(file_name, force_download = FALSE){
 
   base_path <- paste0(get_base_url(), "images/")
   full_path <- paste0(base_path, file_name)
+
+  # check the file exists on GitHub and if not throw and error
+  check_github_file_exists("images", file_name)
 
   # only download the image if it doesn't exist or if force_download is TRUE
   if (!file.exists(file_name) || force_download == TRUE) {
