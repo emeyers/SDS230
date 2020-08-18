@@ -1,2 +1,3 @@
 tidyverse,
-httr
+httr,
+xkcd
