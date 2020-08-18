@@ -1,5 +1,15 @@
 
 
+#' Reinstalls the class package
+#'
+#' This function reinstalls the class package. It is useful in case the package
+#' has been updated in the middle of the semester.
+#'
+#' @examples
+#'  # Reinstall the package
+#'  reinstall_package()
+#'
+#' @export
 reinstall_package <- function() {
 
   user_package_name <- paste0(get_user_name(), "/", get_package_name())
@@ -11,7 +21,6 @@ reinstall_package <- function() {
 
   # load the new version of the package
   library(get_package_name())
-
 
 }
 
