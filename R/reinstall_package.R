@@ -2,7 +2,6 @@
 
 reinstall_package <- function() {
 
-
   user_package_name <- paste0(get_user_name(), "/", get_package_name())
 
   devtools::install_github(user_package_name, force = TRUE)
