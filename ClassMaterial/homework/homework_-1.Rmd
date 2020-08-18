@@ -1,0 +1,21 @@
+---
+title: "Test download homework -1"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+$\\$
+
+
+# File to test downloading homework
+
+
+
+$\\$
+
+
+
+

@@ -1,0 +1,32 @@
+---
+title: "Test file"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+$\\$
+
+
+
+
+# Test download class material
+
+Testing that downloading class material works.
+
+
+$\\$
+
+
+
+
+
+
+
+
+
