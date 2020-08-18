@@ -11,6 +11,6 @@ Description: A package with functions for downloading material.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1.9000
+RoxygenNote: 7.1.0
 Suggests: 
     testthat (>= 2.1.0)
