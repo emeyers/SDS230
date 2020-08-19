@@ -1,4 +1,4 @@
 library(testthat)
-library(ClassTools)
+library(SDS230)
 
-test_check("ClassTools")
+test_check("SDS230")

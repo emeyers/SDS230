@@ -1,7 +1,7 @@
 
 
 # should set this to the name of the package
-package_name <- "ClassTools"
+package_name <- "SDS230"
 
 # should set this to the github user name
 github_user_name <- "emeyers"

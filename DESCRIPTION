@@ -1,13 +1,11 @@
-Package: ClassTools
+Package: SDS230
 Type: Package
-Title: Code useful for classes
+Title: Tools for the class Data Exploration and Analysis
 Version: 0.1.2
 Author: Ethan Meyers
 Maintainer: Ethan Meyers <ethan.meyers@gmail.com>
-Description: A package with functions for downloading material. 
-    This package should be forked to create a package that is useful
-    for a specific class, where additional class specific functions
-    can be added to the R/ directory.
+Description: A package with functions for downloading material and  
+    potentially other useful functions. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
