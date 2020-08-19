@@ -20,8 +20,7 @@ reinstall_package <- function() {
   devtools::install_github(user_package_name, force = TRUE)
 
   # unload the old version of the package
-  #detach(paste0("package:", package_name), unload = TRUE)
-  unloadNamespace(package_name)
+  detach(paste0("package:", package_name), unload = TRUE, character.only = TRUE)
 
   # load the new version of the package
   eval(parse(text=paste0("library(", package_name, ")")))
