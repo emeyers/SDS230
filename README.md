@@ -1,20 +1,30 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-ClassTools
-==========
+
+# SDS230: Data Exploration and Analysis
 
 <!-- badges: start -->
+
 <!-- badges: end -->
-The ClassTools package has a set of functions that are useful for downloading material related to classes from GitHub. This package should forked to create a package that is designed for a particular class. All material for a specific class should be put in the ClassMaterial directory. Additional R code useful for specific classes can be added to the R/ directory.
 
-Installation
-------------
+Class material and functions for S\&DS 230: Data Exploration and
+Analysis
 
-This package should not be installed. Instead it should be forked from [GitHub](https://github.com/emeyers/ClassTools).
+## Installing the SDS230 package
 
-How to fork a package: <https://deanmalone.net/post/how-to-fork-your-own-repo-on-github/>
+To install the SDS230 package that contains functions that are useful
+for the class run the function below.
 
-How to use the package
-----------------------
+``` r
+# install.packages("devtools")
+devtools::install_github("emeyers/SDS230")
+```
 
-Add how to use the package here...
+## Class material
+
+All class material is in the
+[ClassMaterial](https://github.com/emeyers/SDS230/tree/master/ClassMaterial)
+directory. In particular the
+[ClassMaterial/slides](https://github.com/emeyers/SDS230/tree/master/ClassMaterial/slides)
+directory contains the class slides which can be useful to review what
+was covered in class.

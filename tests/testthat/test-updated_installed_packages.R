@@ -17,3 +17,11 @@ test_that("update_installed_packages() works", {
   }
 
 })
+
+
+test_that("can reinstall the package", {
+
+  reinstall_package()
+
+})
+
