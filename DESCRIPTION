@@ -1,7 +1,7 @@
 Package: ClassTools
 Type: Package
 Title: Code useful for classes
-Version: 0.1.1
+Version: 0.1.2
 Author: Ethan Meyers
 Maintainer: Ethan Meyers <ethan.meyers@gmail.com>
 Description: A package with functions for downloading material. 
