@@ -20,7 +20,7 @@ github_user_name <- "emeyers"
 #'
 #' @export
 get_version <- function() {
-  paste0(get_package_name(), ": version ", packageVersion(get_package_name()))
+  paste0(get_package_name(), ": version ", utils::packageVersion(get_package_name()))
 }
 
 

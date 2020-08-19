@@ -12,6 +12,6 @@ has been updated in the middle of the semester.
 }
 \examples{
  # Reinstall the package
- reinstall_package()
+ \dontrun{reinstall_package()}
 
 }

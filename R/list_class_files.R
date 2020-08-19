@@ -1,5 +1,5 @@
 
-
+#' @import httr
 
 
 # A helper function that does all the hard work of going ot the repository
@@ -17,11 +17,11 @@ list_class_files <- function(file_dir_name) {
   file_url <- paste0("https://api.github.com/repos/", get_github_user_name(), "/",
                      get_package_name(), "/git/trees/master?recursive=1")
 
-  req <- GET(file_url)
+  req <- httr::GET(file_url)
   stop_for_status(req)
 
 
-  filelist <- unlist(lapply(content(req)$tree, "[", "path"), use.names = F)
+  filelist <- unlist(lapply(httr::content(req)$tree, "[", "path"), use.names = F)
   file_names <- grep(paste0("ClassMaterial/", file_dir_name, "/"),
               filelist, value = TRUE, fixed = TRUE)
 

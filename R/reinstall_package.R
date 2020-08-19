@@ -7,20 +7,23 @@
 #'
 #' @examples
 #'  # Reinstall the package
-#'  reinstall_package()
+#'  \dontrun{reinstall_package()}
 #'
 #' @export
 reinstall_package <- function() {
 
-  user_package_name <- paste0(get_user_name(), "/", get_package_name())
+  package_name <- get_package_name()
+  user_name <- get_github_user_name()
+
+  user_package_name <- paste0(user_name, "/", package_name)
 
   devtools::install_github(user_package_name, force = TRUE)
 
   # unload the old version of the package
-  detach(paste0("package:", get_package_name()), unload = TRUE)
+  detach(paste0("package:", package_name), unload = TRUE)
 
   # load the new version of the package
-  library(get_package_name())
+  eval(parse(text=paste0("library(", package_name, ")")))
 
 }
 

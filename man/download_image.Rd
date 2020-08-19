@@ -8,6 +8,9 @@ download_image(file_name, force_download = FALSE)
 }
 \arguments{
 \item{file_name}{The name the image to download.}
+
+\item{force_download}{Will download and overwrite an existing image if the
+downloaded image has the same name.}
 }
 \description{
 This function downloads and image related to the class from the class GitHub

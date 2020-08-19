@@ -7,7 +7,7 @@
 download_homework(homework_number)
 }
 \arguments{
-\item{class_number}{A number indicating which homework number file to get.}
+\item{homework_number}{A number indicating which homework number file to get.}
 }
 \description{
 This function downloads homework files from the class GitHub repository.

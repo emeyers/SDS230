@@ -15,15 +15,15 @@
 #' @export
 update_installed_packages <- function(force_reinstall = FALSE) {
 
-  required_packages <- read.csv(paste0(get_base_url(), "required_packages.txt"),
+  required_packages <- utils::read.csv(paste0(get_base_url(), "required_packages.txt"),
                                 header = FALSE)$V1
 
-  packages_already_installed <- installed.packages()[, 1]
+  packages_already_installed <- utils::installed.packages()[, 1]
 
   # force reinstall all the required packages
   if (force_reinstall) {
 
-    install.packages(required_packages)
+    utils::install.packages(required_packages)
 
   } else {
 
@@ -31,7 +31,7 @@ update_installed_packages <- function(force_reinstall = FALSE) {
 
     for (currPackage in required_packages) {
       if (!(currPackage %in% packages_already_installed)) {
-        install.packages(currPackage)
+        utils::install.packages(currPackage, repos = "http://cran.us.r-project.org")
       }
     }
 

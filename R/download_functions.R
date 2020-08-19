@@ -4,7 +4,7 @@
 #'
 #' This function downloads homework files from the class GitHub repository.
 #'
-#' @param class_number A number indicating which homework number file to get.
+#' @param homework_number A number indicating which homework number file to get.
 #'
 #' @examples
 #'  # Download the first homework file
@@ -25,7 +25,7 @@ download_homework <- function(homework_number) {
   # check the file exists on GitHub and if not throw and error
   check_github_file_exists("homework", file_name)
 
-  download.file(full_path, file_name)
+  utils::download.file(full_path, file_name)
 
 }
 
@@ -80,7 +80,7 @@ download_class_code <- function(class_number) {
   check_file_exists(file_name)
 
   # if the file does not already exist, download it
-  download.file(full_path, file_name)
+  utils::download.file(full_path, file_name)
 
 }
 
@@ -111,7 +111,7 @@ download_data <- function(file_name) {
   check_github_file_exists("data", file_name)
 
   # if the file does not already exist, download it
-  download.file(full_path, file_name)
+  utils::download.file(full_path, file_name)
 
 }
 
@@ -126,6 +126,9 @@ download_data <- function(file_name) {
 #' repository.
 #'
 #' @param file_name The name the image to download.
+#'
+#' @param force_download Will download and overwrite an existing image if the
+#' downloaded image has the same name.
 #'
 #' @examples
 #'  # Download an image from the class GitHub repository
@@ -142,7 +145,7 @@ download_image <- function(file_name, force_download = FALSE){
 
   # only download the image if it doesn't exist or if force_download is TRUE
   if (!file.exists(file_name) || force_download == TRUE) {
-    download.file(full_path, file_name)
+    utils::download.file(full_path, file_name)
   }
 
 }
