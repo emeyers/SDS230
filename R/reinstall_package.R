@@ -12,6 +12,8 @@
 #' @export
 reinstall_package <- function() {
 
+  message(paste("Old version: ", get_version()))
+
   package_name <- get_package_name()
   user_name <- get_github_user_name()
 
@@ -24,6 +26,8 @@ reinstall_package <- function() {
 
   # load the new version of the package
   eval(parse(text=paste0("library(", package_name, ")")))
+
+  message(paste("New version: ", get_version()))
 
 }
 
