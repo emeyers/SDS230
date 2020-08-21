@@ -1,10 +1,13 @@
 
 
-#update_installed_packages()
+# Code that can be run to intially set up a student's R installation.
+#  Here we are installing LaTeX through the tidytex package
+intial_setup <- function() {
 
-#tinytex::install_tinytex()
+  update_installed_packages()
+  tinytex::install_tinytex()
 
-
+}
 
 
 
