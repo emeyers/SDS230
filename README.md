@@ -13,10 +13,12 @@ Analysis
 ## Installing the SDS230 package
 
 To install the SDS230 package that contains functions that are useful
-for the class run the function below.
+for the class run the function below
+
+Note: we recommend you cut and paste all these commands to avoid typos.
 
 ``` r
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("emeyers/SDS230")
 ```
 
@@ -33,12 +35,16 @@ Notes:
     patient.
 3.  If it asks you to update any existing package you can do so
     (recommended) or you can skip this.
+4.  When the function is done running, if it asks you to restart R,
+    please close and then reopen R Studio.
 
 <!-- end list -->
 
 ``` r
 SDS230:::initial_setup()
 ```
+
+#### Testing LaTeX has been installed
 
 To test that LaTeX has correctly installed on your system you can run
 the following command:

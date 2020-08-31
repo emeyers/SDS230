@@ -24,11 +24,13 @@ Class material and functions for S&DS 230: Data Exploration and Analysis
 ## Installing the SDS230 package
 
 To install the SDS230 package that contains functions that are useful for the
-class run the function below.
+class run the function below 
+
+Note: we recommend you cut and paste all these commands to avoid typos.
 
 
 ```{r gh-installation, eval = FALSE}
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("emeyers/SDS230")
 ```
 
@@ -42,11 +44,14 @@ Notes:
   1. If any dialog boxes pop up, just click "ok" on them to proceed. 
   2. This function might take several minutes to run so please be patient. 
   3. If it asks you to update any existing package you can do so (recommended) or you can skip this.
+  4. When the function is done running, if it asks you to restart R, please close and then reopen R Studio. 
 
 ```{r, eval=FALSE}
 SDS230:::initial_setup()
 ```
 
+
+#### Testing LaTeX has been installed 
 
 To test that LaTeX has correctly installed on your system you can run the following command: 
 
