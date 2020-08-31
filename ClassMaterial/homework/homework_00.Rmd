@@ -1,0 +1,198 @@
+---
+title: "Homework 0"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+
+$\\$
+
+
+# Welcome to the $0^{th}$ homework assignment 
+
+
+
+
+$\\$
+
+
+
+
+The purpose of this practice homework is to gain experience using R and R Markdown and to make sure that you have all the required software and packages installed on your computer. **This homework will not be turned in** but completing it will make sure that you are ready for the first homework next week. All actual homework assignments will be made available on Tuesdays and will be due the following Sunday at 11:59pm (i.e., the first actual homework for credit will be available by September 8th and will be due on September 13th). 
+
+If you need help with the homework, please attend the TA office hours which are listed on Canvas and/or ask questions on [Piazza](https://piazza.com/class/kd52xzes5se3gh). Also, if you have completed the homework, please help others out by answering questions on Piazza which will count toward your class participation grade.
+
+
+
+
+
+<!-- The R chunk below sets some parameters that will be used in the rest of the document. Please ignore it and do not modify it. -->
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo = FALSE}
+
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60)) 
+set.seed(123)  # set the random number generator to always give the same random numbers
+    
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Exercise 1: R Markdown practice 
+
+
+R Markdown has a number of features that allow the text in your written reports to have better formatting. In the following exercise, please modify lines of text to change their formatting. A cheatsheet for R Markdown formatting can be found [here](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf). When answering the questions (i.e., formatting the text below) be sure to knit your R Markdown document very often to catch errors as soon as they are made. 
+
+
+
+
+$\\$
+
+
+
+
+### Exercise 1.1: Please format the lines of text below
+
+
+Make this line bold
+
+Make this line italics
+
+Make this line a third level header
+
+Make this line a bullet point
+
+Make this text a hyperlink to yale.edu
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Exercise 1.2: LaTeX symbols 
+
+
+Please use LaTeX to write Plato's name in Greek below. An app to find LaTeX characters is here available at http://detexify.kirelabs.org/classify.html, or you can use Google.
+
+Note: make sure the ending dollar sign touches the last letter otherwise you will get an error when knitting.
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Exercise 2: Using R within R Markdown documents 
+
+Below is a chance to practice doing some basic computations in R. As described in class, all code in the R Markdown chunks is executed and the results are shown in the compiled output document (e.g., the code and output will be shown in the compiled pdf document). 
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Exercise 2.1: Number journey 
+
+Please complete the following steps in the R Markdown chunk below:
+
+ 1. Create an object called `my_exp` and assign the value of 3 to it.
+ 2. Create an object called `my_coef` and assign the value 2 to it.
+ 3. Create an object called `my_const` and assign the value 20 to it. 
+ 4. Create an object called `my_result` which is equal to 10 to the `my_exp` power times `my_coef` plus `my_const`.
+ 5. Print out the result.
+ 
+ 
+```{r question_2.1}
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Exercise 2.2: Summing elements in a vector
+
+
+In the R chunk below, create a vector called `my_vec` that has consecutive integers from 1 to 100; i.e., a vector of length 100 that has the numbers 1, 2, 3, ..., 100 (hint: use a colon to create this vector rather than the `c()` function). Then add all the numbers in this vector together and print the result. Finally, check that you have the right answer using Gauss' formula for the sum of consecutive integers which is $S = \frac{n (n + 1)}{2}$, where n = 100 here.  
+
+
+```{r question_2.2}
+
+
+# summing integers from 1 to 100 directly
+
+
+
+
+# using Gauss' formula
+
+  
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Exercise 3: More R practice using DataCamp 
+
+
+If you would like additional practice with the basics of R, you can try the [Intro to R DataCamp course](https://learn.datacamp.com/courses/free-introduction-to-r). While we won't use all the material covered in that course (in particular, we will not be doing much with matrices that are discussed in chapter 3), overall the course is a good way to gain additional experience. DataCamp has also offered all their content free to our class, so you will be able to learn more about R and Statistics using their material.
+
+
+
+
+
+
+
+
+
+
+
+
+
