@@ -3,11 +3,21 @@ title: "Class 2 notes and code"
 output: html_document
 ---
 
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+<!-- Run this once to install packages and get data neededto do the class exercises --> 
+```{r setup2, eval = FALSE, include=FALSE}
+
+install.packages("okcupiddata")
+
+download.file("https://yale.box.com/shared/static/t3ezfphfg729x03079aajop0d3f454wm.rda", "daily_bike_totals.rda")
+
+```
 
 
 $\\$
