@@ -1,0 +1,476 @@
+---
+title: "Class 2 notes and code"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+$\\$
+
+
+
+
+# R Markdown
+
+R Markdown documents allow one to use a simple formatting syntax for authoring HTML, PDF, and MS Word documents combined with R code. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. 
+
+
+$\\$
+
+
+
+## R Markdown syntax - basics
+
+In order to learn the syntax of R Markdown, there is a useful [cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf).
+
+![](https://statistics.yale.edu/sites/default/files/logo2.png)
+
+
+Adding proper R Markdown formatting to homework documents will be important!
+
+
+
+$\\$
+
+
+
+## R Markdown syntax - LaTeX
+
+We can also use $\LaTeX$ to add more complex characters in the document. For example, we can insert Greek letters or put accents on characters. 
+
+
+
+
+
+
+$\\$
+
+
+
+
+# Running R code
+
+We can run R code inside of R chunks
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+# Back to learning R
+
+
+## Data frames
+
+Let's now continue learning R by looking at data frames. Data frames are structed data and can also be thought of as collections of vectors.
+
+Let's look at data from the [website okcupid](https://www.okcupid.com)
+
+
+```{r data_frames_1}
+
+#  install.packages("okcupiddata")
+library(okcupiddata)
+
+#View(profiles)        # the View() function only works in R Studio!
+
+# We can make it visible using the data() function.
+data(profiles)
+
+
+# We can extract the columns of a data frame as vector objects using the $ symbol
+
+
+
+# 1) Try creating an object called the_ages which is a vector that has all the ages of users in the data set
+
+
+
+
+# 2) Can you get the mean age of OKCupid users? 
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+We can extract rows from a data frame in a similar way as extracting values from a vector by using the square brackets.
+
+
+```{r data_frames_2}
+
+
+# Get the first row of the data frame
+
+
+# Get the first column of the data 
+
+
+
+# We can use the head() function so that we don't print out too much stuff!
+
+# You should be mindful not to print too much stuff on your homework too!
+# Note: all homework answers will be less than 100 pages long.
+
+
+# 1) What is another way to get the first column in the profiles data frame? 
+
+
+```
+
+
+
+$\\$
+
+
+
+We can also create vectors of numbers or booleans specifying which rows we want to extract from a data frame.
+
+```{r data_frames_3}
+
+
+# create a vector called my_vec with the numbers 1, 10, 20
+
+
+
+# use my_vec to get the 1st, 10th, and 20th profile
+
+
+
+```
+
+
+$\\$
+
+
+
+Finally, we can also extract rows by creating a Boolean vector that is of the same length as the number of rows in the data frame. TRUE values will be extracted from the data frame while FALSE values will not.
+
+```{r data_frames_4}
+
+
+# create a vector of booleans
+
+
+# use the Boolean vector to get the 1st and 3rd row from my_vec
+
+
+# dim() gives us the the number of rows and columns in a data frame
+
+
+```
+
+
+$\\$
+
+
+
+## Examining categorical data
+
+Categorical variables take on one of a fixed number of possible (non-numeric) values. 
+
+For categorical variables, we usually want to view:
+
+ * How many items are each category    or
+ * The proportion (or percentage) of items in each category
+
+Let's examine categorical data by looking at drinking behavior on OkCupid
+
+
+
+```{r categorical_1}
+
+
+# Get information about drinking behavior in a vector called drinking_vec 
+
+
+
+# Create a table showing how often people drink
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+We can create a relative frequency table using the function: prop.table(my_table). 
+
+Can you create a relative frequency table for the drinking behavior of the people in the okcupid data set in the R chunk below? 
+
+```{r}
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+#### bar plots (no pun intended)
+
+We can visualize the number of items in each category using a bar plot: barplot(my_table) 
+
+Can you create a bar plot for the drinking behavior of the people in the okcupid data set? 
+
+```{r}
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+Is there a problem with using the bar plot function without any of the extra arguments? 
+
+[XKCD illusterates the point](https://xkcd.com/833/)
+
+Can you figure out how to fix your plot? 
+
+We can also create pie charts using the pie(my_table) function. Can you create a pie chart of OkCupid users' sex?
+
+```{r}
+
+
+```
+
+
+Some pie charts [are more informative than others](http://robslink.com/SAS/democd91/pyramid_pie.htm)
+
+
+
+
+$\\$
+
+
+
+
+Our plots are dominated by social drinkers - let's remove them...
+
+```{r}
+
+
+# plot a pie and bar plot with the social drinkers removed
+
+
+
+
+
+```
+
+[There are other websites/apps for dating as well](https://i.kym-cdn.com/photos/images/original/001/293/992/d80.jpg)
+
+
+
+
+$\\$
+
+
+
+
+Can you figure out how to change the colors of the bars/sections in the bar/pie charts? 
+
+```{r}
+
+
+
+
+```
+
+
+
+[Helpdesk cat is wise](https://tr4.cbsistatic.com/hub/i/2017/06/12/bd6094f4-c445-4619-a2a4-376b3a8c2065/google-business-cat.jpg)
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Examining quantiative data
+
+There are several summary statistics useful for describing quantitative data such as the mean and the median. Use the mean() and median() functions to extract measures of the central tendency for okcupid user's heights.
+
+```{r}
+
+
+
+
+
+```
+
+
+Anything go wrong? 
+
+
+
+
+$\\$
+
+
+
+
+The argument na.rm = TRUE can be useful. Try it!
+
+```{r}
+
+
+
+```
+
+
+
+Fact: the average height of males in US is 69.6", and the average height of females is 64". Also 60% of the OkCupid user in the data set are male. Is the height of the average OkCupid user what we would expect from the US population? Would we expect them to be the same? 
+
+
+```{r}
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+We can plot histograms of heights using the hist() function. Plot a histogram of heights and use the nclass = 50 argument to create 50 bars on the plot (the default number of bins is 10). 
+
+```{r}
+
+
+
+```
+
+
+
+
+
+We can add lines to our plots using the abline() function. For example abline(v = 60) would add a vertical line at the value of 60. Can you add a verticle line at the average OkCupid user's height? 
+
+
+```{r}
+
+
+
+```
+
+
+$\\$
+
+
+
+
+Box plots visually show a version of a 5 number summary (min, Q1, median, Q3, max). We can create box plots using the boxplot() function. 
+
+Create a boxplot of okcupid users' heights.
+
+```{r}
+
+
+
+```
+
+If there are extreme outliers in a plot we need to investigate them. If the outliers are errors we can remove them, otherwise we need to take them into account. 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+Let's now look at data from CitiBike in New York City. How many cases are there any how many variables? What does each case correspond to? 
+
+```{r}
+
+# download.file("https://yale.box.com/shared/static/t3ezfphfg729x03079aajop0d3f454wm.rda", "daily_bike_totals.rda")
+
+load("daily_bike_totals.rda")
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+Scatter plots show the relationships between two quantiative variables. We can use the plot(x, y) function to create scatter plots. Create a scatter plot of the maximum temperature as a function of the minimum temperature. Also create a scatter plot of the number of trips as a function of the date. 
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
+
+
+
