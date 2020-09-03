@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-<!-- Run this once to install packages and get data neededto do the class exercises --> 
+<!-- Run this once to install packages and get data needed to do the class exercises --> 
 ```{r setup2, eval = FALSE, include=FALSE}
 
 install.packages("okcupiddata")
