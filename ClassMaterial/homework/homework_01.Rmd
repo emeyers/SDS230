@@ -273,7 +273,7 @@ Hints:
 
 
 
-## Problem 3: For loops (10 points)
+## Problem 3: For loops (15 points)
 
 
 As discussed in class, for loops allow you to repeat a process many times. Each time the process is repeated, a counter index object (usually named *i*) is incremented by 1. This is useful because it allows you to:
