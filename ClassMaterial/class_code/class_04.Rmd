@@ -1,0 +1,611 @@
+---
+title: "Class 4 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+$\\$
+
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(230)
+
+```
+
+
+
+
+<!--  Please run the code in the  R chunk below once. It will install a packages useful for adding LaTeX to figures and download some data we will use.  -->
+
+```{r, eval = FALSE}
+
+
+# get some data and install a package that is needed
+install.packages("latex2exp")
+
+download.file("https://yale.box.com/shared/static/t3ezfphfg729x03079aajop0d3f454wm.rda",
+              "daily_bike_totals.rda")
+
+
+# get some images that are used in this document
+SDS230::download_image("which_are_prob_densities.png")
+SDS230::download_image("area_pdf.png")
+SDS230::download_image("qq-plot.png")
+
+
+```
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+## Part 1: Misc odds and ends
+
+
+
+
+#### Part 1.1:  Adding vertical lines to plots
+
+We can add lines to our plots using the `abline()` function. For example `abline(v = 60)` would add a vertical line at the value of 60. Can you add a verticle line at the average OkCupid user's height? 
+
+
+```{r}
+
+library(okcupiddata)
+
+
+
+
+
+```
+
+
+$\\$
+
+
+
+
+
+#### Part 1.2: Scatter plots
+
+
+
+Let's now look at data from CitiBike in New York City. How many cases are there any how many variables? What does each case correspond to? 
+
+```{r}
+
+load("daily_bike_totals.rda")
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+Scatter plots show the relationships between two quantitative variables. We can use the plot(x, y) function to create scatter plots. Create a scatter plot of the *maximum temperature* as a function of the *minimum temperature*. Also create a scatter plot of the *number of trips* as a function of the *date*. 
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
+
+
+## Part 2: For loops
+
+
+$\\$
+
+
+## For loops
+
+
+For loops are useful when you want to repeat a piece of code many times under similar conditions
+
+Print the numbers from 1 to 50...
+
+
+```{r}
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+For loops are particular useful in combination with vectors that can store the results.
+
+Create a vector with the squares of the numbers from 1 to 50. 
+
+
+
+```{r}
+
+# create a loop to accumulate results for 2^i
+
+
+
+
+# plot the results
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+## Part 3: Probability functions and generating random numbers in R
+
+
+
+
+$\\$
+
+
+
+
+#### Part 3.1: Probability density functions 
+
+
+
+$\\$
+
+
+Probability density functions can be used to model random events. All **probability density functions**, *f(x)*, have these properties:
+
+1. The function are always non-negative.
+2. The area under the function integrates (sums) to 1.
+
+Which of the following are probability density functions? 
+
+
+![](which_are_prob_densities.png)
+
+
+
+
+$\\$
+
+
+
+
+For continuous (quantitative) data, we use density function f(x) to find the probability (e.g., the long run frequency) that a random number X is between two values *a* and *b* using:
+
+
+$P(a < X < b) = \int_{a}^{b}f(x)dx$
+
+
+![](area_pdf.png)
+
+
+
+
+$\\$
+
+
+
+#### Part 3.2: Probability density functions in R
+
+
+$\\$
+
+
+
+
+If we want to plot the true probability density function for the standard uniform distribution U(0, 1) we can use the `dunif()` function. All density function in base R start with `d`. 
+
+
+```{r}
+
+
+# the x-value domain for the density function f(x)
+x <- seq(-.2, 1.2, by = .001)  
+      
+
+# create density function y values
+
+
+# plot the probability density function 
+
+
+```
+
+
+
+**Question:** Can you create density plots for the normal and exponential distributions? 
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+#### Part 3.3: Generating random numbers in R
+
+R has built in functions to generate data from different distributions. All these functions start with the letter `r`. 
+
+We can also set the random number generator seed to always get the same sequence of random numbers.
+
+Let's get a sample of n = 200 random points from the uniform distribution using `runif()`
+
+```{r}
+
+# set the seed to a specific number to always get the same sequence of random numbers
+
+
+# generate n = 100 points from U(0, 1) using runif() function 
+
+
+
+# plot a histogram of these random numbers
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+
+We can also calculate statistics for the central tendency such as the mean $\bar{x}$ and median $m$ and statistics of spread such as the standard deviation $s$ and the interquartile range. Use the mean(), median(), sd(), and IQR() functions to calculate these statistics on the sample of data we generated above. Also use the round() function to only show 3 decimal places of precision. 
+
+
+```{r}
+
+# Print the mean, median, sd, and IQR
+# Also use the round() function to round to 3 decimal places
+
+
+
+
+```
+
+
+Note: closing assignment in parentheses causes the output to be printed. You should always print the output of your calculations to show your answers.  
+
+
+
+
+
+$\\$
+
+
+
+
+## Part 4: The law of large numbers
+
+
+$\\$
+
+
+The *law of large numbers* states that as the sample size *n* grows the sample average approaches the expected value (i.e., the parameter $\mu$). We can write this as $n \rightarrow \infty$  $\bar{x} \rightarrow \mu$. 
+
+Let's use R to examine how the precision of the sample statistic for the mean ($\bar{x}$) changes as the sample size *n* increases. 
+
+
+```{r}
+
+# Using a for loop to calculate statistics from random samples of size n as n increases
+xbars <- NULL
+
+
+
+
+library(latex2exp)
+
+
+
+# plot the results (note \\ is needed for the lates2exp package)
+
+
+
+```
+
+
+
+
+Let's examine this using data sample of sizes n is powers of 2 to see what happens with larger sample sizes. 
+
+
+```{r}
+
+# use a for loop to calculate means for normal data where n is powers of 2
+xbars <- NULL
+
+
+# plot the results
+
+
+
+# add a red horizontal line at the true parameter value
+
+
+
+
+```
+
+
+
+This is a nice theoretical property that our statistic converges to our parameter value (i.e., that our statistic is consistent), but we live in the *real world* where we have finite data. What is of real interest is if we have a finite sample size *n* what does the *distribution of statistics* we get look like, i.e., what does the **sampling distribtuion** look like? 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Part 5: Sampling distributions
+
+
+#### Part 5.1
+
+A distribution of statistics is called a **sampling distribution** 
+
+Can you generate and plot a sampling distribution for:
+ * sample means $\bar{x}$'s 
+ * sample size n = 100
+ * for data that come from uniform distribution
+
+
+Note the shape of the *sampling distribution* can be quite different from the shape of the data distribution (which is uniform here).
+
+
+```{r}
+
+
+# create a sampling distribution of the mean using data from a uniform distribution
+sampling_dist <- NULL
+
+
+
+# plot a histogram of the sampling distribution of these means 
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#### Part 5.2: The standard error (SE)
+
+The deviation of a sampling distribution is called the standard error (SE). Can you calculate the standard error for the sampling distribution you created above? 
+
+```{r}
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#### Part 5.3: Is the data distribution normal?  Quantile-quantile plots
+
+We can check if emperical data seems to come from a particular distribution using quantile-quantile plots (qqplots). qqplots plot the sorted data values in your sample as a function of the theoretical quantile values (at evenly spaced probability areas).
+
+Below is an illustration of theoretical quantile values for 10 data points. If we have 10 data points in our sample, then to create a qqplot comparing our data to a standard normal distribution, we would plot our data as a function of these theoretical quantile values. If the plot falls along a diagonal line, this indicates our data comes from the standard normal distribution 
+
+Also see [this explanation](https://www.statisticshowto.datasciencecentral.com/q-q-plots/)
+
+![](qq-plot.png)
+
+
+
+Let's create a qqplot to compare the 1,000 points we created in our sampling distribution of the mean above to a normal distribution. 
+
+
+
+```{r}
+
+# create an sequence of values between 0 and 1 at even spaces
+prob_area_vals <- seq(0, 1, length.out = length(sampling_dist))
+
+
+# get the quantiles from these values
+
+
+# create the q-q plot
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+We can also use the qqnorm() function to do this more easily when comparing data to the normal distribution.
+
+
+```{r}
+
+
+```
+
+
+
+
+
+Our result show that the data in our sampling distribution is pretty normal. 
+
+Why is this? 
+
+
+
+$\\$
+
+
+
+
+
+#### Part 5.4:  The central limit theorm
+
+The [central limit theorm (CTL)](https://en.wikipedia.org/wiki/Central_limit_theorem) establishes that (in most situations) when independent random variables are added their (normalized) sum converges to a normal distribution.
+
+Put another way, if we definte the average random (i.i.d) sample {$X_1$, $X_2$, ..., $X_n$} of size *n* as: 
+
+$S_{n}:={\frac{X_{1}+\cdots +X_{n}}{n}}$
+
+then the CTL tells us that:
+
+$\sqrt{n}(S_{n} - \mu)$ $\xrightarrow {d} N(0,\sigma^{2})$
+
+
+You will explore this more through simulations on homework 2. 
+
+
+
+
+
+$\\$
+
+
+
+
+
+#### Part 5.5: Sampling and sampling distributions from a data set
+
+
+We generate samples from an actual data set we have using the sample() function.  
+
+Let's start by just generate a single sample of size n = 100 from the OkCupid users' heights and calculating the mean of this sample.
+
+
+```{r}
+
+library(okcupiddata)
+
+
+# get the heights for the OkCupid data
+
+
+# get one random sample of heights from 100 people
+
+
+
+# get the mean of this sample
+
+
+```
+
+
+
+$\\$
+
+
+
+We can then create a sampling distribution from the OkCupid users' data set by repeating this many times in a for loop.
+
+
+
+```{r}
+
+
+# repeat the process 1,000 times
+sampling_dist <- NULL 
+
+
+
+
+# plot a histogram of this sampling distribution 
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
