@@ -101,7 +101,7 @@ Probability density functions are a way to describe the (potentially infinite) p
 
 Note: the term **probability distribution** is a term that can refer to:
 
-1. the *probability density function* (or the probability mass function for descrete data)
+1. the *probability density function* (or the probability mass function for discrete data)
 2. the *cumulative distribution function* which is the integral (sum) of the density function
 
 $$P(X < x) = F(x) = \int_{y < x}f(y)dy$$
@@ -150,7 +150,7 @@ n <- 20
 ```
 
 
-Important facts about the normal distribuition: 
+Important facts about the normal distribution: 
  
  * 68% of the probability mass is within 1 $\sigma$ of $\mu$
  * 95% of the probability mass is within 2 $\sigma$ of $\mu$
@@ -206,7 +206,7 @@ $\\$
 The *law of large numbers* states that as the sample size *n* grows the sample average approaches the expected value (i.e., the parameter $\mu$). We can write this as $n \rightarrow \infty$  $\bar{x} \rightarrow \mu$. 
 
 
-This is a nice theoretical property that our statistic converges to our parameter value (i.e., that our statistic is consistent), but we live in the *real world* where we have finite data. What is of real interest is if we have a finite sample size *n* what does the *distribution of statistics* we get look like, i.e., what does the **sampling distribtuion** look like? 
+This is a nice theoretical property that our statistic converges to our parameter value (i.e., that our statistic is consistent), but we live in the *real world* where we have finite data. What is of real interest is if we have a finite sample size *n* what does the *distribution of statistics* we get look like, i.e., what does the **sampling distribution** look like? 
 
 
 
@@ -283,11 +283,11 @@ $\\$
 
 
 
-## Part 3:  The central limit theorm
+## Part 3:  The central limit theorem
 
 The [central limit theorm (CTL)](https://en.wikipedia.org/wiki/Central_limit_theorem) establishes that (in most situations) when independent random variables are added their (normalized) **sum** converges to a normal distribution.
 
-Put another way, if we definte the average random (i.i.d) sample {$X_1$, $X_2$, ..., $X_n$} of size *n* as: 
+Put another way, if we define the average random (i.i.d) sample {$X_1$, $X_2$, ..., $X_n$} of size *n* as: 
 
 $S_{n}:={\frac{X_{1}+\cdots +X_{n}}{n}}$
 
