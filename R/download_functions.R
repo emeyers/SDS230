@@ -45,11 +45,16 @@ download_homework <- function(homework_number) {
 #'  \dontrun{download_class_code(1)}
 #'
 #' @export
-download_class_code <- function(class_number) {
+download_class_code <- function(class_number, with_answers = FALSE) {
 
   base_path <- paste0(get_base_url(), "class_code/")
 
  file_names <- paste0("class_", sprintf("%02d", class_number), c(".Rmd", ".R"))
+
+ if (with_answers) {
+   file_names <- paste0("class_", sprintf("%02d", class_number), "_with_answers", c(".Rmd", ".R"))
+ }
+
 
   result = tryCatch({
 
