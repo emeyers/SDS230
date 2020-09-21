@@ -31,7 +31,7 @@ As always, if you need help with any of the homework assignments, please attend 
 SDS230::update_installed_packages()
 
 SDS230::download_image("lawyer.png")
-SDS230::download_image("diamonds_forever.jpg")
+SDS230::download_image("diamonds_pressure.jpg")
 
 
 ```
