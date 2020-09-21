@@ -1,0 +1,536 @@
+---
+title: "Homework 3"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+
+
+$\\$
+
+
+
+
+
+The purpose of this homework is to practice using randomization methods to run hypothesis tests. Please fill in the appropriate code and write answers to all questions in the answer sections, then submit a compiled pdf with your answers through gradescope by 11:59pm on Sunday September 27th. 
+
+As always, if you need help with any of the homework assignments, please attend the TA office hours which are listed on Canvas and/or ask questions on [Piazza](https://piazza.com/class/kd52xzes5se3gh). Also, if you have completed the homework, please help others out by answering questions on Piazza.
+
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+SDS230::update_installed_packages()
+
+SDS230::download_image("lawyer.png")
+SDS230::download_image("diamonds_forever.jpg")
+
+
+```
+
+
+
+
+
+<!-- The R chunk below sets some parameters that will be used in the rest of the document. Please ignore it and do not modify it. -->
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo = FALSE}
+
+library(knitr)
+library(latex2exp)
+
+options(scipen=999)
+
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+set.seed(123)  # set the random number generator to always give the same random numbers
+    
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 1: Are lawyers more sinister than the typical US adults? 
+
+
+Lawyers often have a bad reputation, but is it the case that lawyers more sinister than the typical US adults? Let's investigate!
+
+It is known that 10% of US adults are left-handed (i.e., are sinister). A study took a random sample of 105 lawyers and found that 16 were left-handed. Does this provide evidence that a higher proportion of lawyers are left-handed compared to the US population? Please complete the 5 steps of hypothesis testing below to examine this question.
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.1 (6 points)**: State the null and alternative hypotheses for testing whether a higher percentage of lawyers are left-handed compared to the general US population using both words and the appropriate symbols. Also describe what the term 'significance level' means, and denote it with the commonly used symbol and commonly used threshold value. Finally, please state whether this study is an observational study or an experiment and why. 
+
+
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.2 (6 points) **: Compute the statistic of interest and save it in an object `lawyer_stat`. Based on just looking at this statistic, would you guess that lawyers are left-handed at a higher rate than the US population? 
+
+```{r problem_2_2, message=FALSE, warning=FALSE, tidy=TRUE}
+  
+
+
+  
+    
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.3 (6 points) **: Now use the `rbinom()` function to generate a null distribution that would be expected if the null hypothesis was true, and save this in an object called `null_distribution`. 
+
+Remember that the arguments to `rbinom(num_sims, size, prob)` are: 
+
+ * `num_sims`: the number of simulations to run
+ * `size`:  the number of "coin flips" in each simulation
+ * `prob`:  the probability of getting heads on each coin flip. 
+
+Also plot the null distribution as a histogram showing the proportion of "heads" (i.e., proportion of lawyers that are left-handed), and add a vertical line at the observed statistic.
+
+```{r message=FALSE, warning=FALSE, tidy=TRUE}
+
+  
+
+
+
+
+        
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.4 (6 points)**: Now use the `null_distribution` and the `lawyer_stat` objects to calculate the number of simulations that had a higher proportion of heads than the observed statistic. Convert this to a p-value by dividing by the total number of simulations. Describe whether this p-value provides sufficient evidence that lawyers are more left-handed than the general US population.  
+
+```{r problem_2_4, message=FALSE, warning=FALSE, tidy=TRUE}
+    
+    
+
+
+    
+```
+
+**Answer**: 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.5 (14 points)**: Calculate a 95% confidence interval for the proportion of lawyers that are left-handed using the bootstrap. Hint: You will need to create a vector of actual data to do the bootstrap. Using the `rep("left", 16)` as part of the process for creating this vector is a good way to go, and then also consider how many "right"'s you would have. 
+
+```{r problem_2_5, message=FALSE, warning=FALSE, tidy=TRUE}
+    
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+**Part 1.6 (6 points)**: There is also a formula for calculating the standard error of a proportion which is:
+
+$s_p = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$
+
+
+Use this formula to create 95% confidence intervals and compare it to the 95% confidence intervals you calculated in the previous problem. Describe in the answer section below whether the two methods for calculating confidence intervals lead to similar results.
+
+
+```{r}
+
+
+
+
+
+
+
+```
+
+
+**Answer** 
+
+
+
+
+
+
+![](lawyer.png)
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 2: Do diamond prices differ depending on the quality of the cut? 
+
+
+In 2018, the total global wholesale value of polished diamonds amounted to almost [25.3 billion U.S. dollars](https://www.statista.com/statistics/612251/wholesale-value-of-polished-diamonds-worldwide/). The price of an individual diamond can be affected by several factors including the diamond's color, clarity, size and the quality of how it was cut. In this exercise, we will examine data from a large set of diamonds to assess whether the quality of the cut of a diamond affects the average price. 
+
+
+
+
+$\\$
+
+
+
+
+**Part 2.0 (6 points)** 
+
+The code below loads a data frame called `diamonds` that comes from the ggplot2 package, which is a package that is used to visualize data (we will discuss this package soon). For more information about the data set see [this website](https://ggplot2.tidyverse.org/reference/diamonds.html). 
+
+In the exercises below we will compare the mean price of diamonds, for two different levels of the diamond's cut. The levels of cut we are going to compare are the `Fair` cut diamonds (which is the worst cut), and the `Ideal` cut diamonds, which is the best cut. To start this analysis, create a object called `fair_price` that contains the prices for all the diamonds corresponding to the `Fair` cut, and a vector object called `ideal_price` that contains the prices for all the diamonds corresponding to the `Ideal` cut. If done correctly, the `fair_price` vector should have 1,610 elements, and the `ideal_price` vector should have 21,551 elements in it. Also report in the answer section below, how many cases and variables the full `diamonds` data frame has (the `dim()` function can help with this) and also whether you think the prices for the `Ideal` cut diamonds will be higher than the prices for `Fair` cut diamonds. Finally, please state whether this study is an observational study or an experiment and why. 
+
+
+
+```{r diamond_data}
+
+library(ggplot2)
+data(diamonds)
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+In parts 2.1 to 2.5 you will now do the 5 steps to run a hypothesis test!
+
+
+
+$\\$
+
+
+
+
+**Part 2.1 (6 points)** Let's start our hypothesis testing in the usual way by stating the null and alternative hypotheses using words and symbols. Although you might have a prior expectation that one of the diamonds cuts will have a higher average price than the other, please state the alternative hypothesis in a non-directional way such that you are testing whether the average prices of the `Fair` cut and `Ideal` are different, not that one price is higher than the other. When running your hypothesis test below, also do the analysis in such a way that you are doing a non-directional test (i.e., you will calculate the p-value by looking at both tails of the distribution).
+
+Finally, write down the significance level using the appropriate symbol, and set it to the most commonly used value. 
+
+
+
+**Answer**:  
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.2 (6 points)**  Now calculate the value of that observed statistic that is appropriate for this analysis. In the answer section write down the value for this statistic and use the appropriate notation to denote this statistic. Also visualize the data by creating a side-by-side box plot comparing the two groups. Based on this plot, describe in the answer section whether you believe there is a difference in mean prices.
+
+
+```{r observed_statistic}
+
+ 
+
+
+
+
+
+```
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 2.3 (15 points)**  Now create a null distribution using a permutation test. To do this, combine data from both groups, randomly assign the data to a fake "fair" and "idea" groups, calculate a null statistic, and repeat 10,000 times to get a null distribution. Also plot a histogram of the null distribution and add a red vertical line to the plot at the value of the observed statistic. Based on this plot, do you think the average diamond price is the same between the two cuts? 
+
+
+```{r null_distribution}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer** 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.4 (6 points)** Now calculate the p-value in the R chunk below. Be sure that you calculate the p-value using both tails (which should be consistent with how you stated the null hypothesis). Is this the p-value you would expect based on the plot of the null distribution and observed statistic in part 2.3? 
+
+```{r p_value}
+
+
+
+
+
+
+
+```
+
+
+**Answer**
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 2.5 (5 points)** Are the results statistically significant? Do you believe there is a difference between these groups? Are these results surprising at all? 
+
+
+
+
+**Answers**:  
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+**Part 2.6 (6 points)** Parametric hypothesis tests are hypothesis tests where the null distribution is given by a mathematical density function. When comparing two means, a parametric hypothesis test, that you likely learned about in introductory statistics, is the t-test, where the null distribution is a t-distribution. 
+
+R has a built in function called `t.test(sample1, sample2)` that takes two samples of data and runs a t-test on them. Use this function to compare the mean price between the fair cut and ideal cut diamonds and report if there is a statistically significant difference between the groups. Also report the 95% confidence interval that the `t.test()` function returns and describe whether this confidence interval is consistent with it being plausible that there is no difference between the population means of these two groups. 
+
+
+```{r t_test}
+
+
+
+
+```
+
+**Answers**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.7 (3 points)** From looking at the observed statistic, we notice that the fair cut diamonds actually have a higher price than the ideal cut diamond! This is strange since one would expect diamonds that have a better cut would cost more. Try examining the full diamonds data frame and see if you can come up with any reasons why it might be the case that fair cut diamonds cost more. 
+
+
+```{r}
+
+
+
+
+
+
+```
+
+
+
+**Answers**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+![](diamonds_pressure.jpg)
+
+
+
+## Reflection (3 points)
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes link, and clicking on [Reflection on homework 3](https://yale.instructure.com/courses/61201/quizzes/27484)
+
+
+
+
+
