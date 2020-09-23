@@ -1,0 +1,263 @@
+---
+title: "Class 8 notes and code"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+
+
+options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+ * Permutation tests for more than two means
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+
+
+## Part 1: Permutation tests for more than two sample means in R
+
+
+
+A group of Hope College students wanted to see if there was an association between a student’s major and the time it takes to complete a small Sudoku-like puzzle
+
+They grouped majors into four categories
+ * Applied science (as)
+ * Natural science (ns)
+ * Social science  (ss)
+ * Arts/humanities (ah)
+
+
+
+
+
+$\\$
+
+
+
+
+##### Step 1: State the null and alternative hypotheses 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+##### Step 2a: Plot the data
+
+
+```{r sudoku_plot}
+
+
+# get the data
+sudoku_data <- read.table('http://www.math.hope.edu/isi/data/chap9/MajorPuzzle.txt', header = TRUE)
+
+
+
+# create a boxplot of the data
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+##### Step 2b: Calculate the observed statistic
+
+
+
+
+```{r sudoku_obs_stat}
+
+
+# we can use the by() function to get the means separately for each group
+# (we will learn of a better way to do this later in the semester)
+group_means <- as.vector(by(sudoku_data$time, sudoku_data$major, mean))
+
+
+
+
+# a function to get the MAD statistic
+get_MAD_stat <- function(group_means) {
+  
+  total <- 0
+  
+  for (iGroup1 in 1:(length(group_means) - 1)) {
+    for (iGroup2 in (iGroup1 + 1):(length(group_means))){
+      total <- total + abs(group_means[iGroup1] - group_means[iGroup2])
+    }
+  }
+  
+  total
+  
+}  # end of the function 
+
+
+
+
+# apply this function to our data to get our observed statistic 
+
+  
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+##### Step 3: Create the null distribution
+
+
+```{r sudoku_null_dist}
+
+
+# create the null distribution here using a for loop and the get_MAD_stat() function 
+
+
+
+
+
+
+# plot the null distribution as a histogram
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+##### Step 4: Calculate a p-value
+
+
+```{r sudoku_p_value}
+
+
+
+
+
+# plot the null distribution again with a line at the observed statistic
+
+
+
+
+
+# calculate the p-value
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+##### Step 5: Make a decision
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+
+
+
+
