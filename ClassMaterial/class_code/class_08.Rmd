@@ -1,8 +1,8 @@
 ---
 title: "Class 8 notes and code"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 
@@ -40,7 +40,198 @@ $\\$
 
 ## Overview
 
- * Permutation tests for more than two means
+ * Permutation test for two means using a t-statistic
+ * Parametric tests for two means
+ * Permutation tests for more than two means (if there is time)
+
+
+
+
+
+$\\$
+
+
+
+
+## Part 1: Permutation tests for comparing two means in R
+
+
+Let's us examine the randomized comparative experiment by Lyle et al (1987) to assess whether calcium lowered blood pressure.
+
+
+
+
+
+
+##### Step 1: State the null and alternative hypotheses 
+
+
+$H_0: \mu_{treat} - \mu_{control} = 0$
+$H_A: \mu_{treat} - \mu_{control} > 0$
+
+
+$\alpha = 0.05$
+
+
+
+
+$\\$
+
+
+
+
+
+
+##### Step 2a: Plot the data
+
+
+```{r pill_plot}
+
+
+
+treat <- c(7, -4, 18, 17, -3, -5,  1, 10, 11, -2)
+control <- c(-1,  12,  -1,  -3,   3,  -5,   5,   2, -11,  -1,  -3)
+
+
+
+# plot the data
+boxplot(treat, control, 
+        names = c("Treatment", "Control"),
+        main = "Comparison of decrease in blood pressure",
+        ylab = "Blood pressure decrease")
+
+
+
+# create a stripchart
+data_list <- list(treat, control) 
+  
+stripchart(data_list, 
+           group.names = c("treatment", "control"), 
+           main = "Comparison of decrease in blood pressure",
+           xlab = "Blood pressure decrease", 
+           col = c("red", "blue"))
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+##### Step 2b: Calculate the observed statistic using a t-statistic
+
+
+The formula for a t-statistic is: 
+
+$t = \frac{\bar{x}_t - \bar{x}_c}{\sqrt{\frac{s^2_t}{n_t} + \frac{s^2_c}{n_c}}}$
+
+
+
+
+```{r pill_obs_stat}
+
+
+
+
+
+
+```
+
+
+$\\$
+
+
+
+
+
+##### Step 3: Create the null distribution using a permutation/randomization test
+
+
+
+```{r null_dist_pill}
+
+
+# combine the data from the treatment and control groups together
+
+
+# use a for loop to create shuffled treatment and control groups and shuffled statistics 
+
+
+       # shuffle data
+
+
+        # create fake treatment and control groups
+
+
+        # calculate the t-statistic
+
+
+        # save the statistic of interest
+
+
+        
+
+
+
+# plot the null distribution as a histogram
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+##### Step 4: Calculate a p-value
+
+
+```{r p_value_pill}
+
+
+# plot the null distribution again with a red line a the value of the observed statistic
+
+
+
+
+# calculate the p-value
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+##### Step 5: Make a decision
+
+
+
+
+
+When we used a statistic of $\bar{x}_t - \bar{x}_c$ in our randomization test in class 7 we got a p-value of 0.066. How do these results compare? 
+
 
 
 
@@ -56,8 +247,183 @@ $\\$
 
 
 
+## Part 2: Parametric tests for comparing two means in R
 
-## Part 1: Permutation tests for more than two sample means in R
+
+Let's redo this analysis using a parametric probability distribution, which in this case is the t-distribution. The same 5 steps of hypothesis testing apply here as well!
+
+
+
+
+$\\$
+
+
+
+
+##### Step 1: State the null and alternative hypotheses 
+
+
+Same as before...
+
+
+$H_0: \mu_{treat} - \mu_{control} = 0$
+$H_A: \mu_{treat} - \mu_{control} > 0$
+
+
+$\alpha = 0.05$
+
+
+
+
+$\\$
+
+
+
+
+
+##### Step 2b: Calculate the observed statistic using a t-statistic
+
+
+Same as before: 
+
+
+$t = \frac{\bar{x}_t - \bar{x}_c}{\sqrt{\frac{s^2_t}{n_t} + \frac{s^2_c}{n_c}}}$
+
+
+
+
+```{r pill_obs_stat2}
+
+
+numerator <- mean(treat) - mean(control)
+
+demoninator <- sqrt(   var(treat)/length(treat) + var(control)/length(control)    )
+
+
+(obs_stat <- numerator/demoninator)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+##### Step 3: Create the null distribution
+
+
+
+We will now use a parametric t-distribution (i.e., density function) as a null distribution. The t-distribution has one parameter called "degrees of freedom". We will set this parameter as the minimum of $n_t - 1$ or $n_c - 1$. 
+
+
+What are the degrees of freedom for this calcium study? 
+
+
+Let's visualize the t-distribution
+
+
+```{r t_density}
+
+
+
+# plot the density function
+
+
+
+
+# how does this compare to our t-distribution created by shuffling? 
+
+
+
+```
+
+
+$\\$
+
+
+
+
+##### Step 4: Calculate a p-value
+
+
+We can get $Pr(X > stat)$ for a t-distribution using the `pt()` function.
+
+
+
+```{r p_value_pill2}
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+##### Step 5: Make a decision
+
+
+How does our p-value and decision compare to the p-value decision we got from the permutation test? 
+
+
+
+
+$\\$
+
+
+
+
+##### Built in R functions for t-tests
+
+We can use the built in `t.test()` function to run a t-test as well. We will use the extra argument `alternative = "greater"` to do a one-sided t-test. 
+
+
+
+```{r t_test}
+
+
+
+
+```
+
+
+Why is the p-value slightly different than what we got when we used the `pf()` function? 
+
+
+
+```{r t_test_sw}
+
+
+
+```
+
+
+
+
+See the [Welch–Satterthwaite equation](https://en.wikipedia.org/wiki/Welch%E2%80%93Satterthwaite_equation)
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 3: Permutation tests for more than two sample means in R
+
 
 
 
@@ -87,6 +453,7 @@ $\\$
 
 
 $\\$
+
 
 
 
@@ -248,16 +615,4 @@ $\\$
 
 
 $\\$
-
-
-
-
-
-
-
-
-
-
-
-
 
