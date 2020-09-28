@@ -1,0 +1,476 @@
+---
+title: "Homework 4"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+
+
+$\\$
+
+
+
+
+
+
+The purpose of this homework is to learn how to write functions and reinforce concepts previously discussed in the class. Please fill in the appropriate code and write answers to all questions in the answer sections, then submit a compiled pdf with your answers through Gradescope by 11:59pm on Sunday October 4th. 
+
+
+As always, if you need help with any of the homework assignments, please attend the TA office hours which are listed on Canvas and/or ask questions on [Piazza](https://piazza.com/class/kd52xzes5se3gh). Also, if you have completed the homework, please help others out by answering questions on Piazza.
+
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+SDS230::update_installed_packages()
+
+
+SDS230::download_data("avocados_northeast.rda")
+SDS230::download_image("colbert_bootstrap.jpg")
+SDS230::download_image("correlation.png")
+
+
+```
+
+
+
+
+
+<!-- The R chunk below sets some parameters that will be used in the rest of the document. Please ignore it and do not modify it. -->
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo = FALSE}
+
+library(knitr)
+library(latex2exp)
+library(dplyr)
+
+options(scipen=999)
+
+opts_chunk$set(tidy.opts=list(width.cutoff=60)) 
+set.seed(230)  # set the random number generator to always give the same random numbers
+    
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 1: Writing functions in R and testing the bootstrap confidence interval coverage 
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.1 (23 points)**: On homework 2 part 3.2, you wrote code where you created a confidence interval for the mean price of conventional avocados using the bootstrap. Let's now generalize this code by writing a function to create confidence intervals for the mean of any data sample.
+
+The function you write should be called `create_mean_bootstrap_CI` and should take the following arguments:
+
+1. `data_sample`: a sample of quantitative data that will be used to construct the confidence interval.
+
+2. `CI_level`: a number between 0 and 1 that contains the confidence level to be used. The default value for this argument should be set to .95 which corresponds to a 95% confidence interval. 
+
+3. `num_bootstrap_replicates`: an integer that specifies the number of bootstrap replicates that should be used. The default value for this argument should be set to 10,000. 
+
+4. `plot_dist`: a Boolean flag that specifies whether the bootstrap distribution should be plotted. The default value for this argument should be set to TRUE.
+
+
+Once you have written this function, show that it works by calculating a 95% confidence intervals for the conventional avocados and plotting the corresponding bootstrap distribution. Also calculate a 99% confidence interval for the organic avocados and do **not** display the bootstrap distribution. 
+
+
+
+```{r CI_boot_function}
+  
+
+create_mean_bootstrap_CI <- function(data_sample, 
+                                     CI_level = .95, 
+                                     num_boot_replicates = 10000,
+                                     plot_dist = TRUE) {
+  
+  
+  
+  
+  # create the bootstrap distribution
+  
+  
+  
+  
+  
+  
+  
+  # plot it if plot_dist is TRUE
+  
+  
+  
+  
+  
+  
+  
+  # calculate and return the bootstrap confidence interval
+  
+  
+  
+  
+  
+} # end of the function
+
+
+
+
+
+
+
+# test that the function works
+
+
+
+
+
+    
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.2 (23 points) **: Running computer simulations under controlled conditions is a powerful way to test the effectiveness of different data analysis methods. Let's use this approach (along with the function you wrote above) to examine whether bootstrap confidence intervals for the mean do indeed capture the parameters of interest at the rate they are supposed to. Or to state this same thing more precisely, let's examine whether the bootstrap *coverage probability* indeed matches the *nominal confidence level*. 
+
+To test this, let's use the standard uniform distribution as the underlying data distribution, and let's use a sample size of n = 30 points; for more information on the uniform distribution [see this link](https://en.wikipedia.org/wiki/Uniform_distribution_(continuous)). The mean of the standard uniform distribution (which has end points at a = 0 and b = 1), has a parameter value of $\mu = 0.5$. Thus if we create 100 confidence intervals from random samples of size n = 30 from the standard uniform distribution, approximately 95 of them contain the value  $\mu = 0.5$.
+
+In the R code chunk below, create a for loop that will run 100 simulations. Start by creating an object  `param_in_CI <- NULL` outside of the loop that will store a vector of Booleans indicating whether the confidence interval created in each iteration of the loop contained the parameter. Inside the for loop do the following:
+
+1. generate a random sample of n = 30 points from a uniform distribution. 
+
+2. Create a bootstrap confidence interval from this data sample using the `create_mean_bootstrap_CI()` you created in part 1.1
+
+3. Calculate whether the true mean parameter value ($\mu = .5$) is in the confidence interval (hint: the & operator will be helpful here). Store a Boolean value of whether the current confidence contained the parameter in the `param_in_CI` vector.
+
+Once the for loop is done running, report how many of the confidence intervals contained the parameter (i.e., by calculating the proportion of TRUE values in the `param_in_CI` vector). Also discuss if this is the proportion of confidence intervals you would expect to contain the parameter. Note: ideally we would run more simulations than 100, (say 10,000), however this is going to be a bit too computationally intensive (i.e, will take too long to run) for this homework. 
+
+
+
+```{r boot_coverage, tidy=TRUE}
+  
+
+
+
+
+
+
+      
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+![](colbert_bootstrap.jpg)
+
+
+
+
+$\\$ 
+
+
+
+
+
+
+
+## Part 2: A permutation test for the correlation coefficient 
+
+In class we have used randomization methods and a 5 step process to run hypothesis tests for comparing whether a population proportion is equal to a particular value, and whether two population means are the same. We can use randomization methods and similar logic to test for other parameters as well. In this exercise, you will come up with a hypothesis test for testing whether two variables are correlated. 
+
+As I'm sure you remember from introductory statistics, the correlation coefficient measures the strength of a linear association between two quantitative variables, where a value of |1| means there is a perfect linear association, and a value of 0 means there is not a linear association between the variables. As I'm sure you will also recall, the symbol that is typically used to denote the population correlation (i.e., if there were infinite pairs of data points) is denoted with $\rho$, and the correlation value calculated on a sample is denoted with the symbol $r$. 
+
+In the problem below, we will examine a sample of books purchased on Amazon.com to assess whether there is a linear association between the number of pages in a book and the price of the book. As you can imagine, ink and paper costs money, so longer books might be more expensive. Then again, the real value is in the words themselves, so perhaps there is not a relationship? Let's investigate this important question!
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.1 (5 points)**: As always when running hypothesis tests, start by stating the null and alternative hypotheses, and the significance level, using both words and using the appropriate symbols. Also describe your intuition (i.e., best guess) as to whether you think there is a correlation between the number of pages in a book and its price. 
+
+
+
+
+
+**Answer**:  
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.2a (6 points)**: The code below loads the data and also uses the dplyr filter() function to remove data points that have missing values. Please use the `filter()` on the data to reduce it to only paperback books, which are indicated "P" values in the `Hard..Paper` variable. Then extract the number of pages into a vector called `num_pages` and the list price into a vector called `price`. If done correctly, these vectors should have 235 elements (note: make sure you use the *List Price* and not the *Amazon Price* here).
+
+
+```{r}
+
+amazon <- read.csv("amazon-books.txt", sep = "\t") %>%
+  filter(!is.na(NumPages)) %>%
+  filter(!is.na(List.Price)) 
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+**Part 2.2b (5 points)**:  Now create a scatter plot of the data. Also calculate the statistic of interest using the `cor()` function, save it to an object called `obs_stat`, and print it. Does the statistic value have the sign that you would expect? Based on the magnitude of the statistic value do you think there will be a statistically significant relationship between the number of pages in a book and its price? 
+
+
+```{r}
+
+
+
+
+
+
+
+```
+
+**Answer**: 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.3a (4 points)**: Step 3 of the 5 step hypothesis testing procedure is to calculate the null distribution. When trying to figure out how to create a null distribution for a new statistic, a useful first step is just to calculate *one* statistic value that is consistent with the null hypothesis. Let's take this step now by calculating one statistic value that is consistent with the null hypothesis. 
+
+Hint: if we have a vector called `my_vec`, then the `sample(my_vec)` function will randomly reorder the elements in the vector. 
+
+
+```{r}
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.3b (6 points)**: Now that you have one statistic value consistent with the null distribution, go ahead and create the full null distribution. Then plot it as a histogram and put a red vertical line at the value of the observed statistic. Based on this plot, do you think the results will be statistically significant? 
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+**Answer**: 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.4 (4 points)**: Now calculate the p-value and print out the value.   
+
+
+
+```{r p_value}
+
+
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 2.5 (5 points)** Report whether the results are statistically significant and what your conclusions are. 
+
+
+
+**Answers**: 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.6 (16 points)**: When running *exploratory data analyses*, it is often useful to assess the robustness of patterns seen in data. Let's check how robust the relationship is between the number of pages in a book and the book's price by rerunning the hypothesis test you did above but under the following conditions: 
+
+1. Using Amazon's prices rather than the list price (use only the paperback books here).
+
+2. Using hard cover books instead of paper back books (use the list price here).
+
+3. Excluding outliers by excluding books that cost more than $60 (use only the paperback books and the list price here). 
+
+
+In order to test the robustness of these different conditions, write a function called `print_cor_pval(vec1, vec2)` that takes takes two vectors `vec1` and `vec2` prints the correlation between these values, and also prints the p-value from running a permutation test between these vectors (i.e., it runs steps 2.2b to 2.4 above and prints the p-value, but does not create any of the plots). Hint: the `print()` function can be used to print out values inside a function. Also, the `paste()` function can be useful to add extra text to what is being printed. 
+
+Once this function is written, use the dplyr `filter()` functions to get the appropriate data sets that are needed to address the robustness questions listed above, and then use the `print_cor_pval(vec1, vec2)` function to get the correlation coefficient values (r) and the p-values. Fill in these values in the table below, and discuss under which conditions there is a statistically significant relationship.
+
+
+
+```{r robustness}
+
+
+# write a function that prints the correlation value and the p-value
+
+
+
+
+
+
+
+# testing the robustness of the results
+
+
+
+
+```
+
+**Answers**:  
+
+
+
+
+Fill in this table and report which relationships are robust...
+
+
+
+
+  Condition       |    r       |  p-value   
+------------------|------------|-----------
+Amazon's prices   |   x        |    a
+Only books < $60  |   y        |    b 
+Hard cover books  |   z        |    c 
+
+
+
+
+
+$\\$
+
+
+
+
+
+![](correlation.png)
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+## Reflection (3 points)
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes link, and clicking on [Reflection on homework 4](https://yale.instructure.com/courses/61201/quizzes/27480)
+
+
+
+
+
