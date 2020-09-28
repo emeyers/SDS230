@@ -4,4 +4,5 @@ okcupiddata,
 Lahman,
 latex2exp,
 nycflights13,
+gapminder,
 xkcd
