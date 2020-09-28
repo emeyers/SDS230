@@ -24,9 +24,14 @@ $\\$
 # makes sure you have all the packages we have used in class installed
 SDS230::update_installed_packages()
 
-SDS230::download_data("movies.Rdata")
-
 SDS230::download_image("pipe.jpg")
+
+
+# SDS230::download_data("movies.Rdata")
+
+# problem download file on Windows so using this to download data as binary data
+download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/movies.Rdata", "movies.Rdata", mode = "wb")
+
 
 
 
