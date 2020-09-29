@@ -6,4 +6,5 @@ latex2exp,
 nycflights13,
 gapminder,
 ggridges,
+plotly,
 xkcd
