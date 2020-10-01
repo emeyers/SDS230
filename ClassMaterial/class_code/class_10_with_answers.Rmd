@@ -1,0 +1,483 @@
+---
+title: "Class 10 notes and code"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+
+The focus of today's class is to revisit the hypothesis tests for two means but using: 
+
+* dplyr to filter the data
+* writing a function that can run hypothesis tests
+* comparing permutation tests to t-distributions and t-tests
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+SDS230::update_installed_packages()
+
+SDS230::download_image("diamonds_forever.jpg")
+
+```
+
+
+
+
+
+<!-- The R chunk below sets some parameters that will be used in the rest of the document. Please ignore it and do not modify it. -->
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo = FALSE}
+
+library(knitr)
+library(latex2exp)
+
+options(scipen=999)
+
+opts_chunk$set(tidy.opts=list(width.cutoff=60))
+set.seed(123)  # set the random number generator to always give the same random numbers
+    
+```
+
+
+
+
+
+$\\$
+
+
+
+## Part 1: Preliminaries note on logical AND (&) and OR (|)
+
+The AND (&) and OR (|) operators are used to connect two Boolean expressions: 
+
+* The AND (&) returns TRUE if both expressions are TRUE.
+* The | operator  returns TRUE if either expressions are TRUE.
+
+
+
+```{r}
+
+# Exploring the AND (&) operator
+
+TRUE & TRUE
+TRUE & FALSE
+
+
+# Exploring the OR (|) operator
+
+TRUE | TRUE
+TRUE | FALSE
+FALSE | FALSE
+
+```
+
+
+
+
+
+
+
+
+
+
+
+## Part 2: Do diamond prices differ depending on the quality of the cut? 
+
+
+To gain practice with dplyr and writing functions, let's revisit hypothesis tests for comparing the price of fair cut and ideal cut diamonds. 
+
+
+
+$\\$
+
+
+
+
+**Part 2.0a** 
+
+Let's recreate our `fair_price` vector that has diamonds with `Fair` cut, and the `ideal_price` vector that contains the prices for all the diamonds corresponding to the `Ideal` cut using dplyr. 
+
+
+
+```{r diamond_data}
+
+library(dplyr)
+library(ggplot2)
+data(diamonds)
+
+
+# let's use the dplyr glimpse() function to look at this data frame
+glimpse(diamonds)
+
+
+# let's get the fair cut diamonds
+
+
+# version 1
+fair_price <- filter(diamonds, cut == "Fair")$price
+
+
+# version 2: using the pipe operator and the pull() function to extract a variable
+fair_price <- diamonds %>% 
+  filter(cut == "Fair") %>%
+  pull(price)
+
+
+# get the ideal cut diamonds vector
+ideal_price <- diamonds %>% 
+  filter(cut == "Ideal") %>%
+  pull(price)
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+In parts 2.1 to 2.5 you will now do the 5 steps to run a hypothesis test!
+
+
+
+$\\$
+
+
+
+
+**Part 2.1** Let's start our hypothesis testing in the usual way by stating the null and alternative hypotheses. Although you might have a prior expectation that one of the diamonds cuts will have a higher average price than the other, please state the alternative hypothesis in a non-directional way such that you are testing whether the average prices of the `Fair` cut and `Ideal` are different, not that one price is higher than the other. 
+
+
+In symbols: 
+
+ * $H_0$ : $\mu_{fair} = \mu_{ideal}$ 
+
+ * $H_a$ : $\mu_{fair} \ne \mu_{ideal}$
+ 
+
+$\alpha$ = 0.05. 
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.2a**  Let's calculate the value of that observed statistic using the original data frame and dplyr.
+
+
+```{r observed_statistic, warning = FALSE}
+
+
+# getting the mean diamond price for all cuts
+diamonds %>%
+  group_by(cut) %>%
+  summarize(mean_price = mean(price))
+
+
+# getting the mean diamond price for fair and ideal cuts
+the_prices <- diamonds %>%
+  group_by(cut) %>%
+  summarize(mean_price = mean(price)) %>%
+  filter(cut %in% c("Fair", "Ideal"))
+
+
+# create the observed statistic
+(obs_stat <- (the_prices$mean_price[1] - the_prices$mean_price[2]))
+
+
+```
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+**Part 2.2b**  Let's write a function to compute the observed statistic 
+
+
+```{r obs_stat_function}
+
+
+# a function that computes the difference between means
+mean_diff <- function(sample1, sample2) {
+  mean(sample1) - mean(sample2)
+}
+
+
+
+# test out the mean_diff() function on our diamond price vectors
+mean_diff(fair_price, ideal_price)
+
+
+
+# let's write a function that computes the t-statistic
+get_t_stat <- function(sample1, sample2) {
+  
+  numerator <- mean(sample1) - mean(sample2)
+  denominator <- sqrt(var(sample1)/length(sample1) + var(sample2)/length(sample2))
+  
+  numerator/denominator 
+  
+}
+
+
+# test out the get_t_stat() function on our diamond price vectors
+get_t_stat(fair_price, ideal_price)
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.3**  Let's create the null distribution using different statistics.
+
+
+```{r null_distribution}
+
+
+# calculate the observed statistic using our functions
+
+# obs_stat <- mean_diff(fair_price, ideal_price)
+obs_stat <- get_t_stat(fair_price, ideal_price)
+
+
+
+combined_conditions <- c(fair_price, ideal_price)
+
+n_fair <- length(fair_price)
+n_combined <- length(combined_conditions)
+
+
+# compute the full null distribution 
+  null_dist <- NULL
+  for (i in 1:10000)
+  {
+    shuffled_conditions <- sample(combined_conditions)
+    shuff_fair <- shuffled_conditions[1:n_fair]
+    shuff_ideal <- shuffled_conditions[(n_fair + 1):n_combined]
+
+    # original code, replace with our function
+    # null_dist[i] <- mean(shuff_fair) - mean(shuff_ideal)
+    
+    #null_dist[i] <- mean_diff(shuff_fair, shuff_ideal)
+    null_dist[i] <- get_t_stat(shuff_fair, shuff_ideal)
+
+      
+  }
+ 
+  
+  # plot the null distribution
+  hist(null_dist, n = 100, 
+       xlab = "Null statistic values", 
+       main = "Null distribution", xlim = c(-10, 10))
+  
+  abline(v = obs_stat, col = "red")
+  abline(v = -1 * obs_stat, col = "red")
+
+ 
+  
+``` 
+
+
+$\\$
+
+
+
+
+
+**Part 2.4 (5 points)** Let's use if statements to get p-values in different tails
+
+
+
+
+```{r}
+
+alternative <- "two_sided"   # "greater", "less"
+
+
+if (alternative == "two_sided") {
+  
+  # get the two-sided p-value
+  num_upper_tail <- sum(null_dist >= abs(obs_stat))  
+  num_lower_tail <-  sum(null_dist <= -1 * abs(obs_stat))
+
+  (p_value <- (num_upper_tail + num_lower_tail)/length(null_dist) )
+  
+
+} else if (alternative == "greater") {
+    
+      num_upper_tail <- sum(null_dist >= obs_stat)
+      p_value <- num_upper_tail/length(null_dist)
+    
+} else if (alternative == "less") { 
+  
+      num_lower_tail <-  sum(null_dist <= obs_stat)
+      p_value <- num_lower_tail/length(null_dist)
+
+    
+} else {
+    
+    stop("alternative must be either 'two_sided', 'greater', 'less'")
+    
+}
+  
+  
+
+```
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+**Part 2.5 (5 points)** Are the results statistically significant? Do you believe there is a difference between these groups? Are these results surprising at all? 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+**Part 2.6** Let's compare the distribution permutation null distribution using the t-statistic to a parametric t-distribution. 
+
+
+```{r t_test}
+
+
+# plot the t density function 
+degree_free <- min(length(fair_price) - 1, length(ideal_price) - 1)
+
+x <- seq(-4, 4, by = .001)
+y <- dt(x, df = degree_free)
+
+plot(x, y, type = "l", 
+     main = "The t density function")
+
+
+
+
+# compare the t-density function to the null distribution 
+  # plot the null distribution
+  hist(null_dist, n = 100, freq = FALSE,
+       xlab = "Null statistic values", 
+       main = "Null distribution", xlim = c(-10, 10))
+  
+  abline(v = obs_stat, col = "red")
+  abline(v = -1 * obs_stat, col = "red")
+
+  
+  points(x, y, type = "l", col = "green")
+  
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 2.7** Let's get the p-value from a t-distribution.
+
+
+```{r p_val_t_dist}
+
+
+lower_pval <- pt(-1 * abs(obs_stat), df = degree_free)
+upper_pval <- pt(abs(obs_stat), df = degree_free, lower.tail = FALSE)
+
+p_val <- lower_pval + upper_pval
+
+
+
+(t_test_results <- t.test(fair_price, ideal_price))
+
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+![](diamonds_forever.jpg)
+
+
+
+
+
+
+
