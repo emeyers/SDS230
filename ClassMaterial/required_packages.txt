@@ -7,4 +7,5 @@ nycflights13,
 gapminder,
 ggridges,
 plotly,
+formatR,
 xkcd
