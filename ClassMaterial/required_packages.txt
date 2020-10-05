@@ -8,4 +8,5 @@ gapminder,
 ggridges,
 plotly,
 formatR,
+ggridges,
 xkcd
