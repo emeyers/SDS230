@@ -1,0 +1,594 @@
+---
+title: "Homework 5"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+
+
+$\\$
+
+
+
+
+
+The purpose of this homework is to practice using dplyr to transform data, and to practice using ggplot2 to visualize data. Please fill in the appropriate code and write answers to all questions in the answer sections, then submit a compiled pdf with your answers through Gradescope by 11:59pm on Sunday October 11th. 
+
+As always, if you need help with any of the homework assignments, please attend the TA office hours which are listed on Canvas and/or ask questions on [Piazza](https://piazza.com/class/kd52xzes5se3gh). Also, if you have completed the homework, please help others out by answering questions on Piazza.
+
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+SDS230::update_installed_packages()
+
+SDS230::download_data("forecast_ne_joined.rda")
+
+SDS230::download_image("grumpy_cat.jpg")
+
+
+```
+
+
+
+
+
+<!-- The R chunk below sets some parameters that will be used in the rest of the document. Please ignore it and do not modify it. -->
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo = FALSE}
+
+library(knitr)
+library(latex2exp)
+library(dplyr)
+library(gapminder)
+library(ggplot2)
+library(ggridges)
+
+
+options(scipen=999)
+
+opts_chunk$set(tidy.opts=list(width.cutoff=60)) 
+set.seed(230)  # set the random number generator to always give the same random numbers
+    
+```
+
+
+
+
+
+$\\$
+
+
+
+  
+  
+   
+
+## Part 1: Data transformations with dplyr
+
+
+Prior to the outbreak of COVID-19 in March 2020, people used to travel in the air in large metal vehicles called [airplanes](https://en.wikipedia.org/wiki/Airplane). This form of travel was convenient because airplanes fly very fast. However, even though the airplanes themselves are fast, their scheduled departure times were often delayed, which used to make people frustrated. 
+
+Let's relive what it was like to be part of this ancient civilization by analyzing the delay times of airplane flights. In particular, we will look at airplane flights that left the airports in New York City, since these airports are some of the closest major airports to New Haven, and we will use dplyr to do some quick explorations of the data to see if there are some ways to potentially avoid flight delays. 
+
+To begin, let's load the data for flights leaving New York City in 2013 using the code below. To get more information on this data set, use *? flights* (you don't need to modify anything on the code below).
+ 
+```{r message=FALSE, warning=FALSE}
+
+
+# install.packages("nycflights13")
+
+# get the flight delays data and load dplyr
+require("nycflights13")
+data(flights)
+data(airlines)   # the names of the airline carriers
+
+
+```
+
+
+
+   
+$\\$   
+    
+   
+    
+
+
+
+**Part 1.1 (8 points):**  One way to avoid being delayed would be to avoid the worst airlines. Which airline had the longest arrival delays on average, and how long was this average delay?  Use the *airlines* data frame to figure out which airline each carrier code corresponds to. 
+
+
+```{r, bad_airlines, message=FALSE, warning=FALSE}
+
+library(dplyr)
+
+
+# get the average delay for each airline
+
+
+
+
+
+
+```
+
+**Answers**:  
+
+
+
+   
+   
+   
+   
+$\\$      
+
+
+
+**Part 1.2 (8 points):**  Flights that start off with a delay might end up making up some time during the course of the flight. Test whether this is true on average. Hint: only use flights that have positive departure delay. 
+
+ 
+```{r, make_up_time, message=FALSE, warning=FALSE}
+
+
+
+
+
+
+```
+
+**Answers**: 
+
+
+
+
+
+
+
+
+$\\$    
+    
+
+    
+
+    
+
+**Part 1.3 (8 points):**  Another way to avoid flight delays would be to avoid particularly bad times to fly. Which month of the year had the longest departure delays? Also report which hour of the day had the longest departure delays. Finally, report how many flights left at the hour of the day that had the longest delay and what the average delay was at that time. 
+
+
+```{r, bad_fly_time, message=FALSE, warning=FALSE}
+
+
+# month that had the longest departure delays
+
+
+
+
+
+
+
+
+# hour of the day that had the longest departure delays
+
+
+
+
+
+```
+
+**Answers**: 
+
+
+
+
+
+    
+
+![](grumpy_cat.jpg)
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 2: Data visualization
+
+
+In the next set of exercises you will use ggplot2 to compare different visualizations and see which gives the clearest insights. A useful resource for ggplot and other tidyverse code is the book [R for Data Science](https://r4ds.had.co.nz).
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.1 (10 points)**: Let's start by comparing some visualizations on the [gapminder data](https://www.gapminder.org) which contains information about different countries in the world over time. Use ggplot and the gapminder data to compare the GDP per capita of Japan, the United States and China. Plot a line graph of GDP per capita as a function of the year, with each country in a different color. Also, create a plot that compares these countries GDP per capita as a function of the year using facets, where the data from each country is on a separate subplot. As always, make sure to label your axes in this plot and in all other plots in this worksheet. Do you think one type of plots is better than another in comparing these countries? Explain why. (Hint for completing this exercise: first use the dplyr filter() function to get the subset of data you need, then plot it). 
+
+
+```{r question_2_1, message=FALSE, warning=FALSE}
+
+# filter the data to get only data from Japan the United States and China
+
+
+
+         
+# create a line plot showing the three countries on the same plot
+
+
+
+
+
+# use facets to put the three countries on side-by-side plots
+
+
+
+
+
+```
+
+**Answers**: [Explain whether you think of of these plots is more informative than the other]. 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.2 (10 points)**:  DataExpo is a Statistics event at the Joint Statistical Meetings where different researchers compare data analysis methods applied to a common data set. In 2018, the data set consisted of weather predictions made between 2014 and 2017. In this exercise, let's look at the data from this event and try to visualize the prediction accuracies for predictions made 0 to 6 days in the future. 
+
+The code below loads a data frame called `forecast_ne_joined` that has the prediction errors for the maximum temperature for the 9 cities in New England, along with several other variables. First, create a new data frame called `new_haven_preds` that has only the predictions from New Haven, and has only the variables cityID, city, num_days_out_prediction_made and max_temp_prediction_error. Also, convert the variable `num_days_out_prediction_made` to a factor using the mutate() and as.factor() functions. Then use ggplot to create plots that compare the prediction accuracy as a function of the number of days in advance that a prediction was made using the following geoms:
+
+1) Create a box plot using geom_boxplot()
+2) Create a violin plot using geom_violin()
+3) Create a joy plot using geom_density_ridges()
+
+Note that the geom geom_density_ridge() comes from the ggridges packages that was loaded at the top of the worksheet, and that the x and y aesthetic mapping is in the opposite order as the mapping used for the geom_boxplot() and geom_violin() geoms. 
+
+After you created these plots, briefly discuss which plot you believe most clearly shows how the prediction accuracy decreases as a function of days in the future. Also, don't forget to label your axes using the xlab() and ylab() functions.
+
+
+
+```{r question_2_2, message=FALSE, warning=FALSE}
+
+
+# load the data that has the weather prediction errors
+load('forecast_ne_joined.rda')
+
+
+# filter and select the data to get data from only New Haven for the 4 variables of interest
+# and convert num_days_out_prediction_made to a factor using the mutate() function
+
+
+
+
+# compare the predictions made 0 to 6 days out using box plots
+
+
+
+
+
+# compare the predictions made 0 to 6 days out using violin plots
+
+
+
+
+
+# compare the predictions made 0 to 6 days out using joy plots
+
+
+
+
+
+```
+
+
+**Answers**: 
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.3 (8 points)**: Create an *interesting* plot using one of the data sets we have discussed in class or another data set you can find. Try exploring other features of ggplot we have not discussed in class using the [ggplot cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf). See if you can find something interesting in the data and explain why you find it interesting. 
+
+
+
+```{r question_2_3, message=FALSE, warning=FALSE}
+
+
+
+
+
+
+
+
+```
+
+
+**Answers**:   
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 3: Transforming, joining and visualizing COVID-19 data
+
+
+To gain practice joining data tables, and as well as additional practice transforming and visualizing data, let's examine data related to the COVID-19 pandemic. In particular, let's examine which states have the highest rate of COVID-19 cases. 
+
+
+
+$\\$
+
+
+
+
+**Part 3.0 (5 points)**:
+
+
+Data on all COVID-19 cases is being compiled by the New York Times and has been made publicly available on the New York Times GitHub repository. The data compiled by the Times is listed at the county level, where a county is a sub-region of a state. For example [New Haven County](https://en.wikipedia.org/wiki/New_Haven_County,_Connecticut) is the county that contains the cities of New Haven and Waterbury. 
+
+The code below loads the latest data from the New York Times GitHub repository into an object called `county_covid_cases` and it also uses dplyr to convert the variable `date` into an object that is of the class type Date. To start the analysis, report how many cases and variables are there in this data frame, and also report what case correspond to. 
+
+
+```{r, covid_load_data}
+
+county_covid_cases <- read.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv') %>% mutate(date = as.Date(date))
+
+
+
+
+
+```
+
+
+**Answers**: 
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 3.1 (8 points)**:
+
+
+In the `county_covid_cases` data frame loaded above, the variable `cases` contains the cumulative total number of people infected with COVID-19 for each county in the United States for each date. For the purposes of the exercises below, let's ignore the time sequence of cases and only examine the number of cases as of the most recent date (note: by "cases" we mean people infected with COVID-19).
+
+In the R chunk below, create a data frame `county_totals` that has the total cumulative number of cases as of the most recent date for each county. This data frame should have three variables in it called `state`, `county` and `cases` which have the name of the state, name of the county and the total cumulative number of cases in each county. Note: there are a few different ways to do this which yield similar results. 
+
+Also, display the top 6 counties that have had the most COVID-19 cases, and report whether these results are expected (hint: the `head()` function could be useful)
+
+```{r, covid_county_totals}
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answers**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 3.2 (8 points)**:
+
+Now let's apply dplyr to the `county_totals` data frame in order to create a data frame called `state_covid` that has the total number of cases for each state. This data frame should have two variables called `state` and `state_tot_cases` which have the names of the states and the total cumulative number of cases for each state.
+
+Also, display the top 6 states that have had the most COVID-19 cases, and report whether these results are expected (hint: the `head()` function could be useful)
+
+
+```{r, covid_state_totals}
+
+
+
+
+
+
+```
+
+**Answers**: 
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 3.3 (8 points)**:
+
+In part 3.2, seeing the list of the states with the highest number of infections shouldn't be too surprising since these are states with some of the highest populations. What is much more informative is to look at the number of infections per capita; i.e., the number of cases divided by the total number of people in each state. 
+
+The code below loads data from the US Census Bureau on the number of people living in each county in the United States. Please use dplyr to transform the data in this data frame so that it only has two variables which are: 1) a variable that has the name of each state, and 2) a variable that has the total population of each state from 2019 (this variable should be derived from the variable POPESTIMATE2019). Then display the top of the data frame you created to show the 2019 populations of the first few states (sorted alphabetically).
+
+Note: be careful when you calculate the state total populations. In particular, check your answers with known data sources to make sure they are correct and look carefully at the data that is loaded from the census bureau to make you understand what each case is in this data. Also check the final output you have to make sure you have the expected number of cases. 
+
+
+```{r, state_pop_load_data}
+
+state_pop <- read.csv("https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/co-est2019-alldata.csv", stringsAsFactors = FALSE)  
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 3.4 (8 points)**:
+
+Now let's calculate the number of cases per capita by joining together the `state_covid` data frame and the `state_pop` data frame. Please do this joining in two different ways: 
+
+1. Create a data frame called `left_joined_cases_pop` that does a left join on these data frames, where the `state_covid` data frame is the left data frame and the `state_pop` is the right data frame.
+
+2. Create a data frame called `inner_joined_cases_pop` that does an inner join on these data frames.
+
+If you have done this correctly, you will notice that the data frames do not have the same number of rows. In the answer section please describe why the data frames have different numbers of rows. 
+
+Also, please add a variable called `cases_per_capita` to the `inner_joined_cases_pop`. Then display the top 6 states that have the highest number of COVID-19 cases per capita. Is this would you would expect? 
+
+
+```{r, join_data}
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answers**:
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+**Part 3.5 (8 points)**:
+
+
+Finally, let's visualize our results using ggplot. Create a plot that shows bars for the percent of people who have had COVID-19 in each state. Flip the coordinates so that the name of each state is going down the y-axis and the percent of people infected is on the x-axis. See if you can also sort the data from the states that have the lowest rates of infection per capita to the states with the highest rates. Describe whether this plot "speak to your senses without fatiguing your mind".
+
+
+
+
+```{r, viz_covid, fig.height = 9}
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answers**: 
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Reflection (3 points)
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes link, and clicking on [Reflection on homework 5](https://yale.instructure.com/courses/61201/quizzes/27488)
+
+
+
+
+
