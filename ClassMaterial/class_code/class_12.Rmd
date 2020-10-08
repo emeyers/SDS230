@@ -390,12 +390,15 @@ the_data <- data.frame(Person = c("Bob", "Alice", "Steve"),
                        Height = c(72, 65, 70))
 
 
+
 # convert it to a long format
-data_long <- pivot_longer(the_data, c("Age", "Height"))
+
+
 
 
 # convert it back to wide format
-date_wide <- pivot_wider(data_long, names_from = name, values_from = value)
+
+
 
 
 ```
