@@ -1,0 +1,361 @@
+---
+title: "Class 11 notes and code"
+output:
+  html_document: default
+  pdf_document: 
+   fig_width: 7
+   fig_height: 5
+---
+
+
+
+
+
+$\\$
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+SDS230::update_installed_packages()
+
+
+
+```
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+
+library(dplyr)
+
+
+#options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Overview
+
+
+ * Review of bootstrap confidence levels in R
+ * More practice joining data frames: dealing with duplicate keys
+ * ggplot bonus features
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 1: Review of concepts from the homework
+
+
+
+
+$\\$
+
+
+
+
+
+
+#### Part 1.1: Confidence intervals for different confidence levels 
+
+
+Creating 99% confidence intervals for baseball player heights using different bootstrap methods. Also see class 6 code. 
+
+
+```{r, CI_levels}
+
+
+# get the heights of all baseball players
+library(Lahman)
+all_heights <- People$height
+all_heights <- all_heights[!is.na(all_heights)]
+
+
+# get the heights from the first 20 baseball players
+sample_heights <- all_heights[1:20] 
+
+# create the bootstrap distribution
+bootstrap_dist <- NULL
+for (i in 1:10000){
+  boot_sample <- sample(sample_heights, replace = TRUE)
+  bootstrap_dist[i] <- mean(boot_sample)
+}
+
+SE_boot <- sd(bootstrap_dist)
+
+
+
+# z* for 99% confidence interval using qnorm
+
+
+
+# CI based on the assumption that the bootstrap distribution in normal
+
+
+
+# 99% CI using the percentile method
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 2: Exploring joining data tables when there are duplicate keys
+
+
+Let's look at the `flights` data frame and the `weather` data from from the `nycflights13` package. 
+
+Let's use dplyr's `sample_n()` function to get a random selection of 25 rows from the `flights` data frame. 
+
+
+
+```{r, join_flights}
+
+library(dplyr)
+library(nycflights13)
+
+
+# the flights data frame has data from 336,776 flights
+# glimpse(flights)
+
+# the weather data frame has data on weather for 26,115 days
+# glimpse(weather)
+
+
+# create object flights_small that has 25 random cases using sample_n() function
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+If you have the same column names in the two data frames, dplyr is smart about matching up column names when joining. In particular, it matches up multiple columns which in this case creates a unique set of identifiers for each case. 
+
+
+
+```{r, join_automatic_match}
+
+
+# join the flights_small with the weather data frame
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+If we need to join by multiple keys and we do not specify this correctly, we get our dreaded Cartesian join.
+
+Let's join the `flights_small` and `weather` data frame but only use the `day` variable as the key.  
+
+
+```{r, join_cartesian}
+
+
+# join the flights_small with the weather data frame, specifying only the "day" variable to join on
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: ggplot bonus features
+
+
+
+$\\$
+
+
+
+#### Part 3.1: Plotly 
+
+
+The plotly package can be used to create interactive visualizations. 
+
+Let's use the gapminder data to create a scatter plot of data from 2007 using:
+
+ * x = life expectancy
+ * y = gpd per capita
+ * col = continent
+ * name = country
+
+We will save our plot to an object `g` and then we can use `ggplotly(g)` to create an interactive visualization. 
+
+
+
+```{r, plotly}
+
+# install.packages("plotly")
+
+
+# library(gapminder)
+# library(plotly)
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+#### Part 3.2: emojis
+
+
+
+```{r, emoji}
+
+# # install.packages("emojifont")
+
+# library(emojifont)
+# 
+# load.emojifont('OpenSansEmoji.ttf')
+# 
+# 
+# ggplot(mtcars, aes(x = wt, y = mpg, label = emoji("car"), col = factor(cyl))) +  	  	
+# 	geom_text(family="OpenSansEmoji", size=6)  +    
+# 	xlab("Weigth") +   
+# 	ylab("Miles per Gallon") + 
+# 	theme_classic()
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+#### Part 3.3: animations
+
+
+```{r, animations}
+
+
+#install.packages('png')
+#install.packages('gganimate')
+
+
+# library(gganimate)
+# 
+# 
+# ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+#   geom_point(alpha = 0.7, show.legend = FALSE) +
+#   scale_colour_manual(values = country_colors) +
+#   scale_size(range = c(2, 12)) +
+#   scale_x_log10() +
+#   facet_wrap(~continent) +
+#   # Here comes the gganimate specific bits
+#   labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+#   transition_time(year) +
+#   ease_aes('linear')
+
+
+
+```
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
