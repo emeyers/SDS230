@@ -9,4 +9,7 @@ ggridges,
 plotly,
 formatR,
 ggridges,
+png,
+gganimate,
+emojifont,
 xkcd
