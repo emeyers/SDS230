@@ -351,10 +351,111 @@ $\\$
 
 
 
+$\\$
+
+
+
+
+
+
+## Part 4: Reshaping data
+
+Using ggplot often requires that data is in the appropriate format. The tidyr package is useful for tranforming data between long and wide formats which can be useful for calculating different statistics and plotting data. 
+
+Let's examine the Amazon book price data to practice transforming data using tidyr's `pivot_longer()` and `pivot_wider()` functions. The R chunk below loads the data. 
+
+
+```{r}
+
+
+# download the amazon data
+# SDS230::download_data("amazon-books.txt")
+
+# load the book price data and removing NAs
+amazon <- read.csv("amazon-books.txt", sep = "\t") %>%
+  filter(!is.na(NumPages)) %>%
+  filter(!is.na(List.Price)) 
+
+
+# create data frame amazon_long that has only the Title, ISBN.10, Amazon.Price, List.Price variables
+
+
+```
+
+
+
 
 
 $\\$
 
+
+
+
+
+
+#### Part 4.1: Creating longer data
+
+If we want to create a side-by-side box plot in ggplot we would need a data frame with the following columns:
+
+  1. A column with the categorical variables saying if the price is Amazon's price or the List price
+  2. A column with the prices
+
+Let's transform the data to make it longer so that it has these columns using the `pivot_longer(df, cols)` function.
+
+
+```{r}
+
+
+# create a long data frame called amazon_long
+
+
+
+
+# let's now create side-by-side boxplots on the long data
+
+
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+#### Part 4.2: Creating wider data
+
+We can convert data from a long format into a wide format using the tidyr R function `pivot_wider(df, names_from, cols_from)`. 
+
+Let's transform our long data back to wide format. We could imagine a scenario where this would be useful, for example if we wanted the difference in the Amazon vs. List price and our data had come in the initial longer format, then transforming to the wide format would be useful. 
+
+
+```{r}
+
+# create a long data frame called amazon_long
+
+
+
+
+
+
+# let's get the difference in prices and plot these differences in a single boxplot
+
+
+
+
+
+
+
+```
 
 
 
