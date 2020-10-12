@@ -1,0 +1,605 @@
+---
+title: "Homework 6"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+
+
+$\\$
+
+
+
+
+
+The purpose of this homework is to gain more practice with dplyr and ggplot2, to learn how to create choropleth maps, and to practice using simple linear regression to explore relationships. Please fill in the appropriate code and write answers to all questions in the answer sections, then submit a compiled pdf with your answers through Gradescope by 11:59pm on Sunday October 18th. 
+
+As always, if you need help with any of the homework assignments, please attend the TA office hours which are listed on Canvas and/or ask questions on [Piazza](https://piazza.com/class/kd52xzes5se3gh). Also, if you have completed the homework, please help others out by answering questions on Piazza.
+
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+SDS230::update_installed_packages()
+
+SDS230::download_data("florida_vote_data_2000.Rda")
+
+SDS230::download_data("state_cases_per_capita.rda")
+
+```
+
+
+
+
+
+<!-- The R chunk below sets some parameters that will be used in the rest of the document. Please ignore it and do not modify it. -->
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo = FALSE}
+
+library(knitr)
+library(latex2exp)
+library(dplyr)
+library(gapminder)
+library(ggplot2)
+library(ggridges)
+
+
+options(scipen=999)
+
+opts_chunk$set(tidy.opts=list(width.cutoff=60)) 
+set.seed(230)  # set the random number generator to always give the same random numbers
+    
+```
+
+  
+  
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 1: Additional practice visualizing COVID-19 data
+
+
+To gain more practice using ggplot and dplyr, we will visualize COVID-19 cases in the United States as a function of the date. The results from these exercises could be useful for knowing where one needs to be careful when traveling (e.g., if you're planning on taking a flight for the Thanksgiving break).  
+
+As discussed on homework 5, data on all COVID-19 cases is being compiled by the New York Times and has been made publicly available on the New York Times GitHub repository. The data compiled by the Times is listed at the county level, where a county is a sub-region of a state. For example [New Haven County](https://en.wikipedia.org/wiki/New_Haven_County,_Connecticut) is the county that contains the cities of New Haven and Waterbury. 
+
+The code below loads the latest data from the New York Times GitHub repository into an object called `county_covid_cases` and it also uses dplyr to convert the variable `date` into an object that is of the class type Date. We will use this data in the exercises below.
+
+
+```{r covid_data}
+
+# load covid county data and convert dates to the date type
+county_covid_cases <- read.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv') %>%
+  mutate(date = as.Date(date)) 
+
+
+dim(county_covid_cases)
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.1 (10 points)**: Let's start by visualizing the cumulative number of cases in New Haven County as a function of the date using ggplot. The cumulative number of cases is in the variable called `cases`, so filter and plot the data appropriately to create this visualization. 
+
+
+
+```{r, covid_viz1}
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.2 (10 points)**: To understand the progression of COVID-19 cases, it is much more informative to visualize the number of *new cases* each day rather than the total cumulative number of cases. Let's do this visualization first using base R graphics and then we will create the visualization using ggplot. 
+
+To begin, we first need to calculate the number of new cases. To do this we can use the `diff()` function which takes the difference in values between successive numbers in a vector. For example, if we had a vector `vec <-c(2, 10, 3)`, using `diff(vec)` will return a vector with the values `8 -7`. Please complete the following steps to calculate the number of new cases: 
+
+1. Use dplyr to create a data frame object called `new_haven_sorted` which has the data from only New Haven sorted by the date.
+
+2. Create a vector object called `new_haven_new_cases` which contains the *new cases* on each date based on the data in the `new_haven_sorted` data frame using the `diff()` function. 
+
+3. Create a vector object called `new_haven_date` which contains the dates from the `new_haven_sorted`.
+
+4. Report the lengths of `new_haven_date` vector and the `new_haven_new_cases` vector. 
+
+From step 4 you should note that the `new_cases` vector has one less element that the `date` vector. This makes sense because we can't calculate the number of new cases on the very first day. Thus we should append a `NA` value as the first element of the `new_haven_new_cases` vector using the `c()` function to indicate that we don't know how many new cases there were on the first day. Please do this, and then use the base R `plot()` function to plot the number of new cases as function of the date for New Haven. 
+
+
+
+```{r, covid_viz2}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.3 (10 points)**: 
+
+Now let's recreate the plot in part 1.2 but using ggplot. To do this, recreate your `new_haven_cases` data frame, but now use the `mutate()` function to add a new variable called `new_cases` to this data frame. Once you have done this, use ggplot to visualize the data with a point for each day. Also add other layer showing the smoothed trends using the `geom_smooth()` **(for all future plots, be sure to also add a layer that has the smoothed results)**. 
+ 
+
+```{r, , covid_viz3, warning = FALSE}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.4 (10 points)**:  Now let's now visualize the data from Connecticut as a whole. To do this, create a data frame called `conn_cases` that has data only from Connecticut summed over all the counties. Then add a variable to this data frame called `new_cases` which has the new cases for each date. Once you have created the `conn_cases` data frame, please visualize the number of new cases as a function of the date using ggplot. 
+
+
+
+```{r, , covid_viz4, warning = FALSE}
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.5 (15 points)**:  Now let's plot the new cases as a function of the date for all states. To do this create a data frame called `state_covid_cases` that has the number of new cases in each state for each date. Hint: you should repeat the processes done in part 1.4 by first getting the totals for all states (i.e., summed over counties), and then adding the variable new cases for all states. Using the `group_by()` function appropriately in conjunction with `summarize()` and then with `mutate()` will be useful. Also to remove any possible errors, filter this data frame so that the `new_cases` variable is always greater than 0. 
+
+Once you have created `state_covid_cases` data frame, plot the new cases as a function of the date, and use a `facet_wrap()` to create the plot for all states. In the `facet_wrap()`, set the arguments `scales = "free"` to allow the different plots to have different y-axis scales, and use the argument `ncol = 5` to have 5 columns in the plot. In the answer section below, make a few comments on anything interesting you see. 
+
+
+
+```{r, , covid_viz5, fig.width=12, fig.height=16}
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answers**:  
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 2: Creating maps of the COVID-19 data
+
+
+In part 3 of homework 5 you created a bar chart of the number of COVID-19 cases per capita for each state. While this plot might have "spoken to your senses without fatiguing your mind" this figure makes it hard to see spatial relationships between the levels of outbreaks in different states. Let's redo this now using a map which should make the relationships between different states easier to see. 
+
+
+
+$\\$
+
+
+
+
+**Part 2.1 (6 points)**: The code chunk below loads a data frame called `state_cases_per_capita` that has the total number of COVID-19 cases per capita for each state as of October 4th 2020 (this is the same data frame you created on homework 5 part 3 where it was called `inner_joined_cases_pop`). It also loads the package `maps` which contains map coordinate information. Once the maps package is loaded, we can use ggplot's `map_data("state")` function to get a data frame that contains coordinates of the borders of all states in the United States. Please use a left join to join the `state_cases_per_capita` information on to the state map data frame, and arrange the resulting data frame by variables `group` and `order`. Save the resulting data frame in an object called  `states_covid_map`.
+
+Note: If you forget to arrange the data after joining the data tables you might end up with a [strange looking map](https://xkcd.com/1653/)). 
+
+
+```{r, map1}
+
+library('maps')
+
+load("state_cases_per_capita.rda")
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.2 (6 points)**: Now create a choropleth map of the cases per capita for the continental United States. Adjust the color scale of this map to better show the differences between the states ("viridis" could be a good choice for the color palette). Does this speak to your senses more than the plot you created in Part 3.5 in homework 5?  
+
+
+
+```{r, map2}
+
+
+
+
+
+
+
+
+```
+
+
+**Answers**: 
+
+
+
+
+
+$\\$
+
+
+
+Rhetorical question (0 points): which type of map projection [do you prefer?](https://xkcd.com/977/)? 
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 3: Simple linear regression
+
+
+The 2020 election is coming up on November 3rd. To gain practice creating simple linear regression models, and to see if we can learn from the past, let's analyze data from the 2000 election!
+
+In 2000, the United States presidential election was between a Yale alumnus, George W. Bush who was the Republican candidate, and a Harvard alumnus Al Gore who was the Democratic candidate. There were also a number of "third-party" candidates such as Princeton alumnus Ralph Nader who was the Green Party candidate, and Georgetown alumnus Pat Buchanan who was the Reform Party candidate. 
+
+The code chunk below contains data from the 2000 election for the state of Florida in a data frame called `florida data`. Each observational unit in this data frame contains information from the 67 counties in Florida including demographic information on each county as well as the votes received by each candidate in each county. 
+
+In the exercises below, you will use linear regression to look at the relationship between the votes that the Republican candidate *George W. Bush* received and the votes that the Reform candidate *Patrick Buchanan* received. 
+
+
+```{r, election0}
+
+load('florida_vote_data_2000.Rda')
+
+dim(florida_data)
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 3.1 (6 points):**  
+
+
+Start the analysis by creating a scatter plot of the number of votes that Pat Buchanan received as a function of the votes that George Bush received *using base R graphics*. Then fit a linear model that can predict the number of votes Buchanan should receive given the number of votes that Bush received, and add the regression line to this plot in red. In the answer section below describe notable features of this graph (i.e., trends and unusual points).
+
+
+```{r, election1}
+
+
+
+
+
+
+
+
+
+```
+
+**Answers**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 3.2 (5 points):**
+
+
+Now extract the coefficients from the linear model and print them. In the answer section below, report how many votes Buchanan is expected to get for every 1,000 votes Bush received, and how many votes the model predicts that Buchanan would have gotten if Bush had received 0 votes. Also, write an equation that predicts the number of votes Buchanan should get as a function of the number of votes Bush received (make sure to use use $LaTeX$ for the proper notation). 
+
+
+
+```{r, election2}
+
+
+
+```
+
+
+
+**Answers**: 
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 3.3 (12 points):**
+
+From looking at the plot above, it should be clear that there is one extreme outlier. To see this more clearly, create a box plot of the residuals of the model below. Then report: 
+
+1. What is the county that the outlier corresponds to. 
+
+2. How many votes Buchanan actually received in that county.
+
+3. The predicted number of votes that Buchanan should have received for this county based on the regression model fit above for that county.
+
+4. The value of the residual for this county. 
+
+Be sure to use  the appropriate notation when reporting these numbers. Finally, use the Internet to come up with a reasonable explanation that could have led to this outlier (embedding images in the markdown document could be useful here).  
+
+
+
+```{r, election3}
+
+# boxplot of the residuals
+
+
+
+# county that is the outlier
+
+
+# actual number of Buchanan votes
+
+
+# predicted number of Buchanan votes
+
+
+# residual value
+
+
+
+
+```
+
+
+**Answers**
+
+1. 
+
+2. 
+
+3. 
+
+4. 
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 3.4 (5 points):**
+
+
+Suppose that Buchanan received exactly the number of votes predicted by the regression model, and the residual number of votes he received were intended to be votes for Al Gore. To examine the consequences of this, start by calculating the total number of votes Bush received and the total number of votes Gore received. Then add the residual number of Buchanan votes from the outlier county to the total number of votes that Gore received. Fill in these values in the R Markdown table below to report these numbers. If the residual votes Buchanan received had indeed been intended for Gore, would this have changed who got the majority number of votes in Florida (and hence who would have won Florida)? 
+
+
+```{r, election4}
+
+
+
+
+
+
+```
+
+
+**Answers** 
+
+
+
+
+Bush votes | Gore + res  |  Gore votes |
+-----------|-------------|-------------|
+    x      |      y      |      z      |
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 3.5 (2 points):**
+
+The United States uses the Electoral College system. In this system, the candidate who got the majority of the vote in a state wins all the Electoral College votes for that state (at least for most of the states in the US including Florida). Use the Internet to find the number of votes that Bush won the Electoral College system by in 2000. Based on the number of Electoral College votes that Florida had, would the outcome of the election changed if Gore have won Florida? 
+
+Bonus (0 points), report any possible policy differences that might have been enacted had Gore been elected. 
+
+
+
+$\\$
+
+
+
+
+**Answers**
+
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Reflection (3 points)
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes link, and clicking on [Reflection on homework 6](https://yale.instructure.com/courses/61201/quizzes/27478).
+
+
+
+
+
