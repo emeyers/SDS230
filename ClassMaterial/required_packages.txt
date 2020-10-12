@@ -12,4 +12,6 @@ ggridges,
 png,
 gganimate,
 emojifont,
+maps,
+mapproj,
 xkcd
