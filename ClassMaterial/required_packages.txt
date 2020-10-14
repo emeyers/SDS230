@@ -15,4 +15,5 @@ emojifont,
 maps,
 mapproj,
 viridis,
+fivethirtyeight,
 xkcd
