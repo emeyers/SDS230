@@ -465,6 +465,7 @@ In particular, follow the steps below:
   a) model_bought: the model of the car 
   b) new_or_used_bought: whether a car was new or used when it was purchased
   c) price_bought: the price the car was purchased for
+  d) mileage_bought: the number of miles the car had when it was purchased
 
 2. The only cases that should be in the `used_corollas_all` data frame are: 
   a) used cars
