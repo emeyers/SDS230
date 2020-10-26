@@ -1,0 +1,721 @@
+---
+title: "Homework 7"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+
+
+$\\$
+
+
+
+
+
+The purpose of this homework is to practice conducting inference and diagnostic plots for simple linear regression models. Please fill in the appropriate code and write answers to all questions in the answer sections, then submit a compiled pdf with your answers through gradescope by 11:59pm on Sunday November 1st. 
+
+As always, if you need help with any of the homework assignments, please attend the TA office hours which are listed on Canvas and/or ask questions on [Piazza](https://piazza.com/class/kd52xzes5se3gh). Also, if you have completed the homework, please help others out by answering questions on Piazza.
+
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+SDS230::update_installed_packages()
+
+# install.packages('car')
+
+
+# Note: I only have permission to use this data for educational purposes so please do not share the data
+download.file('https://yale.box.com/shared/static/gzu5lhulepp3zsyxptwxoeafpst1ccdv.rda', 'car_transactions.rda')
+
+
+```
+
+
+
+
+<!-- The R chunk below sets some parameters that will be used in the rest of the document. Please ignore it and do not modify it. -->
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo = FALSE}
+
+library(knitr)
+library(latex2exp)
+library(dplyr)   # load the dplyr library
+library(car)
+
+options(scipen=999)
+
+opts_chunk$set(tidy.opts=list(width.cutoff=60)) 
+set.seed(230)  # set the random number generator to always give the same random numbers
+    
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+## Part 1: Fitting a linear model and statistical inference on regression coefficients
+
+
+On July 3rd 2015, my 1999 Toyota Corolla broke down on the side of the highway outside of Sturbridge MA. While I had the car repaired, I knew it was time to sell it and get a new car. I intended to sell my Corolla to the car dealership, the only catch was that I was not sure how much the used Corolla was worth. In the following exercises we will model how much a used Corolla is worth as a function of the number of miles it has been driven.
+
+The data we will look at comes from Edmunds.com which is a website where you can buy new and used cars online. This data set is from the 2015 DataFest competition, which is an undergraduate data science competition that takes place at difference colleges across the United States. The data has been made available to this class for educational purposes, however please do not share this data outside of the class. 
+
+
+**Note: for all plots on this homework, please use base R graphics**
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.1 (8 points)**: Let's start by loading the `car_transactions` and data set using the code below. Report how many cases and variables the full data set has. Then use the dplyr `select()` and `filter()` functions to create a reduced data frame object called `used_corollas` in which:
+
+1. The only variables that should be in the `used_corollas` data frame are: 
+  a) model_bought: the model of the car 
+  b) new_or_used_bought: whether a car was new or used when it was purchased
+  c) price_bought: the price the car was purchased for
+  d) mileage_bought: the number of miles the car had when it was purchased
+
+2. The only cases that should be in the `used_corollas` data frame are: 
+  a) used cars
+  b) Toyota Corollas
+  c) cars that have been drive less than 150,000 miles
+
+3. Finally use the `na.omit()` function on the `used_corollas` data frame to remove cases that have missing values.
+
+
+If you have properly filtered the data, the resulting data set should have 248 cases, so check this is the case before going on to the next set of exercises. 
+
+
+
+```{r get_used_corollas}
+
+
+# load the data set
+load("car_transactions.rda")
+
+
+# get the size of the original data set
+
+
+
+# use dplyr to reduce the data set to only used Corolla's with under 150,000 miles
+
+
+
+
+                        
+              
+# check the size of the resulting data frame
+
+
+
+```
+
+
+**Answers**  
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.2 (8 points)**: 
+
+Now that we have the relevant data, let's examine the relationship between a car's price and the number of miles driven!  Let's begin analyzing the data by taking the following steps:
+
+1. Plot the price as a function of the number of miles driven (use base R graphics for all plots on this homework).
+
+2. Fit a linear model regression model that shows the predicted (expected) price as a function of the number of miles driven. Save this model to an object called `lm_fit` which you will use throughout the rest of this homework.
+
+3. Add a red line to our plot showing the regression line fit. 
+
+4. Print the regression coefficients found. 
+
+
+Report how much does the price of a Corolla decrease for every additional mile it has been driven, and what this regression model suggests a car that has been driven 0 miles would be worth. Also describe whether the the sign and magnitude of these regression coefficient values match what you might expect for car prices. Finally, write out the regression equation. 
+
+
+```{r car_regression}
+
+# start by plotting the data
+
+
+
+# fit a regression model  
+
+
+
+# add the regression line to the plot
+
+
+# display the regression coefficients
+
+
+
+```
+
+
+**Answers**: 
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.3 (5 points)**: Now use R's `summary()` function to report whether there is statistically significant evidence that the price of a car decreases as a function of the number of miles driven. Also, write out the hypothesis that is being tested using the appropriate symbols/notation discussed in class. 
+
+
+```{r car_inference}
+
+# get information about the statistical significance of the fit
+
+
+
+```
+
+
+
+**Answer** 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.4 (5 points)**: We can create confidence intervals using a t-distribution via the `confint()` function. Report what the confidence interval for slope of the regression line is. Also, based on the confidence interval, explain why it seems likely that the price of a car is not independent of the number of miles driven. 
+
+
+```{r car_CI}
+
+
+
+```
+
+**Answer** 
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.5 (8 points)**: We can also use the bootstrap to create confidence intervals for the slope of the regression coefficient. To do this you can use the following procedure: 
+
+1. Create a bootstrap resampled data frame by sampling with replacement from the `used_corollas` data frame. You can do this using dplyr's `sample_n()` function with the sample size being the number of cases in the `used_corollas` data frame and setting the `replace = TRUE` argument.
+
+2. Fit the regression model using the bootstrap data frame.
+
+3. Extract the regression slope coefficient and save it to a vector object. 
+
+4. Repeat this process 1,000 times (this is less than what we normally use because it is computationally expensive to run this bootstrap procedure).
+
+5. Plot the bootstrap distribution and use the percentile method to report a 95% confidence interval for the regression slope.
+
+
+Report whether the bootstrap confidence interval is similar to the confidence interval using the t-distribution you calculated above. 
+
+
+
+
+```{r boot_reg}
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answers:** 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.6 (8 points)**:  My Toyota had 180,000 miles at the time I wanted to sell it. Based on the regression model fit above, what is the predicted worth of this car?  Does this seem like a reasonable estimate? 
+
+
+```{r car_value_prediction}
+
+
+
+
+
+
+
+```
+
+
+
+**Answer** 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 2: Regression diagnostics
+
+
+When making inferences about regression coefficients using most parametric methods, there are a number of assumptions that need to be met to make the mathematical derivations of tests/confidence intervals methods valid. The assumptions are: 
+
+1) **Normality**: residuals are normally distributed around the predicted value $\hat{y}$
+2) **Homoscedasticity**: constant variance over the whole range of x values
+3) **Linearity**: A line can describe the relationship between x and y
+4) **Independence**: each data point is independent from the other points
+
+
+We can check whether these assumptions are met by creating a set of diagnostic plots. 
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.1 (4 points):** To check whether the residuals are normally distributed we can use create a Q-Q plot. The `car` package has a nice function to create these plots called `qqPlot()` to create these plots. If we pass the `lm_fit` object to the `qqPlot()` function it will create a Q-Q plot of the studentized residuals. Create this plot and report if the residuals seem normally distributed.
+
+
+```{r qqplot}
+
+
+
+
+
+```
+
+
+**Answer:** 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.2 (5 points):** To check for homoscedasticity and linearity, we can create a plot of the residuals as a function of the fitted values. Create such a plot below using information in the `lm_fit` object. Does it appear that homoscedasticity and linearity are met here? Are these results what you would expect from looking at plots above and from the nature of the type of data you are analyzing? 
+
+
+```{r homoscedasticity}
+
+
+
+
+
+
+```
+
+
+**Answers:** 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.3 (5 points):** To check if the data points are independent requires knowledge of how the data was collected. For example, if the data you have is from a time-series (e.g., recordings of the temperature in New Haven on consecutive days) then there is a high likelihood that the data points might not be independent. On the other hand, if you take a simple random sample from a population where every point is equally likely to be selected, then the data is going to be independent. 
+
+Unfortunately I do not know exactly how this data was collected so it is difficult to say if the data is independent here. However, there might be ways to investigate whether it seems plausible that it could be independent. Please describe some ways you might investigate whether the data could be independent (hint: think about the variables in the full `car_transactions` data set) Note: there is no exact 'right answer' here, just describe some possible ideas.
+
+
+$\\$
+
+
+**Answer:** 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 3: The effect of high leverage points on regression models
+
+
+In the above example we fit the regression model using all used Toyotas that had less than 150,000 miles. Let's now examine the affects of high leverage points by including all used Toyotas regardless of how many miles that have been driven. 
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 3.1 (5 points)**: 
+
+Let's start again with the `car_transactions` data frame, and again use the dplyr `select()` and `filter()` functions to create a reduced data frame object called `used_corollas_all`. However this time **do not do any filtering related to the number of miles a car has been driven**; i.e., also keep in the data frame cars that have been driven more than 150,000 miles. 
+
+In particular, follow the steps below: 
+
+1. The only variables that should be in the `used_corollas_all` data frame are: 
+  a) model_bought: the model of the car 
+  b) new_or_used_bought: whether a car was new or used when it was purchased
+  c) price_bought: the price the car was purchased for
+
+2. The only cases that should be in the `used_corollas_all` data frame are: 
+  a) used cars
+  b) Toyota Corollas
+
+3. Use the `na.omit()` function on the `used_corollas_all` data frame to remove cases that have missing values.
+
+If you have properly filter the data, the `used_corollas_all` should have additional case in your data frame, or 249 cases in total. Please check this before going on to the next set of exercises. 
+
+
+```{r get_all_used_corollas}
+
+
+# use dplyr to reduce the data set to only used Corolla's for all miles driven
+
+
+
+
+
+
+
+
+                        
+              
+# check the size of the resulting data frame
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+**Part 3.2 (8 points)**: 
+
+Now fit a linear regression model to the `used_corollas_all` that shows the predicted (expected) price as a function of the number of miles driven. Save this model to an object called `lm_fit_all`, print the regression coefficients, and describe how much the cost of a car decreases for every mile driven in this model. 
+
+Also, create a scatter plot of the price as a function of the number of miles driven, and add a red line to our plot showing the regression line for the model with all used Corollas. Then add to the plot the regression a green line based on the model you fit in part 1 when only cars with less than 150,000 miles were used (i.e., when the one high leverage point was not included). 
+
+Finally, make a prediction for the price of a car that has been driven 150,000 miles using both the `lm_fit_all` based on the model using all the data, and the `lm_fit` based on using only cars with less than 150,000 miles. Do these models seem similar to you? 
+
+
+
+```{r compare_regression_models}
+
+
+# fit a regression model  
+
+
+
+# display the regression coefficients
+
+
+
+# let's start by plotting the data
+
+
+
+
+
+# add the regression line to the plot
+
+
+
+# add a green line for the model that excludes cars with over 150k miles
+
+
+
+# make a prediction for a car driven 150k miles using both models
+
+
+
+
+
+
+
+```
+
+
+**Answers**: 
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 3.3 (5 points)**: Now look again at the 95% confidence interval for the value of the regression slope $\beta_1$ that you created in part 1.4 that was based on using only the cars that have fewer than 150,000 miles. If we were assuming that this confidence interval is reasonable, would the value for the estimated regression slope found in using all the data (i.e., the $\hat{\beta_1}$ using data in `used_corollas_all` that includes the car with 300,000 miles) be a plausible value for what the true parameter value $\beta_1$ that was found by using the `used_corollas` data set? 
+
+
+
+**Answer** 
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 3.4 (8 points)**: Now sort the data frame `used_corollas_all` so that the rows are in the order from smallest number of miles driven to the most number of miles driven, and store it again the same object called `used_corollas_all`. Refit the `lm_fit_all` using this sorted data frame (as a sanity check, the coefficients found should be the same as before). Then, recreate the scatter plot based on this sorted `used_corollas_all` data and add to this plot both the 95% confidence intervals for **the regression line** in green, and the 95% prediction interval in blue (again using this sorted `used_corollas_all`). 
+
+
+
+```{r conf_pred_intervals}
+
+# arrange the data and refit the model
+
+
+
+# confidence intervals for the betas
+
+
+
+# confidence interval for the regression line mu_y
+
+
+
+
+# prediction interval for the regression line
+
+
+
+
+# plot both confidence interval and the prediction interval
+
+
+
+
+
+# plot confidence interval
+
+
+
+# plot prediction interval
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+**Part 3.5 (10 points)**:  Let's analyze the leverage and Cook's distance for the data points in the  `used_corollas_all`. Calculate the leverage for the data points in this model (i.e., the hat values) and plot the 20 largest leverage values found using a bar plot. Also plot the residuals as a function of the leverage for each point, and use R's built in plot functions to plot Cook's distance for each data point and the standardized residuals as a function of the leverage for each point. Based on the 'rules of thumb' we discussed in class, **how many points** are considered 'very unusual' for the different measures of: 
+
+a) Cook's distance
+b) standardized residuals 
+c) studentized residuals
+d) leverage
+
+
+```{r leverage_analysis}
+
+
+
+
+
+
+
+```
+
+
+
+**Answer** Based on the rule's of thumb discussed in class and the `lm_fit_all model`, the number of 'highly unusual' points are:
+
+a) 
+b) 
+c) 
+d) 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+**Part 3.6 (5 points)**:  Above you fit two models: `lm_fit_all` which contained all the used Corollas and `lm_fit` which did not contain the high leverage car with 300,000 miles driven. Describe below which you think is best and why? Also describe any limitation to these models. 
+
+
+
+**Answer**  
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Reflection (3 points)
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes link, and clicking on [Reflection on homework 7](https://yale.instructure.com/courses/61201/quizzes/27476).
+
+
+
+
+
