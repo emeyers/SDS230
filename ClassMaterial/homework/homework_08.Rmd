@@ -624,6 +624,8 @@ Based on these plots, describe which model do you think is the best one and why.
 
 ```{r poly_plots}
 
+predict_df <- data.frame(mileage_bought = seq(0, 300000))
+par(mfrow = c(2, 2)) # this create 4 subplots which makes the plots take up less space
 
 
 
