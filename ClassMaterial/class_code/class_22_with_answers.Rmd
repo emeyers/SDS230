@@ -1,5 +1,5 @@
 ---
-title: "Class 21 notes and code"
+title: "Class 22 notes and code"
 output:
   pdf_document: default
   html_document: default
