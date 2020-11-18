@@ -16,4 +16,5 @@ maps,
 mapproj,
 viridis,
 fivethirtyeight,
+Stat2Data,
 xkcd
