@@ -1,0 +1,610 @@
+---
+title: "Class 26 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+SDS230::update_installed_packages()
+
+SDS230::download_data("moby_dick.txt")
+
+```
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+library(dplyr)
+library(ggplot2)
+
+#options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Overview
+
+ * String manipulation
+ * Regular expressions
+
+
+
+$\\$
+
+
+
+
+## Part 1: String manipulation using stringr
+
+
+Base R has a number of functions to manipulate character strings. However, there is often not a lot of consistency between the syntax/arguments to this different string manipulation functions. The stringr package is a package in the tidyverse that contains a set of functions for manipulating strings in a more consistent way which makes it easier to remember how to use these functions. For example, all functions in the stringr package start with `str_`.
+
+Let's practice transforming strings using the stringr package. These functions might be useful for your final project and for future work. 
+
+
+
+
+
+$\\$
+
+
+
+
+##### Part 1.1: Base R and stringr
+
+
+Let's start by comparing the base R's `tolower()` function with stringr's `str_to_lower()` function.
+
+
+
+```{r}
+
+library(stringr)
+
+
+# base R
+tolower("Hey")
+
+# string R
+str_to_lower("STOP YELLING")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+##### Part 1.2: Trimming and padding a string
+
+
+Let's trim and pad strings using `str_trim()` and `str_pad()`.
+
+
+
+
+```{r}
+
+
+str_trim("    What a mess      ")
+
+
+str_pad("Let's make it messier", 50, "right")
+str_pad(1:11, 3, pad = 0)   # useful for adding leading 0’s
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+##### Part 1.3: Extracting a piece of a string
+
+
+We can extract a substring using `string_sub()`.
+
+
+
+```{r}
+
+str_sub("What a mess", 6, 11)
+
+fruits <- c("apple", "pineapple", "Pear", "orange",  "peach", "banana")
+str_sub(fruits, 2, 4)
+
+
+```
+
+
+
+$\\$
+
+
+
+
+##### Part 1.4: Concatenating strings
+
+We can combine strings using `str_c()`. Because this is such a common thing to do, it's also often useful to use base R's `paste()` and `paste0()` functions. The `glue` package also create a nice way to paste strings together. 
+
+
+
+```{r}
+
+str_c("What", "a", "mess", sep = " ")
+
+vec_words <- c("What", "a", "mess")
+str_c(vec_words, collapse = " ")
+
+
+```
+
+
+
+$\\$
+
+
+
+
+
+##### Part 1.5: Download an article
+
+
+Let's download a recent news artcile to gain more practice with string manipulation. 
+
+
+
+```{r}
+
+
+
+base_name <- "https://www.nytimes.com/2020/11/30/world/asia/"
+
+article_name <- "biden-trump-china-asia.html"
+
+full_name <- str_c(base_name, article_name)
+
+download.file(full_name, article_name)
+
+
+# viewer <- getOption("viewer")
+# viewer(article_name)
+
+
+
+
+```
+
+
+
+$\\$
+
+
+##### Part 1.6: string length
+
+
+We can get the length of a string using `str_length()`. Let's get the length of the article we just downloaded. 
+
+
+
+```{r}
+
+
+str_length("What a mess")
+ 
+
+article_size <- file.info(article_name)$size    # size of the article in bytes
+
+
+# read the whole article as a single string
+the_article <- readChar(article_name, article_size)
+
+
+str_length(the_article)     # size of the article as a string
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+##### Part 1.7: string replace all
+
+
+We can replace all instances of one string with a different string using the `str_replace_all()` function. 
+
+
+
+```{r}
+
+str_replace("String", "old", "new")
+
+
+article2  <- str_replace_all(the_article,  "Trump", "Grump")
+
+article2  <- str_replace_all(article2,  "Biden", "Sleepy Joe")
+
+
+write(article2, "grump_article.html")
+
+#viewer("grump_article.html")
+
+
+
+```
+
+
+
+
+$\\$
+
+
+##### Part 1.8: String split
+
+
+We can split up strings using `str_split()`. 
+
+
+
+```{r}
+
+
+str_split("String",  "split pattern")
+
+
+list_of_strings <- str_split("What a mess",  " ")
+vector_of_strings <- unlist(list_of_strings)
+vector_of_strings[3]
+
+article_vec <- unlist(str_split(the_article, " "))
+
+
+```
+
+
+
+
+$\\$
+
+
+##### Part 1.9: Extracting strings
+
+
+We can extract a string from a longer string using `str_extract()`. 
+
+
+
+```{r}
+
+
+
+str_extract("String", "pattern")
+
+str_extract(fruits,  "apple")
+
+
+
+```
+
+
+
+$\\$
+
+
+##### Part 1.10: Detecting a string
+
+
+We can see if a string contains another string using `str_detect()`.
+
+
+
+```{r}
+
+str_detect("String", "pattern")
+
+str_detect(fruits,  "apple")
+
+# can you tell how many times Trump was mentioned in the article? 
+sum(str_detect(article_vec, "Trump"))
+
+
+```
+
+
+
+$\\$
+
+
+
+
+## Part 2: Regular expressions
+
+
+We can use regular expressions to do a lot more complex string matching!
+
+
+The following are special regular expression characters that are reserved:  
+	  .     *      \     $      { }      [ ]          ^         ? 
+
+
+$\\$
+
+
+
+
+#### Part 2.1: matching start and end of strings, and the multiple characters
+
+
+Some special characters used in regular expression are: 
+
+* The character "^" indicates the beginning of a string
+* The character "$" indicates the end of a string
+* The expression "[Pp]" indicates "P" or "p"
+
+
+
+what do these expressions do? 
+  
+  str_detect(fruits, "e$")
+  str_detect(fruits, "^[Pp]")
+
+
+
+```{r}
+
+  str_detect(fruits, "e$")
+  
+  str_detect(fruits, "^[Pp]")
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+#### Part 2.2: Matching any character 
+
+The following regular expressions are useful for matching any character:
+
+
+`.`  (period) matches any single character
+
+`*` means match 0 or more of the preceding character
+
+`+` means match 1 or more of the preceding character
+
+
+What will the following match?
+
+str_detect(c("mess", "mass", "miss"), "m.ss")
+str_detect(c("xz", "xyz", "xyyz", "xyyyz"), "xy*z")
+str_detect(c("xz", "xyz", "xyyz", "xyyyz"), "xy+z")
+str_detect(fruits, "^a.*e$") 
+
+
+```{r}
+
+str_detect(c("mess", "mass", "miss"), "m.ss")
+str_detect(c("xz", "xyz", "xyyz", "xyyyz"), "xy*z")
+str_detect(c("xz", "xyz", "xyyz", "xyyyz"), "xy+z")
+str_detect(fruits, "^a.*e$") 
+
+
+```
+
+
+
+
+  
+$\\$
+
+
+
+#### Part 2.3: Matching characters in a range
+
+
+[ ] means match anything in the range inside the braces 
+> str_detect(fruits, "^[a-o]")
+> str_detect(c("chimp", "champion", "chomp"), "ch[aio]mp")
+
+Note: if the ^ appears inside square braces it means not
+ > str_detect(fruits, "^[^a-o]")
+
+() groups things together, useful in combination with {}
+
+{num} means repeat the preceding sequence num times
+> str_detect(fruits, "(an){2}")
+> str_extract(fruits, "(an){1,}")
+
+
+```{r}
+
+
+str_detect(fruits, "^[a-o]")
+str_detect(c("chimp", "champion", "chomp"), "ch[aio]mp")
+
+# Note: if the ^ appears inside square braces it means not
+str_detect(fruits, "^[^a-o]")
+
+
+str_detect(fruits, "(an){2}")
+str_extract(fruits, "(an){1,}")
+
+
+```
+
+
+  
+$\\$
+
+
+
+#### Part 2.4: Extracting phone numbers
+
+Let's look at an example of extracting phone numbers that were specified in an inconsistent way.
+
+
+
+```{r}
+
+strings <- c(
+	"apple", 
+  	"219 733 8965", 
+  	"329-293-8753", 
+  	"Work: 579-499-7527",
+	"Home: 543.355.3679"
+)
+
+
+
+phone <- "([2-9][0-9]{2})[- .]([0-9]{3})[- .]([0-9]{4})"
+
+str_extract(strings, phone)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#### Part 2.5: Escape sequences
+
+
+Escape sequences allow us to match the regular expression special characters. In R start with two slashes `\\` and cause the next character to be treated literally rather than as a special character.
+
+For example, the string "\\." allows us to match a period. 
+
+
+```{r}
+
+the_string  <-  c("Ryan has $100 and Sein has $20") 
+str_extract_all(the_string, "\\$[0-9]{1,}")
+
+```
+
+
+
+$\\$
+
+
+
+
+#### Part 2.6: More special characters
+
+Other special characters are also designated by using a double slash first, such as:
+
+"\\s"   space
+"\\n"   new line     or also   "\\r"
+"\\t"   tab
+
+
+```{r}
+
+# get 6 characters prior to the end of a line in the_article
+str_extract_all(the_article, ".{6}\\n") 
+
+
+# all ending html tags
+end_tag <- str_extract_all(the_article, "</[A-z]{1,}>\\n")
+lapply(end_tag, str_replace, "\n", "")
+
+
+```
+
+
+$\\$
+
+
+
+#### Part 2.7: Practice with Pig Latin
+
+Pig Latin is language game that conceals words for others not familiar with the rules. The rules of Pig Latin are:
+
+For words that start with vowels, the suffix "way" is added to the end of word.
+E.g.,  eat -> eatway,        are -> areway
+
+
+For words that start with consonants, the first letter is removed from the start of the word and added to the end of the word with an additional "ay".
+
+E.g., pig  ->   igpay   	latin -> atinlay
+
+
+The following code downloads the text of Moby Dick. A little know fact about Moby Dick is that it was originally written in Pig Latin. See if you can using stringr and regular expressions to convert it back to it's original Pig Latin version. 
+
+
+```{r}
+
+# file_name <- "moby_dick.txt"
+# SDS230::download_data(file_name)
+# the_book <- readChar(file_name, file.info(file_name)$size)
+
+
+```
+
+
+
+
+[Regular expressions can definitely be useful!](https://xkcd.com/208/)
+
+
+
+
+
