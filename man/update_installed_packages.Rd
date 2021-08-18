@@ -16,7 +16,7 @@ This function installs packages that are used in the class based on a list
 of packages described in a file on the class GitHub repository.
 }
 \examples{
- # Intall all the needed class packages
+ # Install all the needed class packages
  \dontrun{update_installed_packages()}
 
 }

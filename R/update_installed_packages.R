@@ -9,7 +9,7 @@
 #' packages that have not been installed yet will be installed.
 #'
 #' @examples
-#'  # Intall all the needed class packages
+#'  # Install all the needed class packages
 #'  \dontrun{update_installed_packages()}
 #'
 #' @export
