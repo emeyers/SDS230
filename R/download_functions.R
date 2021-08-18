@@ -102,12 +102,17 @@ download_class_code <- function(class_number, with_answers = FALSE) {
 #'
 #' @param file_name The name the file that has the data.
 #'
+#' @param mode A character indicating the mode with which to write the file.
+#'   Useful values are "w", "wb" (binary), "a" (append) and "ab". Not used for
+#'   methods "wget" and "curl". See also ‘Details’, notably about using "wb" for
+#'   Windows. See download.file() mode argument.
+#'
 #' @examples
 #'  # Download code from the first class
 #'  \dontrun{download_data("test_data.rda")}
 #'
 #' @export
-download_data <- function(file_name) {
+download_data <- function(file_name, mode = "wb") {
 
   base_path <- paste0(get_base_url(), "data/")
   full_path <- paste0(base_path, file_name)
@@ -120,7 +125,7 @@ download_data <- function(file_name) {
   check_github_file_exists("data", file_name)
 
   # if the file does not already exist, download it
-  utils::download.file(full_path, file_name)
+  utils::download.file(full_path, file_name, mode = mode)
 
 }
 
@@ -139,12 +144,17 @@ download_data <- function(file_name) {
 #' @param force_download Will download and overwrite an existing image if the
 #' downloaded image has the same name.
 #'
+#' @param mode A character indicating the mode with which to write the file.
+#'   Useful values are "w", "wb" (binary), "a" (append) and "ab". Not used for
+#'   methods "wget" and "curl". See also ‘Details’, notably about using "wb" for
+#'   Windows. See download.file() mode argument.
+#'
 #' @examples
 #'  # Download an image from the class GitHub repository
 #'  \dontrun{download_image("valentin.png")}
 #'
 #' @export
-download_image <- function(file_name, force_download = FALSE){
+download_image <- function(file_name, force_download = FALSE, mode = "wb"){
 
   base_path <- paste0(get_base_url(), "images/")
   full_path <- paste0(base_path, file_name)
@@ -154,10 +164,54 @@ download_image <- function(file_name, force_download = FALSE){
 
   # only download the image if it doesn't exist or if force_download is TRUE
   if (!file.exists(file_name) || force_download == TRUE) {
-    utils::download.file(full_path, file_name)
+    utils::download.file(full_path, file_name, mode = mode)
   }
 
 }
+
+
+
+
+
+#' Download any file related to the class
+#'
+#' This function downloads any file related to the class from the class GitHub
+#' repository.
+#'
+#' @param file_path_and_name The name of the path and file to download.
+#'
+#' @param force_download Will download and overwrite an existing file if the
+#' downloaded file has the same name.
+#'
+#' @param mode A character indicating the mode with which to write the file.
+#'   Useful values are "w", "wb" (binary), "a" (append) and "ab". Not used for
+#'   methods "wget" and "curl". See also ‘Details’, notably about using "wb" for
+#'   Windows. See download.file() mode argument.
+#'
+#' @examples
+#'  # Download an image from the class GitHub repository
+#'  \dontrun{download_any_file("images/valentin.png")}
+#'
+#' @export
+download_any_file <- function(file_path_and_name, force_download = FALSE, mode = "wb"){
+
+  full_path <- paste0(get_base_url(), file_path_and_name)
+  file_name <- basename(file_path_and_name)
+  file_dir_name <- dirname(file_path_and_name)
+
+  # check the file exists on GitHub and if not throw and error
+  check_github_file_exists(file_dir_name, file_name)
+
+  # only download the file if it doesn't exist or if force_download is TRUE
+  if (!file.exists(file_name) || force_download == TRUE) {
+    utils::download.file(full_path, file_name, mode = mode)
+  }
+
+}
+
+
+
+
 
 
 

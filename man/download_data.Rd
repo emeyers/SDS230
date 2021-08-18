@@ -4,10 +4,15 @@
 \alias{download_data}
 \title{Download data related to the class}
 \usage{
-download_data(file_name)
+download_data(file_name, mode = "wb")
 }
 \arguments{
 \item{file_name}{The name the file that has the data.}
+
+\item{mode}{A character indicating the mode with which to write the file.
+Useful values are "w", "wb" (binary), "a" (append) and "ab". Not used for
+methods "wget" and "curl". See also ‘Details’, notably about using "wb" for
+Windows. See download.file() mode argument.}
 }
 \description{
 This function downloads data related to the class from the class GitHub
