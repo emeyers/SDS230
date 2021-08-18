@@ -1,7 +1,7 @@
 Package: SDS230
 Type: Package
 Title: Tools for the class Data Exploration and Analysis
-Version: 0.1.4
+Version: 0.2021.1
 Author: Ethan Meyers
 Maintainer: Ethan Meyers <ethan.meyers@gmail.com>
 Description: A package with functions for downloading material and  

@@ -3,6 +3,7 @@
 #' @import httr
 
 
+
 # should set this to the name of the package
 package_name <- "SDS230"
 
@@ -44,12 +45,9 @@ get_github_user_name <- function() {
 
 
 get_base_url <- function() {
-
   base_path <- paste0("https://raw.githubusercontent.com/",
                       github_user_name, "/", package_name, "/master/ClassMaterial/")
-
   base_path
-
 }
 
 
