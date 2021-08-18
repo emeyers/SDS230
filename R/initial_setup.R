@@ -1,6 +1,6 @@
 
 
-# Code that can be run to intially set up a student's R installation.
+# Code that can be run to initially set up a student's R installation.
 #  Here we are installing LaTeX through the tidytex package
 initial_setup <- function() {
 
