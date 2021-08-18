@@ -3,7 +3,7 @@
 # should set this to the name of the package
 package_name <- "SDS230"
 
-# should set this to the github user name
+# should set this to the github user name of the repository owner
 github_user_name <- "emeyers"
 
 
@@ -41,8 +41,12 @@ get_github_user_name <- function() {
 
 
 get_base_url <- function() {
+
   base_path <- paste0("https://raw.githubusercontent.com/",
                       github_user_name, "/", package_name, "/master/ClassMaterial/")
+
+  base_path
+
 }
 
 
