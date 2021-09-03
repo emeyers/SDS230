@@ -1,6 +1,5 @@
 tidyverse,
 tinytex,
-okcupiddata,
 Lahman,
 latex2exp,
 nycflights13,
