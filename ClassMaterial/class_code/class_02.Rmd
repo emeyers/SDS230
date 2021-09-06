@@ -1,0 +1,415 @@
+---
+title: "Class 2 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+$\\$
+
+
+
+
+# R Markdown
+
+R Markdown documents allow one to use a simple formatting syntax for authoring HTML, PDF, and MS Word documents combined with R code. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. 
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Download files needed for the next two classes
+
+The code below uses the SDS230 package to get to download files needed for the next two classes. Please press the green play arrow once to download the files. Once they are downloaded you do not need to run this again. 
+
+On the homework, you will also need to start by downloading files also by pressing the green start arrow on an R chuck at the top of the document. 
+
+
+```{r download_files, echo = FALSE, eval = FALSE}
+
+# you could also try downloading these files using the SDS230 package
+library(SDS230)
+
+download_data("daily_bike_totals.rda")
+download_data("profiles_revised.csv")
+download_image("sds.png")
+
+
+# If you don't have the SDS230 package working yet, you can download the files using the following commands
+
+#download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/images/sds.png", "sds.png", mode = "wb")
+
+#download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/daily_bike_totals.rda", "daily_bike_totals.rda", mode = "wb")
+
+#download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/profiles_revised.csv", "profiles_revised.csv", mode = "wb")
+
+```
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+## R Markdown syntax - basics
+
+In order to learn the syntax of R Markdown, there is a useful [cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf).
+
+![](sds.png)
+
+
+Adding proper R Markdown formatting to homework documents will be important!
+
+
+
+$\\$
+
+
+
+
+
+## R Markdown syntax - LaTeX
+
+We can also LaTeX characters in the document, such as the Greek letter $\theta$, and we can put accents on characters too such as $\hat{p}$ and $\hat{\theta}$.
+
+
+
+
+$\\$
+
+
+
+
+# Running R code
+
+We can run R code inside of R chunks
+
+```{r}
+
+2 + 3
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+# Back to learning R
+
+
+## Data frames
+
+Let's now continue learning R by looking at data frames. Data frames are structed data and can also be thought of as collections of vectors.
+
+Let's look at data from the [website okcupid](https://www.okcupid.com)
+
+
+```{r data_frames_1}
+
+# library(SDS230)
+# download_data("profiles_revised.csv")
+
+#profiles <- read.csv("profiles_revised.csv")
+
+#View(profiles)        # the View() function only works in R Studio!
+
+# We can extract the columns of a data frame as vector objects using the $ symbol
+
+
+# We can get the mean() age of OKCupid users
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+We can extract rows from a data frame in a similar way as extracting values from a vector by using the square brackets
+
+```{r data_frames_2}
+
+# get the first row of the data frame
+
+
+
+# get the first column of the data 
+
+
+
+# we can use the head() function here so that we don't print out too much stuff!
+
+
+# Note: the first column of the profiles data frame is the variable age, so we can also get the first column using:
+# head(profiles$age)  # this is the same as profiles[, 1]  
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+We can also create vectors of numbers or Booleans specifying which rows we want to extract from a data frame
+
+```{r data_frames_3}
+
+
+# create a vector with the numbers 1, 10, 20
+
+
+# use my_vec to get the 1st, 10th, and 20th profile
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+Finally, we can also extract rows by creating a Boolean vector that is of the same length as the number of rows in the data frame. True values will be extracted from the data frame while false values will not
+
+```{r data_frames_4}
+
+
+# create a vector of Booleans
+
+
+
+# use the Boolean vector to get the 1st and 3rd row 
+
+
+
+
+# dim() gives us the the number of rows and columns in a data frame
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Examining categorical data
+
+Categorical variables take on one of a fixed number of possible values 
+
+For categorical variables, we usually want to view:
+
+ * How many items are each category    or
+ * The proportion (or percentage) of items in each category
+
+Let's examine categorical data by looking at drinking behavior on Ok Cupid
+
+
+```{r categorical_1}
+
+
+# Get information about drinking behavior
+
+
+# Create a table showing how often people drink
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+We can create a relative frequency table using the function: `prop.table(my_table)` 
+
+Can you create a relative frequency table for the drinking behavior of the people in the OkCupid data set in the R chunk below? 
+
+
+```{r categorical_2}
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+#### bar plots (no pun intended)
+
+We can plot the number of items in each category using a bar plot: barplot(my_table) 
+
+Can you create a bar plot for the drinking behavior of the people in the okcupid data set? 
+
+```{r categorical_3}
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+Is there a problem with using the bar plot function without any of the extra arguments? 
+
+[XKCD illusterates the point](https://xkcd.com/833/)
+
+Can you figure out how to fix your plot? 
+
+We can also create pie charts using the pie function
+
+```{r categorical_4}
+
+
+
+
+
+
+```
+
+
+
+Some pie charts [are more informative than others](http://robslink.com/SAS/democd91/pyramid_pie.htm)
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+Our plots are dominated by social drinkers - let's remove them...
+
+```{r categorical_5}
+
+
+
+
+
+
+
+
+
+
+```
+
+[There are other websites/apps for dating as well](https://i.kym-cdn.com/photos/images/original/001/293/992/d80.jpg)
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+# Reading for next class
+
+
+Please read the article [The Big Lies People Tell In Online Dating](https://theblog.okcupid.com/the-big-lies-people-tell-in-online-dating-a9e3990d6ae2). 
+
+
+Once you have read the article, please share your thoughts on this article by filling out [this quick survey](https://yale.instructure.com/courses/68751/quizzes/46444). We will briefly discuss the article in groups at the start of next class.
+
+
+
+
+
+
