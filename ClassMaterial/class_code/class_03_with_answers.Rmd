@@ -1,0 +1,503 @@
+---
+title: "Class 3 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Download files 
+
+If you have not done so already (or if you're working in a new directory), please download files needed for the next two classes. Please press the green play arrow once to download the files. Once they are downloaded you do not need to run this again. 
+
+On the homework, you will also need to start by downloading files also by pressing the green start arrow on an R chuck at the top of the document. 
+
+
+```{r download_files, echo = FALSE, eval = FALSE}
+
+
+# If you don't have the SDS230 package working yet, you can download the files using the following commands
+
+download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/images/sds.png", "sds.png", mode = "wb")
+
+download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/daily_bike_totals.rda", "daily_bike_totals.rda", mode = "wb")
+
+download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/profiles_revised.csv", "profiles_revised.csv", mode = "wb")
+
+download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/profiles_revised.csv", "profiles_revised.csv", mode = "wb")
+
+
+```
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Back to learning R
+
+
+## Data frames
+
+Let's now continue learning R by looking at data frames. Data frames are structed data and can also be thought of as collections of vectors.
+
+Let's look at data from the [website okcupid](https://www.okcupid.com)
+
+
+```{r data_frames_1}
+
+
+profiles <- read.csv("profiles_revised.csv")
+
+#View(profiles)        # the View() function only works in R Studio!
+
+# We can extract the columns of a data frame as vector objects using the $ symbol
+the_ages <- profiles$age
+
+# We can get the mean() age of OKCupid users
+mean(the_ages)
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+We can extract rows from a data frame in a similar way as extracting values from a vector by using the square brackets
+
+```{r data_frames_2}
+
+profiles[1, ]  # returns the first row of the data frame
+
+head(profiles[, 1])  # returns the first column of the data 
+
+# we are using the head() function here so that we don't print out too much stuff!
+
+# Note: the first column of the profiles data frame is the variable age, so we can also get the first column using:
+head(profiles$age)  # this is the same as profiles[, 1]  
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+We can also create vectors of numbers or Booleans specifying which rows we want to extract from a data frame
+
+```{r data_frames_3}
+
+
+# create a vector with the numbers 1, 10, 20
+my_vec <- c(1, 10, 20)
+
+# use my_vec to get the 1st, 10th, and 20th profile
+small_profiles <- profiles[my_vec, ]
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+Finally, we can also extract rows by creating a Boolean vector that is of the same length as the number of rows in the data frame. True values will be extracted from the data frame while false values will not
+
+```{r data_frames_4}
+
+# create a vector of booleans
+my_bools <- c(TRUE, FALSE, TRUE)
+
+# use the Boolean vector to get the 1st and 3rd row 
+my_bools <- c(TRUE, FALSE, TRUE)
+small_profiles[my_bools, ]
+
+# dim() gives us the the number of rows and columns in a data frame
+dim(small_profiles)
+
+dim(small_profiles[my_bools, ])
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Examining categorical data
+
+Categorical variables take on one of a fixed number of possible values 
+
+For categorical variables, we usually want to view:
+
+ * How many items are each category    or
+ * The proportion (or percentage) of items in each category
+
+Let's examine categorical data by lookig at drinking behavior on Ok Cupid
+
+
+```{r categorical_1}
+
+# Get information about drinking behavior
+drinking_vec <- profiles$drinks
+
+# Create a table showing how often people drink
+drinks_table <- table(drinking_vec)
+drinks_table
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+We can create a relative frequency table using the function: `prop.table(my_table)` 
+
+Can you create a relative frequency table for the drinking behavior of the people in the okcupid data set in the R chunk below? 
+
+
+```{r categorical_2}
+
+drinks_table <- table(profiles$drinks)
+prop.table(drinks_table)
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+#### Bar plots (no pun intended?)
+
+We can plot the number of items in each category using a bar plot: `barplot(my_table)` 
+
+Can you create a bar plot for the drinking behavior of the people in the okcupid data set? 
+
+```{r categorical_3}
+
+drinks_table <- table(profiles$drinks)
+barplot(drinks_table)
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+Is there a problem with using the bar plot function without any of the extra arguments? 
+
+[XKCD illusterates the point](https://xkcd.com/833/)
+
+Can you figure out how to fix your plot? 
+
+We can also create pie charts using the pie function
+
+```{r categorical_4}
+
+pie(prop.table(table(profiles$sex, useNA = "always")))
+
+```
+
+
+
+Some pie charts [are more informative than others](http://robslink.com/SAS/democd91/pyramid_pie.htm)
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+Our plots are dominated by social drinkers - let's remove them...
+
+```{r categorical_5}
+
+nonsocial_inds <- drinks_table < 10000
+nonsocial_drinks_table <- drinks_table[nonsocial_inds]
+pie(nonsocial_drinks_table)
+barplot(nonsocial_drinks_table)
+
+
+```
+
+[There are other websites/apps for dating as well](https://i.kym-cdn.com/photos/images/original/001/293/992/d80.jpg)
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Examining quantiative data
+
+There are several summary statistics useful for describing quantitative data such as the mean and the median. Use the mean() and median() functions to extract measures of the central tendency for okcupid user's heights.
+
+```{r quantitative_1}
+
+mean(profiles$height)
+
+```
+
+
+
+What went wrong? 
+
+Try we can ignore the NA values
+
+```{r quantitative_2}
+
+mean(profiles$height, na.rm = TRUE)
+median(profiles$height, na.rm = TRUE)
+
+```
+
+
+
+
+Fact: the average height of males in US is 69.6", and of females is 64". Also 60% of the ok cupid users are in our data set are male. Is is the height of the average okcupid user what we would expect from the US population? Would we expect them to be the same? 
+
+
+
+```{r quantitative_3}
+
+expected_okcupid_height <-  .6 * 69.6 + .4 * 64
+observed_okcupid_height <- mean(profiles$height, na.rm = TRUE)
+
+expected_okcupid_height
+observed_okcupid_height
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+We can plot histograms of heights using the `hist()` function. 
+
+```{r quantitative_4}
+
+hist(profiles$height)
+hist(profiles$height, breaks = 50)
+
+```
+
+
+
+
+We can add lines to our plots using the abline() function. For example abline(v = 60) would add a vertical line at the value of 60. Can you add a vertical line at the average okcupid user's height? 
+
+
+
+```{r quantitative_5}
+
+     hist(profiles$height, nclass = 50, xlim = c(50, 90))
+     abline(v = mean(profiles$height, na.rm = TRUE), col = "red")
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+Boxplots visually show a version of a 5 number summary (min, Q1, median, Q3, max). We can create boxplots using the `boxplot()` function. 
+
+Create a boxplot of okcupid users heights.
+
+```{r quantitative_6}
+
+boxplot(profiles$height, ylab = "Heights (inches)", main = "OkCupid users' heights")
+
+
+```
+
+If there are extreme outliers in a plot we need to investigate them. If they are errors we can remove them, otherwise we need to take them into account. 
+
+
+
+$\\$
+
+
+
+
+
+Let's now look at data from CitiBike in New York City. How many cases are there any how many variables? What does each case corresond to? 
+
+```{r quantitative_7}
+
+# download.file("https://yale.box.com/shared/static/t3ezfphfg729x03079aajop0d3f454wm.rda", "daily_bike_totals.rda")
+
+load("daily_bike_totals.rda")
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+Scatter plots show the relationships between two quantitative variables. We can use the `plot(x, y)` function to create scatter plots. Create a scatter plot of the maximum temperature as a function of the minimum temperature. Also create a scatter plot of the number of trips as a function of the date. 
+
+```{r quantitative_8}
+
+plot(bike_daily_data$min_temperature, bike_daily_data$max_temperature)
+plot(bike_daily_data$date, bike_daily_data$trips)
+
+```
+
+
+
+
+## For loops
+
+
+
+For loops are useful when you want to repeat a piece of code many times under similar conditions
+
+Print the numbers from 1 to 50...
+
+
+```{r}
+
+for (i in 1:50) {
+	print(i)
+}
+
+
+```
+
+
+
+$\\$
+
+
+
+
+For loops are particular useful in combination with vectors that can store the results.
+
+Create a vector with the squares of the numbers from 1 to 50. 
+
+
+
+```{r}
+
+# create a loop to accumulate results for 2^i
+the_results <- NULL
+for (i in 1:100) {
+	the_results[i] <- 2^i
+}
+
+
+# plot the results
+plot(the_results, 
+     type = "o",
+     xlab = "x", 
+     ylab = "2^x")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
