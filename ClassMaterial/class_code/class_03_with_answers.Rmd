@@ -37,8 +37,6 @@ download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMate
 
 download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/profiles_revised.csv", "profiles_revised.csv", mode = "wb")
 
-download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/profiles_revised.csv", "profiles_revised.csv", mode = "wb")
-
 
 ```
 
@@ -321,7 +319,8 @@ mean(profiles$height)
 
 What went wrong? 
 
-Try we can ignore the NA values
+We can ignore the NA values by setting the `na.rm` argument to TRUE
+
 
 ```{r quantitative_2}
 
