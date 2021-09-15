@@ -16,7 +16,7 @@ $\\$
 
 # install.packages("latex2exp")
 
-library(latex2exp)
+# library(latex2exp)
 
 knitr::opts_chunk$set(echo = TRUE)
 
