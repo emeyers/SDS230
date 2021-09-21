@@ -166,7 +166,7 @@ $\\$
 
 
 
-**Part 1.4 (4 points)**: Now use the `null_distribution` and the `lawyer_stat` objects to calculate the number of simulations that had a higher proportion of heads than the observed statistic. Convert this to a p-value by dividing by the total number of simulations. Describe whether this p-value provides sufficient evidence that lawyers are more left-handed than the general US population.  
+**Part 1.4 (4 points)**: Now use the `null_distribution` and the `lawyer_stat` objects to calculate the number of simulations that had a proportion of heads as high or higher than the observed statistic. Convert this to a p-value by dividing by the total number of simulations. Describe whether this p-value provides sufficient evidence that lawyers are more left-handed than the general US population.  
 
 ```{r part_1_4}
     
