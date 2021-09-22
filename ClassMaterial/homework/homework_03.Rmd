@@ -568,7 +568,7 @@ $\\$
 
 
 
-**Part 3.2 (5 points)**: The code below loads a data frame with information on 230 paperback books listed on Amazon that sell for under $60. Create a vector called `num_pages` that has the number of pages in each book, and a vector called `price` that has the price of each book. Then create a scatter plot of the data. Also, calculate the statistic of interest using the `cor()` function, save it to an object called `obs_stat`, and print it. Does the statistic value have the sign that you would expect? Based on the magnitude of the statistic value do you think there will be a statistically significant relationship between the number of pages in a book and its price? 
+**Part 3.2 (5 points)**: The code below loads a data frame with information on 230 paperback books listed on Amazon that sell for under $60. Create a vector called `num_pages` that has the number of pages in each book, and a vector called `price` that has the listed price of each book. Then create a scatter plot of the data. Also, calculate the statistic of interest using the `cor()` function, save it to an object called `obs_stat`, and print it. Does the statistic value have the sign that you would expect? Based on the magnitude of the statistic value do you think there will be a statistically significant relationship between the number of pages in a book and its price?  
 
 
 ```{r amazon_data}
