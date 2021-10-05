@@ -36,6 +36,9 @@ SDS230::download_data("forecast_ne_joined.rda")
 
 SDS230::download_image("grumpy_cat.jpg")
 
+SDS230::download_data("babyNames538.rda")
+
+SDS230::download_data("unisex_names.rda")
 
 ```
 
