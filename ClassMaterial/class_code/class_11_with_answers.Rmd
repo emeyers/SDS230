@@ -548,7 +548,12 @@ ggplot(mtcars, aes(x = wt, y = mpg)) +
 	geom_point()  +    
 	xlab("Weigth") +   
 	ylab("Miles per Gallon") + 
-	theme_classic()
+	theme_classic() + 
+  theme(                                              # modify the theme by:
+        axis.text.y = element_blank(),                #  - turning off the y-axis text
+        plot.background = element_rect(fill = "red")  #  - making the background red
+        )                                             # see ? theme for more options
+
 
 
 # install.packages("ggthemes")
