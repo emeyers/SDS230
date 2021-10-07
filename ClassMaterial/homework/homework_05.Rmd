@@ -403,9 +403,9 @@ As a warm up exercise to get familiar with the babyNames data, please plot infor
 
 3. It should contain appropriate x and y labels.
 
-4. It should contain a text annotation at position (1910, 500) that it red text says "Stephans still alive". The annotation text should be aligned to the left. 
+4. It should contain a text annotation at position (1910, 500) that it blue text says "Stephans still alive". The annotation text should be aligned to the left. 
 
-5. It should contain a text annotation at position (1910, 500) that it blue text says "Total Stephans born".This annotation text should also be aligned to the left. 
+5. It should contain a text annotation at position (1910, 550) that it red text says "Total Stephans born".This annotation text should also be aligned to the left.  
 
 
 Note: The reason we need the text annotations in this plot is because ggplot has not automatically added a legend that specify what each colored line in the plot corresponds to. The reason that ggplot did not automatically add this legend is because we used two separately aesthetic mappings for the two lines. Later in the class we will learn how to reshape our data frame (using the tidyr package) so that it is in the correct format where ggplot will know how to automatically add a legend for each line color. 
