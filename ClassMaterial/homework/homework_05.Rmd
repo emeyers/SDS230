@@ -446,7 +446,7 @@ $\\$
 Now that you have some familiarity with the `babyNames` data frame, let's wrangle the data into a format that has the information necessary to create "The Most Common Unisex Names In America" figure. Starting with the `babyNames` data frame, please derive a data frame called `unisex_names` which has the following variables:
 
 1. `name`: The name of a baby.
-2. `total`: The total number of babies born from 1920 to 2013 that have a given name *that are still alive*
+2. `total`: The total number of babies born from 1900 to 2013 that have a given name *that are still alive*
 3. `male_share`: An integer specifying the percent of (total) babies born that are male *that are still alive*
 4. `female_share`: An integer specifying the percent of (total) babies born that are female *that are still alive*
 
