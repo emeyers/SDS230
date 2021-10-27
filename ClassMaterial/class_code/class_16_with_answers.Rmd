@@ -1,0 +1,239 @@
+---
+title: "Class 16 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+# SDS230::update_installed_packages()
+
+# install.packages('car')
+
+SDS230::download_data("IPED_salaries_2016.rda")
+
+
+SDS230::download_image("tukey_ladder.png")
+
+
+```
+
+
+
+
+
+```{r setup, include=FALSE}
+
+library(latex2exp)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+
+#options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(230)
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Overview
+
+
+
+ * Regression diagnostics
+ * Identifying unusual points
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Part 1: Exploring the faculty salary data
+
+
+To explore linear regression models, we will examine data from the Integrated Postsecondary Education Data System (IPEDS) which has information about colleges and universities. I have created a subset of this data from 2016 that has information about college salaries, endowment sizes and other variables. Full datasets from several years are available in Microsoft Access format and [can be downloaded here](https://nces.ed.gov/ipeds/use-the-data/download-access-database).
+
+Below is code that loads the data. You can use the `View()` function from the console to look at the data. The `glimpse()` function in dplyr is also useful for getting a sense of what is in a data frame. 
+
+
+
+```{r load_iped}
+
+# load the data into R
+load("IPED_salaries_2016.rda")
+
+
+```
+
+
+
+
+
+
+
+
+
+## Part 4: Regression diagnostics
+
+
+
+When making inferences about regression coefficients, there are a number of assumptions that need to be met to make these tests/confidence intervals valid. The (LINE) assumptions are: 
+
+1. **Linearity**: A line can describe the relationship between x and y.
+2. **Independence**: Each data point is independent from the other points.
+3. **Normality**: The errors (are normally distributed.
+4. **Equal variance (homoscedasticity)**: The variance of the errors is constant over the whole range of x values.
+
+
+To check whether these assumptions seem to be met by creating a set of diagnostic plots. 
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 4.1:** To check for linearity and homoscedasticity (conditions 1 and 4), we can create a plot of the residuals as a function of the fitted values. 
+
+```{r}
+
+
+plot(lm_fit$fitted.values, lm_fit$residuals,
+     xlab = "Fitted values (y-hat)", 
+     ylab = "Residuals")
+
+
+
+```
+
+
+
+
+**Question** Does it appear that the data is homoscedastic and linear? 
+
+
+**Answer** A bit hard to tell but there might be curvature to the data. 
+
+
+
+
+$\\$
+
+
+
+
+
+
+We can examine this further some more of R's built in functions and well as other functions from the `car` package and getting the studentized residuals using the `Mass` package. 
+
+
+
+```{r}
+
+par(mfrow = c(2, 2))
+plot(lm_fit)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+**Part 4.2:** To check whether the residuals are normally distributed (condition 3) we can use create a Q-Q plot. The `car` package has a nice function to create these plots called `qqPlot()` to create these plots that uses the residuals from model fit with the lm() function, i.e, the `lm_fit` object.
+
+
+```{r}
+
+# install.packages('car')
+library(car)
+
+# create a Q-Q plot of the residuals
+qqPlot(lm_fit)
+
+
+# we can also create a histogram of the residuals
+hist(lm_fit$residuals, breaks = 100)
+
+
+```
+
+
+**Question:** Do the residuals seem normal? 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+**Part 4.3:** To check if the data points are independent (condition 2) requires knowledge of how the data was collected. Do you think the data is independent here? i.e., do you think that the salary of one school effects the salaries at another school? 
+
+
+
+
+
+$\\$
+
+
+
+
