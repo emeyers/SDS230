@@ -90,7 +90,7 @@ Toward the end of my search for a new car, the car models I was considering were
 
 To start our analyses, please use the Edmunds `car_transactions` data frame to create a data frame called `three_car_data` that only has the car brands Mazda 3's, Subaru Imprezas, and BMW 5 series (one can dream, right?). To create this data frame, please complete the following steps:
 
-1. Get only the makes of Mazda 3's, Subaru Imprezas, and BMW 5 series car makes (i.e., `MAZDA3`, `Impreza` and `5 Series`) 
+1. Get only the models of Mazda 3's, Subaru Imprezas, and BMW 5 series car makes (i.e., `MAZDA3`, `Impreza` and `5 Series`) 
 
 2. Get the data for only used cars. 
 
