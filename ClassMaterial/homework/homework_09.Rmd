@@ -46,6 +46,7 @@ SDS230::download_data("covid_nov_09_2021_data.rda")
 download.file("https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/co-est2019-alldata.csv", "co-est2019-alldata.csv")
   
 
+SDS230::download_image("xkcd_map_projections.png")
 
 
 ```
