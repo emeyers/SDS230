@@ -1,0 +1,694 @@
+---
+title: "Class 22 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+# SDS230::update_installed_packages()
+
+SDS230::download_data("x_y_join.rda")
+
+
+SDS230::download_data("state_demographics.rda")
+
+
+SDS230::download_data("amazon-books.txt")
+
+
+SDS230::download_data("IPED_salaries_2016.rda")
+
+
+
+```
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+library(dplyr)
+library(ggplot2)
+
+#options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+ * Visualizing multiple regression models with ggplot
+ * Joining data frames
+ * Spatial mapping
+ * Reshaping data
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Part 1: Visualizing multiple regression models with ggplot
+
+In prior classes we have visualized multiple regression models with categorical predictors using base R graphics. In particular, we created scatter plots for data in different categories using the `plot()` and `points()` and used the `col` argument to color the points. We then added on regression lines using the `abline()` function. This method was useful for educational purposes so that we could see the connection between the model parameters that were estimated using the `lm()` function, and the underlying data. However, if we want to create better looking visualizations in a more efficient manner, then it is better to use ggplot.
+
+Let's now use ggplot to visualize a multiple regression model that has one quantitative and one categorical variable. In particular, let's recreate the plot from class 19 part 3.6 where we display faculty salaries as a function of log endowment separately for different faculty ranks. 
+
+
+
+```{r}
+
+
+load("IPED_salaries_2016.rda")
+
+# create the IPED data subset used in class 19 part 3
+IPED_2 <- IPED_salaries %>%
+filter(endowment > 0) %>%
+mutate(log_endowment = log10(endowment)) %>%
+filter(CARNEGIE %in% c(15, 31)) %>%
+filter(rank_name %in% c("Assistant", "Associate", "Full"))
+dim(IPED_2)
+
+
+# using ggplot
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 2: Joining data frames
+
+
+Often data of interest is spread across multiple data frames that need to be joined together into a single data frame for further analyses. We will explore how to do this using dplyr. 
+
+
+Let's look at a very simple data set to explore joining data frames. 
+
+
+```{r}
+
+library(dplyr)
+
+
+load('x_y_join.rda')
+
+x
+y
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 2.1: Left join
+
+Left joins keep all rows in the left table.  
+
+Data from right table added when there is the key matches, otherwise NA as added. 
+
+Try to do a left join of the data frames x and y using their keys.
+
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.2: Right join
+
+
+Right joins keep all rows in the right table.  
+
+Data from left table added when there is the key matches, otherwise NA as added. 
+
+Try to do a right join of the data frames x and y using their keys.
+
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.3: Inner join
+
+
+Inner joins only keep rows in which there are matches between the keys in both tables
+
+Try to do an inner join of the data frames x and y using their keys.
+
+
+```{r}
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.4: Full join
+
+Full joins keep all rows in both table.  
+
+NAs are added where there are no matches.
+
+
+
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.5a: Duplicate keys
+
+
+Duplicate keys are useful if there is a one-to-many relationship (duplicates are usually in the left table). 
+
+Let's look at two other tables that have duplicate keys
+
+
+
+```{r}
+
+x2
+y2
+
+nrow(x2)
+nrow(y2)
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 2.5b: Duplicate keys
+
+
+If both tables have duplicate keys you get all possible combinations (Cartesian product). This is almost always an error! Always check the output dimension after you join a table because even if there is not a syntax error you might not get the table you are expecting!
+
+
+Try doing a left join on the data frames x2 and y2 using only their first keys (i.e., key1_x and key1_y). Save the joined data frame to an object called `x2_joined`. Note that `x2_joined` has more rows than the original `x2` data frame despite the fact that you did a left join!  This is due to duplicate keys in both x2 and y2. 
+
+Usually a mistake was made when a data frame ends up having more rows after a left join. It is good to check how many rows a data frame has before and after a join to catch any possible errors. 
+
+
+
+```{r}
+
+# initial left data frame only has 3 rows
+
+
+
+# left join when both the left and right tables have duplicate keys
+
+
+
+# output now has more rows than the initial table
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.5c: Duplicate keys
+
+
+
+To deal with duplicate keys in both tables, we can join the tables **using multiple keys** in order to make sure that each row is uniquely specified.
+
+Try doing a left join on the data frames x2 and y2 using both the keys. Save the joined data frame to an object called `x2_joined_mult_keys`. Note that `x2_joined_mult_keys` has the same number of rows as the original `x2` data frame which is usually what we want when we do a left join.
+
+
+
+
+```{r}
+
+
+# initial left data frame only has 3 rows
+
+
+# join the data frame using multiple keys
+
+
+
+# output now only has 3 rows
+
+
+
+
+```
+
+
+
+
+
+
+$\\$ 
+
+
+
+
+
+
+
+
+## Part 3: Creating choropleth maps
+
+
+
+To practice creating choropleth maps, we will examine demographic patterns in the United States by creating a map of people who are of retirement age. 
+
+
+For more fun data sets to map, check out [howmuch.net](https://howmuch.net/sources/income-inequality-by-state)
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 3.1: Get map coordinates
+
+
+
+To start our mapping practice, let's plot Yale's location (longitude = -72.9223, latitude = 41.3163) on a map of Connecticut.
+
+
+
+```{r}
+
+
+# Get the map of the States
+
+
+
+# Plot a state
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 3.2: Combine demographic data with the map coordinates
+
+
+Let's now look at state demographic information and combine this with mapping data.
+
+
+
+```{r}
+
+
+# load the data
+load("state_demographics.rda")
+
+
+# mutate the data to names of states in lower case
+
+
+
+# join state_demographics and states_map data frames 
+
+
+
+# order the data
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 3.3: Plot the map
+
+
+To get a sense of which states have an older population, let's plot the number of people in each state who are over 64 years old. 
+
+
+
+```{r}
+
+
+
+
+
+```
+
+
+
+**Question:**  What is wrong with this figure? 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 3.4: Normalizing data
+
+
+In order to really see which states have older populations, we need to normalize our maps based on the total population. 
+
+Do the results from the normalized map make more sense? 
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 4: Reshaping data
+
+Creating plots and calculating particular statistics often requires data to be in a particular format. Reshaping data is the processing of changing the number of rows and columns of a data table in order to make particular computations or plots easier. The tidyr package in R is package that is useful for reshaping data. Let's explore it now!
+
+
+
+$\\$
+
+
+
+
+### Part 4.1: Simple reshaping
+
+
+Let's start with the sample example that is in the class slides. The code below recreates this simple data frame. Let's reshape it by: 
+
+1. Converting it into a longer format data frame using the `pivot_longer()` function. 
+
+2. Converting it back to a wider data frame using the `pivot_wider()` function. 
+
+
+```{r, simple_reshaping}
+
+
+library(tidyr)
+
+
+# the data example from the class slides
+the_data <- data.frame(Person = c("Bob", "Alice", "Steve"),
+                       Age = c(32, 24, 64), 
+                       Height = c(72, 65, 70))
+
+
+
+# convert it to a long format
+
+
+
+# convert it back to wide format
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 4.2: Reshaping data to create box plots of book prices
+
+
+Let's examine the Amazon book price data to practice transforming data using tidyr's `pivot_longer()` and `pivot_wider()` functions. The R chunk below loads the data. 
+
+Let's start by using dplyr to create a simplified data set that only has the columns Title, ISBN.10, Amazon.Price, and List.Price.
+
+
+```{r}
+
+
+# download the amazon data
+# SDS230::download_data("amazon-books.txt")
+
+# load the book price data and removing NAs
+amazon <- read.csv("amazon-books.txt", sep = "\t") %>%
+  filter(!is.na(NumPages)) %>%
+  filter(!is.na(List.Price)) 
+
+
+# select only the Title, ISBN.10, Amazon.Price, List.Price variables
+amazon_wide <- amazon %>%
+    select(Title, ISBN.10, Amazon.Price, List.Price) 
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 4.3: Creating longer data
+
+If we want to create a side-by-side box plot in ggplot we would need a data frame with the following columns:
+  1. A column with the categorical variables saying if the price is Amazon's price or the List price
+  2. A column with the prices
+
+Let's transform the data to make it longer so that it has these columns using the `pivot_longer(df, cols)` function.
+
+
+```{r}
+
+# create a long data frame called amazon_long
+
+
+
+
+# let's now create side-by-side boxplots on the long data
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 4.4: Creating wider data again
+
+We can convert data from a long format into a wide format using the tidyr R function `pivot_wider(df, names_from, cols_from)`. 
+
+Let's transform our long data back to wide format. We could imagine a scenario where this would be useful, for example if we wanted the difference in the Amazon vs. List price and our data had come in the initial longer format, then transforming to the wide format would be useful. 
+
+
+```{r}
+
+# create a long data frame called amazon_long
+
+
+
+
+# let's get the difference in prices and plot these differences in a single boxplot
+
+
+
+
+
+
+```
+
+
+
+
+
