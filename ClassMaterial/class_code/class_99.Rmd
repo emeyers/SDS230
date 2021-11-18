@@ -1,0 +1,295 @@
+---
+title: "Class 22 bonus notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+# SDS230::update_installed_packages()
+
+
+```
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+library(dplyr)
+library(ggplot2)
+
+#options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+ * String manipulation
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 1: String manipulation using stringr
+
+
+$\\$
+
+
+##### Part 1.1: Base R and stringr
+
+
+```{r}
+
+library(stringr)
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+##### Part 1.2: Trimming and padding a string
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+##### Part 1.3: Extracting a piece of a string
+
+
+```{r}
+
+
+fruits <- c("apple", "pineapple", "Pear", "orange",  "peach", "banana")
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+##### Part 1.4: Concatenating strings
+
+
+```{r}
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+
+##### Part 1.5: Download an article
+
+
+
+```{r}
+
+
+#base_name <- "https://www.washingtonpost.com/politics/2021/11/16/white-house-says-democratic-infighting-has-hurt-biden/"
+#article_name <- "infighting.html"
+#full_name <- str_c(base_name) #, article_name)
+
+
+base_name <- "https://www.nytimes.com/2021/11/17/us/"
+article_name <- "catholic-bishops-biden-communion.html"
+full_name <- str_c(base_name, article_name)
+
+
+# download.file(full_name, article_name)
+
+
+# viewer <- getOption("viewer")
+# viewer(article_name)
+
+
+
+
+```
+
+
+
+$\\$
+
+
+##### Part 1.6: string length
+
+
+
+```{r}
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+##### Part 1.7: string replace all
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+##### Part 1.8: String split
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+##### Part 1.9: Extracting strings
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+##### Part 1.10: Detecting a string
+
+
+```{r}
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+## Part 2: Regular expressions
+
+
+We can use regular expressions to do a lot more complex string matching!
+
+
+
+
+
