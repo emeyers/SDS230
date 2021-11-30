@@ -1,0 +1,443 @@
+---
+title: "Class 23 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+# makes sure you have all the packages we have used in class installed
+#SDS230::update_installed_packages()
+
+SDS230::download_data("downloading.csv")
+
+
+```
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+library(dplyr)
+library(ggplot2)
+
+#options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+ * One-way ANOVA
+ * Connections between ANOVA and linear regression
+ * Pairwise comparisons after running an ANOVA
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 1: One-way ANOVA to analyze if the time of the day affects download speeds
+
+
+A college sophomore was interested in knowing whether the time of day affected the speed at which he could download files from the Internet. To address this question, he placed a file on a remote server and then proceeded to download it at three different time periods of the day: 7AM,  5PM,  12AM. He downloaded the file 48 times in all, 16 times at each time of day, and recorded the time in seconds that the download took. 
+
+Let's assess whether the mean download time differs depending on the time of the day!
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.1: State the null and alternative hypotheses 
+
+
+Let's start as always by stating the null and alternative hypotheses:
+
+$H_0: \mu_{7am} = \mu_{5pm} = \mu_{12am}$
+$H_A: \mu_{i} \ne \mu_{j}$ for some pair of i, j
+
+
+$\alpha = 0.05$
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.2a: Plot the data
+
+
+```{r download_plot}
+
+
+# get the data
+download_speeds <- read.csv('downloading.csv', header = TRUE)
+
+
+# create a boxplot of the data using ggplot
+download_speeds %>%
+  ggplot(aes(Time_of_Day, Time_Sec, fill = Time_of_Day)) + 
+  geom_boxplot() + 
+  xlab("Time of Day") + 
+  ylab("Download speed (sec)")
+
+
+```
+
+
+
+
+```{r}
+
+download_summary <- download_speeds %>%
+  group_by(Time_of_Day) %>%
+  summarize(SD_Time_Sec = sd(Time_Sec), 
+            Time_Sec = mean(Time_Sec))
+
+
+download_summary
+
+
+download_speeds %>%
+  ggplot(aes(Time_of_Day, Time_Sec, col = Time_of_Day)) + 
+  geom_jitter(position = position_jitter(width = .2)) + 
+  xlab("Time of Day") + 
+  ylab("Download speed (sec)") + 
+  geom_crossbar(download_summary, mapping = aes(ymin = Time_Sec, ymax = Time_Sec, col = Time_of_Day), size=.5,width = .5)
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 1.2b: Calculate the observed statistic
+
+Our observed statistic is an F-statistic:
+
+$F = \frac{\frac{1}{K-1}\sum_{i=1}^K n_i(\bar{x}_i - \bar{x}_{tot})^2}{\frac{1}{N-K}\sum_{i=1}^K \sum_{j=1}^{n_i} (x_{ij} - \bar{x}_i)^2}$
+
+
+We will cheat and use the `lm()` and `anova()` functions to get the F-statistic. On the homework you will need to calculate this statistic from the data using dplyr!
+
+
+```{r download_obs_stat}
+
+
+# Getting the observed F-statistic for the download data using built in R functions
+# On the homework be sure to use dplyr to actually calculate this statistic!
+
+(obs_stat <- anova(lm(Time_Sec~ Time_of_Day, data = download_speeds))$F[1])
+
+
+  
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 3: Create the null distribution
+
+
+Let's visualize the null distribution.
+
+
+```{r download_null_dist, message = FALSE}
+
+N <- nrow(download_speeds)
+K <- 3
+
+(df1 <- K - 1)
+(df2 <- N - K)
+
+x <- seq(-.5, 5, by = 0.01)
+y <- df(x, df1, df2)
+
+plot(x, y, type = "l")
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Part 1.4: Calculate a p-value
+
+
+```{r download_pvalue}
+
+
+# calculate the p-value
+(p_value <- pf(obs_stat, df1, df2, lower.tail = FALSE))
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 1.5: Make a decision
+
+
+Since `r p_value` is less than $\alpha = 0.05$ we can reject the null hypothesis, although we should really check the model assumptions before making this claim. We will do this next...
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+## Part 2: Connections between ANOVA and regression 
+
+
+Let's look at connections between the least squares fit we used when fitting linear regression models and our one-way ANOVA. 
+
+
+
+$\\$
+
+
+
+### Step 2.1: Least squares offsets are the group means
+
+
+Let's look at the mean download times for each time of day and compare it to the least squares offsets that the `lm()` function finds. 
+
+
+```{r}
+
+# get the mean and sd of the download times for each time of day
+download_stats <- download_speeds %>%
+  group_by(Time_of_Day) %>%
+  summarize(mean_download_times = mean(Time_Sec),
+            sd_download_times = sd(Time_Sec))
+
+
+# fit a linear model 
+fit_download <- lm(Time_Sec ~ Time_of_Day, data = download_speeds)
+
+
+
+# check that the least squares fit offsets are the means of each group
+(summary_download <- summary(fit_download))
+
+fit_coefs <- coef(fit_download)
+
+
+c(fit_coefs[1], fit_coefs[1] + fit_coefs[2], fit_coefs[1] + fit_coefs[3])
+
+download_stats$mean_download_times
+
+```
+
+
+
+$\\$
+
+
+
+
+### Step 2.2: Using R to get an ANOVA table and to look at diagnostic plots
+
+
+We can use the `anova()` function to create an ANOVA table, and we can use the `plot()` function to look at diagnostic plots to make sure our ANOVA conditions have been met. 
+
+
+
+```{r}
+
+# an easy way to get the ANOVA table using the ANOVA function 
+(anova_table <- anova(fit_download))
+
+# we can see that the SST = SSG + SSE
+(SST <- sum((download_speeds$Time_Sec - mean(download_speeds$Time_Sec))^2))
+
+sum(anova_table$`Sum Sq`)
+
+
+
+# we can use regression diagnostic plots to assess if ANOVA conditions have been met
+par(mfrow = c(2, 2))
+plot(fit_download)
+
+
+# we should also check that the maximum and minimum standard deviations are not greater 
+# than a factor of 2 apart
+print("sds")
+download_stats$sd_download_times
+max(download_stats$sd_download_times)/min(download_stats$sd_download_times)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+###  Part 2.3 Kruskal–Wallis test to see if any of our groups stochastically dominate another group. 
+
+If we are concerned that our one-way ANOVA conditions are not met, we can run a Kruskal–Wallis test which does not rely on the assumptions of normality and homoscedasticity. We could also run a permutation test which does not rely on these assumptions either.
+
+
+```{r}
+
+#Kruskal–Wallis test
+kruskal.test(Time_Sec ~ Time_of_Day, data = download_speeds)
+
+
+# compare to the ANOVA 
+# anova(fit_download)
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 3: Pairwise comparisons after running a one-way ANOVA
+
+
+
+
+
+###  Part 3.1 Pairwise comparisons in R
+
+If we run a one-way ANOVA and the results are statistically significant, there are a number of tests we can run to see which pairs of results are significantly different. 
+
+
+
+```{r}
+
+
+# test with no multiple comparisons adjustment (not great)
+(pair_tests <- pairwise.t.test(download_speeds$Time_Sec, download_speeds$Time_of_Day, p.adj = "none"))
+
+
+# with the Bonferroni correction
+pairwise.t.test(download_speeds$Time_Sec, download_speeds$Time_of_Day, p.adj = "bonferroni")
+
+
+# Note, the Bonferroni p-values are 3 times larger than the p-values with no adjustment
+3 * pair_tests$p.value
+
+
+# Tukey's HSD test using the TukeyHSD() function 
+# It is giving results similar to the Bonferroni correction
+fit_download_aov <- aov(Time_Sec ~ Time_of_Day, data = download_speeds)
+TukeyHSD(fit_download_aov)
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+
+
+
+
