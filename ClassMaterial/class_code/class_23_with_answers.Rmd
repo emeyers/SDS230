@@ -20,7 +20,10 @@ $\\$
 # makes sure you have all the packages we have used in class installed
 #SDS230::update_installed_packages()
 
-SDS230::download_data("downloading.csv")
+# SDS230::download_data("downloading.csv")
+
+
+SDS230::download_data("IPED_salaries_2016.rda")
 
 
 ```
@@ -67,12 +70,11 @@ $\\$
 
 
 
-## Part 1: One-way ANOVA to analyze if the time of the day affects download speeds
+## Part 1: One-way ANOVA 
 
 
-A college sophomore was interested in knowing whether the time of day affected the speed at which he could download files from the Internet. To address this question, he placed a file on a remote server and then proceeded to download it at three different time periods of the day: 7AM,  5PM,  12AM. He downloaded the file 48 times in all, 16 times at each time of day, and recorded the time in seconds that the download took. 
+Let's run a one-way ANOVA to see if there is a difference in how much faculty of different ranks get paid. 
 
-Let's assess whether the mean download time differs depending on the time of the day!
 
 
 
@@ -87,7 +89,7 @@ $\\$
 
 Let's start as always by stating the null and alternative hypotheses:
 
-$H_0: \mu_{7am} = \mu_{5pm} = \mu_{12am}$
+$H_0: \mu_{Assistant} = \mu_{Associate} = \mu_{Full}$
 $H_A: \mu_{i} \ne \mu_{j}$ for some pair of i, j
 
 
@@ -107,17 +109,24 @@ $\\$
 
 ```{r download_plot}
 
-
 # get the data
-download_speeds <- read.csv('downloading.csv', header = TRUE)
+load("IPED_salaries_2016.rda")
 
 
 # create a boxplot of the data using ggplot
-download_speeds %>%
-  ggplot(aes(Time_of_Day, Time_Sec, fill = Time_of_Day)) + 
+# get assistant and full professor salaries 
+prof_data <- IPED_salaries %>%
+  filter(endowment > 0, rank_name %in% c("Assistant", "Associate", "Full")) %>%
+  select(school, salary_tot, endowment, enroll_total, rank_name) %>%
+  na.omit()
+
+
+# create a boxplot of the data using ggplot
+prof_data %>%
+  ggplot(aes(rank_name, salary_tot, fill = rank_name)) + 
   geom_boxplot() + 
-  xlab("Time of Day") + 
-  ylab("Download speed (sec)")
+  xlab("") + 
+  ylab("Salary ($)")
 
 
 ```
@@ -127,21 +136,21 @@ download_speeds %>%
 
 ```{r}
 
-download_summary <- download_speeds %>%
-  group_by(Time_of_Day) %>%
-  summarize(SD_Time_Sec = sd(Time_Sec), 
-            Time_Sec = mean(Time_Sec))
+
+prof_summary <- prof_data %>%
+  group_by(rank_name) %>%
+  summarize(salary_tot = mean(salary_tot),
+            sd_salary = sd(salary_tot))
+
+prof_summary
 
 
-download_summary
-
-
-download_speeds %>%
-  ggplot(aes(Time_of_Day, Time_Sec, col = Time_of_Day)) + 
-  geom_jitter(position = position_jitter(width = .2)) + 
-  xlab("Time of Day") + 
-  ylab("Download speed (sec)") + 
-  geom_crossbar(download_summary, mapping = aes(ymin = Time_Sec, ymax = Time_Sec, col = Time_of_Day), size=.5,width = .5)
+prof_data %>%
+  ggplot(aes(rank_name, salary_tot, col = rank_name)) + 
+  geom_jitter(position = position_jitter(width = .2), alpha = .1) + 
+  xlab("") + 
+  ylab("Salary ($)") + 
+  geom_crossbar(data = prof_summary, mapping = aes(ymin = salary_tot, ymax = salary_tot, col = rank_name), size=.5,width = .5)
 
 
 ```
@@ -171,10 +180,10 @@ We will cheat and use the `lm()` and `anova()` functions to get the F-statistic.
 ```{r download_obs_stat}
 
 
-# Getting the observed F-statistic for the download data using built in R functions
+# Getting the observed F-statistic for the faculty rank data using built in R functions
 # On the homework be sure to use dplyr to actually calculate this statistic!
 
-(obs_stat <- anova(lm(Time_Sec~ Time_of_Day, data = download_speeds))$F[1])
+(obs_stat <- anova(lm(salary_tot ~ rank_name, data = prof_data))$F[1])
 
 
   
@@ -200,7 +209,7 @@ Let's visualize the null distribution.
 
 ```{r download_null_dist, message = FALSE}
 
-N <- nrow(download_speeds)
+N <- nrow(prof_data)
 K <- 3
 
 (df1 <- K - 1)
@@ -273,7 +282,11 @@ Let's look at connections between the least squares fit we used when fitting lin
 
 
 
+
 $\\$
+
+
+
 
 
 
@@ -286,26 +299,26 @@ Let's look at the mean download times for each time of day and compare it to the
 ```{r}
 
 # get the mean and sd of the download times for each time of day
-download_stats <- download_speeds %>%
-  group_by(Time_of_Day) %>%
-  summarize(mean_download_times = mean(Time_Sec),
-            sd_download_times = sd(Time_Sec))
+prof_summary <- prof_data %>%
+  group_by(rank_name) %>%
+  summarize(mean_salary = mean(salary_tot),
+            sd_salary = sd(salary_tot))
 
 
 # fit a linear model 
-fit_download <- lm(Time_Sec ~ Time_of_Day, data = download_speeds)
+fit_prof <- lm(salary_tot ~ rank_name, data = prof_data)
 
 
 
 # check that the least squares fit offsets are the means of each group
-(summary_download <- summary(fit_download))
+(summary_download <- summary(fit_prof))
 
-fit_coefs <- coef(fit_download)
+fit_coefs <- coef(fit_prof)
 
 
 c(fit_coefs[1], fit_coefs[1] + fit_coefs[2], fit_coefs[1] + fit_coefs[3])
 
-download_stats$mean_download_times
+prof_summary$mean_salary
 
 ```
 
@@ -326,10 +339,10 @@ We can use the `anova()` function to create an ANOVA table, and we can use the `
 ```{r}
 
 # an easy way to get the ANOVA table using the ANOVA function 
-(anova_table <- anova(fit_download))
+(anova_table <- anova(fit_prof))
 
 # we can see that the SST = SSG + SSE
-(SST <- sum((download_speeds$Time_Sec - mean(download_speeds$Time_Sec))^2))
+(SST <- sum((prof_data$salary_tot - mean(prof_data$salary_tot))^2))
 
 sum(anova_table$`Sum Sq`)
 
@@ -337,14 +350,14 @@ sum(anova_table$`Sum Sq`)
 
 # we can use regression diagnostic plots to assess if ANOVA conditions have been met
 par(mfrow = c(2, 2))
-plot(fit_download)
+plot(fit_prof)
 
 
 # we should also check that the maximum and minimum standard deviations are not greater 
 # than a factor of 2 apart
 print("sds")
-download_stats$sd_download_times
-max(download_stats$sd_download_times)/min(download_stats$sd_download_times)
+prof_summary$sd_salary
+max(prof_summary$sd_salary)/min(prof_summary$sd_salary)
 
 
 ```
@@ -367,11 +380,11 @@ If we are concerned that our one-way ANOVA conditions are not met, we can run a 
 ```{r}
 
 #Kruskal–Wallis test
-kruskal.test(Time_Sec ~ Time_of_Day, data = download_speeds)
+kruskal.test(salary_tot ~ rank_name, data = prof_data)
 
 
 # compare to the ANOVA 
-# anova(fit_download)
+# anova(fit_prof)
 
 
 ```
@@ -403,11 +416,11 @@ If we run a one-way ANOVA and the results are statistically significant, there a
 
 
 # test with no multiple comparisons adjustment (not great)
-(pair_tests <- pairwise.t.test(download_speeds$Time_Sec, download_speeds$Time_of_Day, p.adj = "none"))
+(pair_tests <- pairwise.t.test(prof_data$salary_tot, prof_data$rank_name, p.adj = "none"))
 
 
 # with the Bonferroni correction
-pairwise.t.test(download_speeds$Time_Sec, download_speeds$Time_of_Day, p.adj = "bonferroni")
+pairwise.t.test(prof_data$salary_tot, prof_data$rank_name, p.adj = "bonferroni")
 
 
 # Note, the Bonferroni p-values are 3 times larger than the p-values with no adjustment
@@ -415,26 +428,11 @@ pairwise.t.test(download_speeds$Time_Sec, download_speeds$Time_of_Day, p.adj = "
 
 
 # Tukey's HSD test using the TukeyHSD() function 
-# It is giving results similar to the Bonferroni correction
-fit_download_aov <- aov(Time_Sec ~ Time_of_Day, data = download_speeds)
+fit_download_aov <- aov(salary_tot ~ rank_name, data = prof_data)
 TukeyHSD(fit_download_aov)
 
 
 ```
-
-
-
-
-
-
-$\\$
-
-
-
-
-
-
-
 
 
 

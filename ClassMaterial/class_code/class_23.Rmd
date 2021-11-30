@@ -20,7 +20,10 @@ $\\$
 # makes sure you have all the packages we have used in class installed
 #SDS230::update_installed_packages()
 
-SDS230::download_data("downloading.csv")
+# SDS230::download_data("downloading.csv")
+
+
+SDS230::download_data("IPED_salaries_2016.rda")
 
 
 ```
@@ -67,12 +70,11 @@ $\\$
 
 
 
-## Part 1: One-way ANOVA to analyze if the time of the day affects download speeds
+## Part 1: One-way ANOVA 
 
 
-A college sophomore was interested in knowing whether the time of day affected the speed at which he could download files from the Internet. To address this question, he placed a file on a remote server and then proceeded to download it at three different time periods of the day: 7AM,  5PM,  12AM. He downloaded the file 48 times in all, 16 times at each time of day, and recorded the time in seconds that the download took. 
+Let's run a one-way ANOVA to see if there is a difference in how much faculty of different ranks get paid. 
 
-Let's assess whether the mean download time differs depending on the time of the day!
 
 
 
@@ -92,7 +94,6 @@ Let's start as always by stating the null and alternative hypotheses:
 
 
 
-
 $\\$
 
 
@@ -104,14 +105,17 @@ $\\$
 
 ```{r download_plot}
 
-
 # get the data
-download_speeds <- read.csv('downloading.csv', header = TRUE)
+load("IPED_salaries_2016.rda")
+
+
+
+# get assistant and full professor salaries 
+
+
 
 
 # create a boxplot of the data using ggplot
-
-
 
 
 
@@ -124,11 +128,13 @@ download_speeds <- read.csv('downloading.csv', header = TRUE)
 
 ```{r}
 
-# summarize the mean and sdev for each time of day
+# get a summary of the means of each group
 
 
 
 
+
+# plot the data another way
 
 
 
@@ -162,8 +168,10 @@ We will cheat and use the `lm()` and `anova()` functions to get the F-statistic.
 ```{r download_obs_stat}
 
 
-# Getting the observed F-statistic for the download data using built in R functions
+# Getting the observed F-statistic for the faculty rank data using built in R functions
 # On the homework be sure to use dplyr to actually calculate this statistic!
+
+
 
 
 
@@ -196,8 +204,6 @@ Let's visualize the null distribution.
 
 
 
-
-
 ```
 
 
@@ -217,6 +223,9 @@ $\\$
 # calculate the p-value
 
 
+
+
+
 ```
 
 
@@ -231,8 +240,6 @@ $\\$
 
 
 ### Step 1.5: Make a decision
-
-
 
 
 
@@ -257,7 +264,11 @@ Let's look at connections between the least squares fit we used when fitting lin
 
 
 
+
 $\\$
+
+
+
 
 
 
@@ -275,6 +286,7 @@ Let's look at the mean download times for each time of day and compare it to the
 
 
 # fit a linear model 
+
 
 
 
@@ -298,13 +310,15 @@ $\\$
 ### Step 2.2: Using R to get an ANOVA table and to look at diagnostic plots
 
 
-We can use the `anova()` function to create an ANOVA table, and we can use the `plot()` function to look at diagnostic plots to make sure our ANOVA conditions have been met.
+We can use the `anova()` function to create an ANOVA table, and we can use the `plot()` function to look at diagnostic plots to make sure our ANOVA conditions have been met. 
 
 
 
 ```{r}
 
 # an easy way to get the ANOVA table using the ANOVA function 
+
+
 
 
 
@@ -318,10 +332,8 @@ We can use the `anova()` function to create an ANOVA table, and we can use the `
 
 
 
-
 # we should also check that the maximum and minimum standard deviations are not greater 
 # than a factor of 2 apart
-
 
 
 
@@ -345,15 +357,15 @@ If we are concerned that our one-way ANOVA conditions are not met, we can run a 
 
 ```{r}
 
-# Kruskal–Wallis test
+#Kruskal–Wallis test
 
 
 
+# compare to the ANOVA 
+# anova(fit_prof)
 
 
 ```
-
-
 
 
 
@@ -366,8 +378,8 @@ $\\$
 
 
 
-
 ## Part 3: Pairwise comparisons after running a one-way ANOVA
+
 
 
 
@@ -385,7 +397,11 @@ If we run a one-way ANOVA and the results are statistically significant, there a
 
 
 
+
+
 # with the Bonferroni correction
+
+
 
 
 
@@ -394,8 +410,8 @@ If we run a one-way ANOVA and the results are statistically significant, there a
 
 
 
+
 # Tukey's HSD test using the TukeyHSD() function 
-# It is giving results similar to the Bonferroni correction
 
 
 
