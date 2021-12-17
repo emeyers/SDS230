@@ -1,0 +1,70 @@
+The 2000 Carnegie Classification includes all colleges and universities in the United States that are degree-granting and accredited by an agency recognized by the U.S. Secretary of Education.
+The 2000 edition classifies institutions based on their degree-granting activities from 1995-96 through 1997-98.
+
+15 Doctoral/Research Universities--Extensive: These institutions typically offer a wide range of baccalaureate programs, and they are committed to graduate education through the doctorate.
+They award 50 or more doctoral degrees per year across at least 15 disciplines/2
+
+16 Doctoral/Research Universities--Intensive:
+These institutions typically offer a wide range of
+baccalaureate programs, and they are committed to
+graduate education through the doctorate.
+They award at least ten doctoral degrees/1 per year across three or more disciplines,2 or at least 20 doctoral degrees per year overall.
+
+21 Master’s Colleges and Universities I: These institutions typically offer a wide range of baccalaureate programs, and they are committed to graduate education through the master’s degree.
+They award 40 or more master’s degrees per year
+across three or more disciplines/2.
+
+22 Master’s (Comprehensive) Colleges and Universities II: These institutions typically offer a wide range of baccalaureate programs, and they are committed to graduate education through the master’s degree.  They award 20 or more master’s degrees per year.
+
+31 Baccalaureate Colleges--Liberal Arts: These institutions are primarily undergraduate colleges with major emphasis on baccalaureate programs.
+They award at least half of their baccalaureate degrees in liberal arts fields./3
+
+32 Baccalaureate Colleges--General: These institutions are primarily undergraduate colleges with major emphasis on baccalaureate programs.
+They award less than half of their baccalaureate degrees in liberal arts fields./3
+
+33 Baccalaureate/Associate’s Colleges:
+These institutions are undergraduate colleges where the majority of conferrals are at the subbaccalaureate level (associate’s degrees and certificates), but bachelor’s degrees account for at least ten percent of undergraduate awards.
+
+40 Associate’s Colleges: These institutions offer associate’s degree and certificate programs but, with few exceptions, award no baccalaureate degrees./4
+
+Specialized Institutions - These institutions offer degrees ranging from the bachelor’s to the doctorate, and typically award a majority of degrees in a single field. The list includes only
+institutions that are listed as separate campuses in the Higher Education Directory.
+Specialized institutions include:
+
+51 Theological seminaries and other specialized faith-related institutions:
+These institutions primarily offer religious instruction or train members of the clergy.
+
+52 Medical schools and medical centers:
+These institutions award most of their professional degrees in medicine. In some instances, they include other health professions programs, such as dentistry, pharmacy, or nursing.
+
+53 Other separate health profession schools: These institutions award most of their degrees in such fields as chiropractic, nursing, pharmacy, or podiatry.
+
+54 Schools of engineering and technology: These institutions award most of their bachelor’s or graduate degrees in technical fields of study.
+
+55 Schools of business and management: These institutions award most of their bachelor’s or graduate degrees in business or business-related programs.
+
+56 Schools of art, music, and design: These institutions award most of their bachelor's or graduate degrees in art, music, design, architecture, or some combination of such fields.
+
+57 Schools of law: These institutions award most of their degrees in law. 
+
+58 Teachers colleges: These institutions award most of their bachelor’s or graduate degrees in education or education-related fields.
+
+59 Other specialized institutions: Institutions in this category include graduate centers, maritime academies, military institutes, and institutions that do not fit any other classification category.
+
+60 Tribal Colleges and Universities: These colleges are, with few exceptions, tribally controlled and located on reservations.
+They are all members of the American Indian Higher Education Consortium.
+
+NOTES ON DEFINITIONS
+1. Doctoral degrees are as defined in the Integrated Postsecondary Education Data System (IPEDS) of the U.S. Department of Education's National Center for Education Statistics (NCES).
+This includes the Ph.D. in any field as well as other doctoral-level degrees such as the Doctor of Education, Doctor of Juridical Science, and Doctor of Public Health. It excludes doctoral-level degrees defined as first-professional degrees in IPEDS.
+For more information, see http://nces.ed.gov/ipeds.
+
+2. Distinct disciplines are determined by the 4-digit series of the Classification of Instructional Programs published by NCES. For
+more information, see
+http://nces.ed.gov/pubsearch/pubsinfo.asp?pubid=91396.
+
+3. Liberal arts fields include the following fields (as listed in the Classification of Instructional Programs):
+English language and literature/letters; foreign languages and literatures; biological sciences/life sciences; mathematics; philosophy and religion; physical sciences; psychology ; social sciences and history; visual and performing arts; area, ethnic, and cultural studies; liberal arts and sciences, general studies, and humanities; and multi/interdisciplinary studies.
+
+4. This group includes community, junior, and technical colleges.
+Source: Carnegie Foundation
