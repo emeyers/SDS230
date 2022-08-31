@@ -1,7 +1,7 @@
 Package: SDS230
 Type: Package
 Title: Tools for the class Data Exploration and Analysis
-Version: 0.2021.1
+Version: 0.2022.1
 Author: Ethan Meyers
 Maintainer: Ethan Meyers <ethan.meyers@gmail.com>
 Description: A package with functions for downloading material and  
@@ -9,7 +9,7 @@ Description: A package with functions for downloading material and
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1.9000
+RoxygenNote: 7.2.1
 Imports: 
     httr,
     devtools

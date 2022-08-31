@@ -51,7 +51,7 @@ download_homework <- function(homework_number) {
 #' @export
 download_class_code <- function(class_number, with_answers = FALSE) {
 
-  base_path <- paste0(get_base_url(), "class_code/")
+ base_path <- paste0(get_base_url(), "class_code/")
 
  file_names <- paste0("class_", sprintf("%02d", class_number), c(".Rmd", ".R"))
 
@@ -62,16 +62,17 @@ download_class_code <- function(class_number, with_answers = FALSE) {
 
   result = tryCatch({
 
-    file_name <- file_names[1]
-    full_path <- paste0(base_path, file_name)
+    file_name <<- file_names[1]
+    full_path <<- paste0(base_path, file_name)
 
     # check the file exists on GitHub and if not throw and error
     check_github_file_exists("class_code", file_name)
 
   }, error = function(e) {
 
-    file_name <- file_names[2]
-    full_path <- paste0(base_path, file_name)
+
+    file_name <<- file_names[2]
+    full_path <<- paste0(base_path, file_name)
 
     # check the file exists on GitHub and if not throw and error
     check_github_file_exists("class_code", file_name)
@@ -82,7 +83,6 @@ download_class_code <- function(class_number, with_answers = FALSE) {
                "exist on the class GitHub repository."))
 
   })
-
 
   # if a file already exists with this name, don't download the file
   #  but instead give an error message

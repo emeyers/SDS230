@@ -56,3 +56,14 @@ test_that("can download class code", {
 
 
 
+test_that("can download class code with an R extension", {
+
+  download_class_code(-2)
+  expected_file_name <- "class_-2.R"
+
+  expect_true(file.exists(expected_file_name))
+
+  file.remove(expected_file_name)   # clean up
+
+})
+
