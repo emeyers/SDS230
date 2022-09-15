@@ -1,0 +1,368 @@
+---
+title: "Class 5 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+$\\$
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+
+
+<!--  Please run the code in the R chunk below once. It will install a packages, and and download figures/data we will use.  -->
+
+```{r, eval = FALSE, echo = FALSE}
+
+
+# download the okcupid profile data again
+download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/profiles_revised.csv", "profiles_revised.csv", mode = "wb")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+ * Simulating sampling distributions 
+ * Confidence intervals
+ * The bootstrap
+ * Using the bootstrap to calculate confidence intervals in R
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 1: Sampling distributions and the standard error
+
+
+
+#### Part 1.1: Review:  Sampling distributions
+
+
+A distribution of statistics is called a **sampling distribution**. 
+
+Let's use simulations to generate an approximation to a sampling distribution (a true sampling distribution would have all possible statistic values in it). 
+
+
+```{r}
+
+
+# create a sampling distribution of the mean using data from a uniform distribution
+
+sampling_dist <- NULL
+
+
+
+
+
+
+
+# plot a histogram of the sampling distribution of these means 
+
+
+
+
+
+
+```
+
+
+For many statistics, and the sample average $\bar{x}$ in particular, our sampling distribution is normal. 
+
+We will discuss ways to visualize whether data comes from a particular distribution later in the semester. 
+
+
+
+$\\$
+
+
+
+
+
+#### Part 1.2: The standard error (SE)
+
+The deviation of a sampling distribution is called the standard error (SE). Can you calculate the standard error for the sampling distribution you created above? 
+
+```{r}
+
+# caclulate the SE as the standard deviation of the sampling distribution
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 1.3: Approximating a sampling distributions from a data set
+
+
+We generate samples from an actual data set we have using the `sample()` function.  
+
+Let's start by just generate a single sample of size n = 100 from the OkCupid users' heights and calculating the mean of this sample.
+
+
+```{r okcupid_sampling_dist1}
+
+# read in the okcupid data
+profiles <- read.csv("profiles_revised.csv")
+
+
+# get the heights for the OkCupid data
+
+
+
+# get one random sample of heights from 100 people
+
+
+
+# get the mean of this sample
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+We can then create an approximation of a sampling distribution from the OkCupid users' data set by repeating this many times in a for loop.
+
+
+
+```{r okcupid_sampling_dist2}
+
+
+# repeat the process 1,000 times
+sampling_dist <- NULL 
+
+
+
+
+
+
+# plot a histogram of this sampling distribution 
+
+
+
+
+```
+
+
+
+
+**Question:** What would have to be true for this to be an actual sampling distribution? 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+## Part 2:  The central limit theorm
+
+The [central limit theorm (CTL)](https://en.wikipedia.org/wiki/Central_limit_theorem) establishes that (in most situations) when independent random variables are added their (normalized) **sum** converges to a normal distribution.
+
+Put another way, if we definte the average random (i.i.d) sample {$X_1$, $X_2$, ..., $X_n$} of size *n* as: 
+
+$S_{n}:={\frac{X_{1}+\cdots +X_{n}}{n}}$
+
+then the CTL tells us that:
+
+$\sqrt{n}(S_{n} - \mu)$ $\xrightarrow {d} N(0,\sigma^{2})$
+
+
+You will explore this more through simulations on homework 2. 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 3: Confidence intervals
+
+
+$\\$
+
+
+Confidence intervals are ranges of values that capture a parameter a fix proportion of time.
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 4: The bootstrap
+
+The bootstrap is a method that can be used to create confidence intervals for a large range of parameters. 
+
+The central concept behind the bootstrap is the "plug-in principle" where we treat our sample of data as if it were the population. We then sample *with replacement* from **our sample** to create a *bootstrap distribution* which is a proxy for (the spread of) the sampling distribution. 
+
+
+
+
+$\\$
+
+
+
+
+#### Part 4.1: Creating a bootstrap distribution in R
+
+
+To sample data in R we can use the `sample(the_data)` function. To sample data with replacement we use the `replace = TRUE` argument, i.e., `sample(the_data, replace = TRUE)`.  
+
+Below we calculate the bootstrap distribution for mean age of OkCupid users using just the first 20 OkCupid users in the data set. 
+
+
+```{r boot_dist}
+
+
+# read in the okcupid data
+profiles <- read.csv("profiles_revised.csv")
+
+
+
+# get the ages from the first 20 OkCupid profiles
+
+
+
+
+
+# create the bootstrap distribution
+
+
+
+
+
+
+# plot the bootstrap distribution to make sure it looks normal
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+#### Part 4.2: Calculating the bootstrap standard error SE*
+
+
+The standard deviation of the *bootstrap distribution* is usually a good approximation of the standard deviation of the sampling distribution - i.e, it is a good approximation of the *standard error SE*.
+
+When our bootstrap distribution is relatively normal, we can use the fact that 95% of values fall within to standard deviations of a normal distribution to calculate 95% confidence intervals as:
+
+$CI_{95} = [stat - 2 \cdot SE^*,  stat + 2 \cdot SE^*]$
+
+For example, for a our bootstrap distribution we have a 95% confidence interval for the mean $\mu$ as: 
+
+$CI_{95} = [\bar{x} - 2 \cdot SE^*,  \bar{x} + 2 \cdot SE^*]$
+
+
+
+
+```{r bootstrap_SE}
+
+# calculate the bootstrap standard error SE* as the standard deviation of the bootstrap distribution 
+
+
+
+# calculate the 95% CI using SE*
+
+
+
+
+
+```
+
+
+
+Above we are using the bootstrap to create a 95% confidence interval which should capture the mean age $\mu_{age}$ 95% of the time.
+
+
+
+
+
+
+
+
+
