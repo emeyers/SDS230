@@ -36,6 +36,7 @@ set.seed(230)
 # get some images that are used in this document
 SDS230::download_image("gingko_pills.jpg")
 
+SDS230::download_data("gingko_RCT.rda")
 
 ```
 
