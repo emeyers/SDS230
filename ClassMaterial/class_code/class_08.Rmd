@@ -1,0 +1,686 @@
+---
+title: "Class 8 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+
+
+options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+
+
+<!--  Please run the code in the R chunk below once. It will install a packages, and and download figures/data we will use.  -->
+
+```{r, eval = FALSE}
+
+
+# get some images and data that are used in this document
+SDS230::download_data("gingko_RCT.rda")
+SDS230::download_image("student_t.png")
+SDS230::download_data("alcohol.rda")
+SDS230::download_data("amazon.rda")
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Overview
+
+
+ * Permutation test for more than two means
+ * Randomization test for two means using a t-statistic
+ * Parametric tests for two means
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Part 1: Permutation test comparing more than two means in R
+
+
+
+<!-- Code to calculate the MAD statistic that we will use in our hypothesis test -->
+
+```{r MAD_statistic}
+
+# a function to get the MAD statistic
+get_MAD_stat <- function(quantitative_data, grouping_data) {
+  
+ # we can use the by() function to get the means separately for each group
+ group_means <- as.vector(by(quantitative_data, grouping_data, mean, na.rm = TRUE))
+
+  total <- 0 
+  num_group_pairs <- 0
+  
+  for (iGroup1 in 1:(length(group_means) - 1)) {
+    for (iGroup2 in (iGroup1 + 1):(length(group_means))) {
+      
+      total <- total + abs(group_means[iGroup1] - group_means[iGroup2])
+      num_group_pairs <- num_group_pairs + 1
+      
+    }
+  }
+  
+  total/num_group_pairs
+  
+}  # end of the MAD function 
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Examining beer drinking behavior across different continents...
+
+
+Is there differences between the average amount of beer that countries in different continents drink? Let's explore this more below!
+
+Note: This question was inspired by these sources:
+- https://blog.minitab.com/en/michelle-paret/what-is-anova-and-who-drinks-the-most-beer
+- https://fivethirtyeight.com/features/dear-mona-followup-where-do-people-drink-the-most-beer-wine-and-spirits/
+
+
+Please check out those websites if you are interested in reading more!
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 1: State the null and alternative hypotheses 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 2: Calculate the statistic of interest and visualize the data
+
+
+
+```{r alcohol_stat}
+
+# SDS230::download_data("alcohol.rda")
+
+load("alcohol.rda")
+
+# how many countries are in each continent
+
+
+# look at the average number of beers consumed per capita in each country
+
+
+
+# view a box plot of the data
+
+
+
+# use the get_MAD_stat() defined at the top of this R Markdown document to get the observed statistic
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 3: Create a null distribution
+
+
+To create a null distribution, we need to create a statistic consistent with the
+null hypothesis, and then repeat the process many times.
+
+We can create a MAD statistic consistent with the null hypothesis by shuffling
+the continent names and then recalculate the MAD statistic on the shuffled data.
+To shuffle the data we can use the `sample()` function.
+
+Because calculating the MAD statistic is slow, let's only create 1,000 points in
+our null distribution.
+
+
+
+```{r alcohol_null}
+
+
+# create the null distribution
+
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+
+
+```{r alcohol_pval}
+
+# visualize the null distribution
+
+
+
+
+# calculate the p-value
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+
+### Step 5: Conclusion
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## What is the underlying population/random process we are making claims about???
+
+
+Every time you do an analysis that involves statistical inference (e.g., every
+time you create a confidence interval, run a hypothesis tests, etc.) you are
+trying to answer a question about some larger underlying population or random
+process. For the hypothesis test run here that looks at the relationship between
+beer consumption and continents, what is the underlying population/process we
+are trying to make inferences about?
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 2: Permutation tests for comparing two means in R
+
+
+Let's us reexamine the randomized controlled trial experiment by Solomon et al
+(2002) to see if there is evidence that taking a gingko pills affects cognition.
+
+
+
+
+
+### Step 1: State the null and alternative hypotheses 
+
+
+$H_0: \mu_{gingko} - \mu_{placebo} = 0$
+$H_A: \mu_{gingko} - \mu_{placebo} \ne 0$
+
+
+$\alpha = 0.05$
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 2a: Plot the data
+
+
+```{r pill_plot}
+
+
+load("gingko_RCT.rda")
+
+
+# plot the data
+boxplot(gingko, placebo, 
+        names = c("Gingko", "Placebo"),
+        ylab = "Memory score")
+
+
+
+# create a stripchart
+data_list <- list(gingko, placebo) 
+  
+
+stripchart(data_list, 
+           group.names = c("Gingko", "Placebo"), 
+           method = "jitter",
+           xlab = "Memory score", 
+           col = c("red", "blue"))
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 2b: Calculate the observed statistic using a t-statistic
+
+
+The formula for a t-statistic is: 
+
+
+$$t = \frac{\bar{x}_t - \bar{x}_c}{\sqrt{\frac{s^2_t}{n_t} + \frac{s^2_c}{n_c}}}$$
+
+
+
+
+```{r pill_obs_stat}
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 3: Create the null distribution using a permutation/randomization test
+
+
+
+```{r null_dist_pill}
+
+
+# combine the data from the treatment and control groups together
+
+
+
+# use a for loop to create shuffled treatment and control groups and shuffled statistics 
+
+
+
+
+
+
+
+
+
+
+# plot the null distribution as a histogram
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+
+### Step 4: Calculate a p-value
+
+
+
+```{r p_value_pill}
+
+
+# plot the null distribution again with a red line a the value of the observed statistic
+
+
+
+
+
+
+# calculate the p-value
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 5: Make a decision
+
+
+
+
+
+
+
+When we used a statistic of $\bar{x}_t - \bar{x}_c$ in our randomization test in class 7 we got a p-value of 0.127. How do these results compare? 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 3: Parametric tests for comparing two means in R
+
+
+Let's redo this analysis using a parametric probability distribution, which in
+this case is the t-distribution. The same 5 steps of hypothesis testing apply
+here as well!
+
+
+
+
+$\\$
+
+
+
+
+### Step 1: State the null and alternative hypotheses 
+
+
+Same as before...
+
+
+$H_0: \mu_{gingko} - \mu_{placebo} = 0$
+$H_A: \mu_{gingko} - \mu_{placebo} > 0$
+
+
+$\alpha = 0.05$
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 2b: Calculate the observed statistic using a t-statistic
+
+
+Same as before: 
+
+
+$$t = \frac{\bar{x}_t - \bar{x}_c}{\sqrt{\frac{s^2_t}{n_t} + \frac{s^2_c}{n_c}}}$$
+
+
+
+
+```{r pill_obs_stat2}
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 3: Create the null distribution
+
+
+
+We will now use a parametric t-distribution (i.e., density function) as a null distribution. The t-distribution has one parameter called "degrees of freedom". We will set this parameter as the minimum of $n_t - 1$ or $n_c - 1$. 
+
+
+What are the degrees of freedom for this study? 
+
+
+Let's visualize the t-distribution
+
+
+```{r t_density}
+
+
+# visualize the t-distribution density curve using the dt() function 
+
+
+
+
+
+
+
+
+# how does this compare to our t-distribution created by shuffling? 
+
+
+
+
+
+
+
+
+```
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate a p-value
+
+
+We can get $Pr(X < stat)$ for a t-distribution using the `pt()` function.
+
+
+
+```{r p_value_pill2}
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+### Step 5: Make a decision
+
+
+How does our p-value and decision compare to the p-value decision we got from the permutation test? 
+
+
+
+
+$\\$
+
+
+
+
+### Built in R functions for t-tests
+
+We can use the built in `t.test()` function to run a t-test as well. 
+
+Note: If you want to run one-tailed tests you can use the extra argument `alternative` argument.
+
+
+
+```{r t_test}
+
+
+
+
+```
+
+
+Why is the p-value slightly different than what we got when we used the `pt()` function? 
+
+
+
+$\\$
+
+
+![](student_t.png)
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+
+
