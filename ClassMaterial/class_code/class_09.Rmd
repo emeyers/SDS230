@@ -1,0 +1,490 @@
+---
+title: "Class 9 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+
+
+options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(230)
+
+```
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+ * Hypothesis tests for a single mean 
+ 
+ * Making connections between hypothesis tests, confidence intervals, and
+ concepts underlying hypothesis testing
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 1: Hypothesis test for a single mean using a t-statistic 
+
+
+Humans sleep for 8 hours a day (at least according to a data set that is
+included with ggplot package). Is this different from mean amount of sleep other
+mammals get?  Let's investigate using permutation tests and t-tests!
+
+
+
+
+### Step 1: State the null and alternative hypotheses 
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 2a: Plot the data
+
+
+```{r pill_plot}
+
+# install.packages("ggplot2")
+library(ggplot2)
+
+msleep <- msleep  # make the data frame visible
+
+
+# get the amount of sleep as a vector
+
+
+
+# how much sleep humans get
+
+
+
+# remove humans from the data
+
+
+
+# visualize the data
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 2: Calculate the observed statistic using a t-statistic
+
+
+The formula for a t-statistic is: 
+
+$$t = \frac{\bar{x} - \mu_0}{\frac{s}{\sqrt{n}}}$$
+
+
+
+
+```{r pill_obs_stat}
+
+# calculate the observed statistic 
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 3: Create the null distribution using a t-statistic
+
+
+
+A computational method we can use the create the null distribution consists of:
+
+1. Transforming our sample of data to have a mean value equal to the parameter
+value specified in the null hypothesis.
+
+2. Resampling with replacement to get estimate the amount of variability we
+expect to see in the null distribution (and recomputing out statistic from this
+resampled data).
+
+3. Repeating step 2 10,000 times to get a full null distribution.
+
+
+
+```{r null_dist_pill}
+
+
+# create a data set consistent with the null distribution that the mean amount of sleep is 8 hours
+
+
+
+# use a for loop to create shuffled treatment and control groups and shuffled statistics 
+
+
+
+       # resample the data
+
+
+       # save the statistic of interest
+
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Step 4: Calculate a p-value
+
+
+```{r p_value_pill}
+
+
+# plot the null distribution again with a red line a the value of the observed statistic
+
+
+
+
+# create a t-distribution 
+
+
+
+
+
+
+
+# calculate the randomization method p-value
+
+
+
+
+# calculate the t-statistic p-value
+
+
+
+
+
+# using R's t-test function to get a p-value
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 5: Make a decision
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+
+## Part 2: Confidence intervals for a single mean
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Creating a bootstrap distribution
+
+
+For confidence intervals we want to keep data on the original scale; i.e., we
+want to create a confidence interval for a range of plausible values for the
+**actual mean length of sleep time** for mammals.
+
+Thus in our bootstrap (resampling) procedure we want to use the **mean statistic** 
+applied to our resampled data (rather than calculating t-statistics
+from the resampled data, since creating a confidence interval for a t-statistics
+not that informative about how much mammals speed on average).
+
+
+
+```{r}
+
+
+
+# use a for loop to create shuffled treatment and control groups and shuffled statistics 
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Plot the bootstrap distribution and a parametric approximate sampling distribution 
+
+
+```{r}
+
+
+# plot the bootstrap distribution
+
+
+
+
+
+# create a normal distribution as a parametric approximation if using a noncentral t-distribution 
+
+
+
+
+
+# can create a non-central t-distribution as well by shifting and rescaling the central t-distribution
+# y_vals <- dt(x_vals, df = length(amount_of_sleep) - 1) 
+# points( (SE * x_vals) + mean(amount_of_sleep), y_vals/SE, type = "l", col = "blue")
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Create confidence intervals
+
+
+```{r}
+
+
+# getting bootstrap 95% confidence intervals using the percentile method
+
+
+
+
+# getting bootstrap 95% confidence intervals using a t-distribution 
+
+
+
+
+# get 95% confidence intervals using the t-distribution
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 3: Comparing null and bootstrap distributions
+
+
+
+
+### Simulation based hypothesis test using the mean statistic
+
+
+Let's rerun our simulation based hypothesis test using the **mean statistic**
+(instead of a t-statistic which was done above).
+
+
+```{r}
+
+
+# step 2: observed statistic
+
+
+
+# create a data set consistent with the null distribution that the mean amount of sleep is 8 hours
+
+
+
+# use a for loop to create shuffled treatment and control groups and shuffled statistics 
+
+
+
+       # resample the data
+
+
+       # calculate a bootstrap mean statistic
+
+
+
+
+# plot a histogram of the null distribution 
+
+
+
+
+
+
+# calculate the p-value
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+### Compare null and bootstrap distribution
+
+
+```{r}
+
+
+# plot the bootstrap distribution
+
+
+
+
+
+
+
+
+
+
+# put green lines at the 95% confidence interval limits
+
+
+
+# put a orange line at the observed statistic (x-bar) value
+
+
+
+# put an purple line at the center of the null distribution (null parameter value)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,510 @@
+---
+title: "Class 9 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+
+
+options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(230)
+
+```
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+ * Hypothesis tests for a single mean 
+ 
+ * Making connections between hypothesis tests, confidence intervals, and
+ concepts underlying hypothesis testing
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 1: Hypothesis test for a single mean using a t-statistic 
+
+
+Humans sleep for 8 hours a day (at least according to a data set that is
+included with ggplot package). Is this different from mean amount of sleep other
+mammals get?  Let's investigate using permutation tests and t-tests!
+
+
+
+
+### Step 1: State the null and alternative hypotheses 
+
+
+$H_0: \mu = 8$
+$H_A: \mu_{treat} \ne 8$
+
+
+$\alpha = 0.05$
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 2a: Plot the data
+
+
+```{r pill_plot}
+
+# install.packages("ggplot2")
+library(ggplot2)
+
+msleep <- msleep  # make the data frame visible
+
+amount_of_sleep <- msleep$sleep_total
+
+
+# how much sleep humans get
+(human_sleep <- amount_of_sleep[msleep$name == "Human"])
+
+  
+# remove humans from the data
+amount_of_sleep <- amount_of_sleep[msleep$name != "Human"]
+  
+boxplot(amount_of_sleep)  
+ 
+abline(h = human_sleep, col = "red") 
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 2: Calculate the observed statistic using a t-statistic
+
+
+The formula for a t-statistic is: 
+
+$$t = \frac{\bar{x} - \mu_0}{\frac{s}{\sqrt{n}}}$$
+
+
+
+
+```{r pill_obs_stat}
+
+
+numerator <- mean(amount_of_sleep) - 8
+demoninator <- sd(amount_of_sleep)/sqrt(length(amount_of_sleep))    # the SE for the mean
+
+(obs_stat <- numerator/demoninator)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 3: Create the null distribution using a t-statistic
+
+
+
+A computational method we can use the create the null distribution consists of:
+
+1. Transforming our sample of data to have a mean value equal to the parameter
+value specified in the null hypothesis.
+
+2. Resampling with replacement to get estimate the amount of variability we
+expect to see in the null distribution (and recomputing out statistic from this
+resampled data).
+
+3. Repeating step 2 10,000 times to get a full null distribution.
+
+
+
+```{r null_dist_pill}
+
+
+# create a data set consistent with the null distribution that the mean amount of sleep is 8 hours
+null_sleep_data <- amount_of_sleep - mean(amount_of_sleep) + 8
+
+
+# use a for loop to create shuffled treatment and control groups and shuffled statistics 
+null_distribution <-  NULL
+for (i in 1:10000) {
+
+       # resample the data
+       resample_data <- sample(null_sleep_data, replace = TRUE)
+
+       # save the statistic of interest
+       numerator_resample <- mean(resample_data) - 8
+       demoninator_resample  <- sqrt(   var(resample_data)/length(resample_data)  )
+
+       null_distribution[i] <- numerator_resample /demoninator_resample 
+
+}
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Step 4: Calculate a p-value
+
+
+```{r p_value_pill}
+
+
+# plot the null distribution again with a red line a the value of the observed statistic
+hist(null_distribution, 
+     breaks = 100,
+     freq = FALSE,
+     main = "Null distribution", 
+     xlab = "t-statistic",
+     xlim = c(-6, 6))
+
+
+# create a t-distribution 
+x_vals <- seq(-6, 6, by = .01)
+y_vals <- dt(x_vals, df = length(amount_of_sleep) - 1)
+
+points(x_vals, y_vals, type = "l", col = "blue")
+
+abline(v = obs_stat, col = "red")
+
+
+
+# calculate the randomization method p-value
+(p_value_resample <- (sum(null_distribution >= obs_stat) +  
+                        sum(null_distribution <= -obs_stat))/length(null_distribution))
+
+
+# calculate the t-statistic p-value
+(p_value_t <- 2 * pt(-obs_stat, df = (length(amount_of_sleep) - 1)))
+
+
+# using R's t-test function to get a p-value
+t.test(amount_of_sleep, mu = 8)
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 5: Make a decision
+
+
+Since the p-value is small we have strong evidence that humans get less sleep than other mammals. zzzzz
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+
+## Part 2: Confidence intervals for a single mean
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Creating a bootstrap distribution
+
+
+For confidence intervals we want to keep data on the original scale; i.e., we
+want to create a confidence interval for a range of plausible values for the
+**actual mean length of sleep time** for mammals.
+
+Thus in our bootstrap (resampling) procedure we want to use the **mean statistic** 
+applied to our resampled data (rather than calculating t-statistics
+from the resampled data, since creating a confidence interval for a t-statistics
+not that informative about how much mammals speed on average).
+
+
+
+```{r}
+
+
+
+# use a for loop to create shuffled treatment and control groups and shuffled statistics 
+boot_distribution <-  NULL
+for (i in 1:10000) {
+
+       # resample the data
+       resample_data <- sample(amount_of_sleep, replace = TRUE)
+       
+       boot_distribution[i] <- mean(resample_data)
+
+}
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Plot the bootstrap distribution and a parametric approximate sampling distribution 
+
+
+```{r}
+
+
+# plot the bootstrap distribution
+hist(boot_distribution, 
+     breaks = 100,
+     freq = FALSE,
+     main = "Bootstrap distribution", 
+     xlab = "x-bar")
+
+
+# create a normal distribution as a parametric approximation if using a noncentral t-distribution 
+x_vals <- seq(8, 13, by = .01) 
+SE <- sd(amount_of_sleep)/sqrt(length(amount_of_sleep))    # SE = s/sqrt(n)
+y_vals <- dnorm(x_vals, mean(amount_of_sleep), SE)
+points(x_vals, y_vals, type = "l", col = "purple")
+
+
+
+# can create a non-central t-distribution as well by shifting and rescaling the central t-distribution
+# y_vals <- dt(x_vals, df = length(amount_of_sleep) - 1) 
+# points( (SE * x_vals) + mean(amount_of_sleep), y_vals/SE, type = "l", col = "blue")
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Create confidence intervals
+
+
+```{r}
+
+
+# getting bootstrap 95% confidence intervals using the percentile method
+(CI_boot_percentile <- quantile(boot_distribution, c(.025, .975)))
+
+
+# getting bootstrap 95% confidence intervals using a t-distribution 
+t_critical_value <- qt(.975, df = length(amount_of_sleep) - 1)   # the t* quantile value
+(CI_boot_t <- mean(amount_of_sleep) + c(-t_critical_value, t_critical_value) * sd(boot_distribution))
+
+
+# get 95% confidence intervals using the t-distribution
+(CI_t <- mean(amount_of_sleep) + c(-t_critical_value, t_critical_value) * SE)
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 3: Comparing null and bootstrap distributions
+
+
+
+
+### Simulation based hypothesis test using the mean statistic
+
+
+Let's rerun our simulation based hypothesis test using the **mean statistic**
+(instead of a t-statistic which was done above).
+
+
+```{r}
+
+
+# step 2: observed statistic
+(obs_stat <- mean(amount_of_sleep))
+
+
+# create a data set consistent with the null distribution that the mean amount of sleep is 8 hours
+null_sleep_data <- amount_of_sleep - mean(amount_of_sleep) + 8
+
+
+# use a for loop to create shuffled treatment and control groups and shuffled statistics 
+null_distribution <-  NULL
+for (i in 1:10000) {
+
+       # resample the data
+       resample_data <- sample(null_sleep_data, replace = TRUE)
+
+       # calculate a bootstrap mean statistic
+       null_distribution[i] <- mean(resample_data)
+
+}
+
+
+hist(null_distribution, 
+     breaks = 100,
+     main = "Null distribution", 
+     xlab = "x-bar",
+     xlim = c(5, 11))
+
+abline(v = obs_stat, col = "red")
+
+
+# still a p-value of 0
+(pval_mean_stat <- (sum(null_distribution <= -obs_stat) + sum(null_distribution >= obs_stat))/length(null_distribution))
+
+
+```
+
+
+
+$\\$
+
+
+
+
+### Compare null and bootstrap distribution
+
+
+```{r}
+
+
+# plot the bootstrap distribution
+boot_hist <- hist(boot_distribution, 
+     breaks = 100)
+
+
+null_hist <- hist(null_distribution, 
+     breaks = 100)
+
+
+
+plot(boot_hist, col = "red", 
+     xlim = c(5, 13), 
+     main = "Null and Bootstrap distributions", 
+     xlab = "x-bar")
+
+plot(null_hist, col = "blue", add = TRUE)
+
+
+# put green lines at the 95% confidence interval limits
+abline(v = quantile(boot_distribution, c(.025, .975)), col = "green")
+
+
+# put a orange line at the observed statistic (x-bar) value
+abline(v = obs_stat, col = "orange", lwd = 3)
+
+
+# put an purple line at the center of the null distribution (null parameter value)
+abline(v = 8, col = "purple", lwd = 3)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
