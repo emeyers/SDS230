@@ -1,0 +1,423 @@
+---
+title: "Bonus problem"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some
+packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+
+SDS230::download_data("babyNames538.rda")
+SDS230::download_data("unisex_names.rda")
+
+
+
+```
+
+
+
+
+
+# Bonus problem (0 points)
+
+
+This is a very challenging bonus problem in case you would like more practice
+with ggplot. You will not turn this problem in and it will not contribute to
+your grade in the class but completing it will give you a lot more practice
+using ggplot.
+
+
+
+
+$\\$
+
+
+
+
+
+## Recreating a visualization from FiveThirtyEight
+
+
+To gain additional practice using dplyr and ggplot, let's try to recreate a figure from the website FiveThirtyEight.com that show the [most common unisex names in America](https://fivethirtyeight.com/wp-content/uploads/2015/06/flowers-datalab-unisexnames-1.png?w=1220).
+
+The figure you will recreate comes from the article "The Most Common Unisex Names In America: Is Yours One Of Them?" https://fivethirtyeight.com/features/there-are-922-unisex-names-in-america-is-yours-one-of-them/. 
+
+
+
+
+$\\$
+
+
+
+
+### Part 1: Plotting the number Stephan's born each year 
+
+In order to recreate the "The Most Common Unisex Names In America" figure, we
+will use a data set that contains the number of babies born each year with a
+given name. The data frame, which is called `babyNames`, has data from 1900 to
+2013, and contains the following variables:
+
+- `year`: A given year (in which babies were born)
+
+- `sex`: The sex of the baby       
+
+- `name`: The baby's name
+
+- `n`: The number of babies born in a particular year with a particular name
+
+- `prop`: The proportion of babies born in a particular year with a particular name
+
+- `perctAlive`: The proportion of babies born in a particular year with a
+particular name that were estimated to still be alive in 2013 (most of them were
+no longer babies in 2013).
+
+- `nAlive`: The number of babies born in a particular year with a particular
+name that were estimated to still be alive in 2013 (most of them were no longer
+babies in 2013).
+
+
+As a warm up exercise to get familiar with the babyNames data, please plot
+information about babies named Stephan that are male (in honor of one of the
+outstanding ULAs in the class). In particular, your plot should have the
+following properties:
+
+1. It should contain a red line that plots the number of male Stephans born each year.
+
+2. It should contain a blue line that plots the number of male Stephans born in
+each year that were still alive in 2013 (hint: use a second aesthetic mapping to
+add this second line).
+
+3. It should contain appropriate x and y labels.
+
+4. It should contain a text annotation at position (1910, 500) that it blue text
+says "Stephans still alive". The annotation text should be aligned to the left.
+
+5. It should contain a text annotation at position (1910, 550) that it red text
+says "Total Stephans born".This annotation text should also be aligned to the
+left.
+
+
+Note: The reason we need the text annotations in this plot is because ggplot has
+not automatically added a legend that specify what each colored line in the plot
+corresponds to. The reason that ggplot did not automatically add this legend is
+because we used two separately aesthetic mappings for the two lines. Later in
+the class we will learn how to reshape our data frame (using the tidyr package)
+so that it is in the correct format where ggplot will know how to automatically
+add a legend for each line color.
+
+
+
+```{r babynames}
+
+library(dplyr)
+load("babyNames538.rda")
+
+
+
+
+
+
+
+
+
+
+
+
+  
+```
+
+
+
+$\\$
+
+
+
+
+### Part 2: Data wrangling to get popular unisex names 
+
+
+Now that you have some familiarity with the `babyNames` data frame, let's
+wrangle the data into a format that has the information necessary to create "The
+Most Common Unisex Names In America" figure. Starting with the `babyNames` data
+frame, please derive a data frame called `unisex_names` which has the following
+variables:
+
+1. `name`: The name of a baby.
+2. `total`: The total number of babies born from 1900 to 2013 that have a given name *that are still alive*
+3. `male_share`: An integer specifying the percent of (total) babies born that are male *that are still alive*
+4. `female_share`: An integer specifying the percent of (total) babies born that are female *that are still alive*
+
+The data frame should only contain "unisex names" where at least 1/3 of the
+babies are male and at least 1/3 of the babies are female. The data frame should
+be sorted by the `total` column such that the most common unisex name is the
+first row (i.e., it should match the data in the FiveThirtyEight figure).
+
+To solve this problem, please only use basic base R arithmetic operations such
+as *, >=, etc. and only the dplyr functions we have discussed in class (e.g.,
+`filter()`, `select()`, `mutate()`, `group_by(`), `summarize()`, `arrange()`,
+`desc()`, and `n()`. Also, for full credit, see if you can create a solution
+that contains a single piped sequence without using intermediate objects
+(although while figuring out how to solve this problem, you are definitely
+welcome to create intermediate objects if that is helpful). To give you a sense
+of how much code is needed, my solution consisted of 8 calls to dplyr functions
+and ~10 lines of code piped together, although it is fine if you code ends up
+being a bit longer.
+
+Once you have solved this problem, please use the `head()` function on the
+`unisex_names` data frame you created to print the first 6 rows. You can check
+whether you got the correct results by looking at "The Most Common Unisex Names
+In America" figure.
+
+**Tips on a strategy for solving this problem**: I highly recommend that you
+think about the steps needed to solve this problem prior to coding. Sketching an
+outline of any intermediate data frame you will create to get to the final
+answer will be useful prior to starting on coding the problem - as will thinking
+about how many times you need to group your data prior to each
+summarizing/mutating operation. Using Google to look up anything besides the
+basic functions of dplyr is likely to be **unhelpful** here (and could make you
+more confused), so please try to solve this problem with minimal help from the
+Internet.
+
+
+```{r fivethrityeight_data_wrangling}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+### Part 3: Grammar of Graphics analysis of the Unisex FiveThirtyEight figure 
+
+
+Now that you have the data wrangled into a format that matches the data in the
+FiveThirtyEight figure, we are almost ready to create the figure using ggplot.
+However, before we dive into creating the figure using ggplot, let's analyze the
+graphical elements in the figure which will be useful for determining which
+ggplot functions to use.
+
+To better understand how to construct "The Most Common Unisex Names In America"
+figure, please describe the following visual attributes of the figure:
+
+1. `Coordinate frame`: What variables define the x and y axis of the figure? 
+
+2. `Glyphs`: What are the glyphs on figure? Also state the aesthetic mapping from data to attributes of the glyph. 
+
+3. `Scales and guides`: What are the scales/guides on the figure?
+
+4. `Facets`: What are the facets on the figure?
+
+5. `Layers`: What data layers exist on the figure? 
+
+6. `Theme`: Big part.
+
+Note: some there is some amount of subject interpretation here, so just try your
+best to come up with how visual elements in the figure are created and/or
+mapping from the data to answer this question.
+
+
+**Answer**
+
+
+1. `Coordinate frame`: 
+
+
+2. `Glyphs`: The glyphs of the figure are:
+
+ a. 
+ 
+ b.  
+ 
+ (You should add more letters as you identify more glyphs)
+ 
+
+3. `Scales and guides`: 
+
+
+4. `Facets`: 
+
+
+5. `Layers`: 
+
+
+6. `Theme`: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 4: Recreating the unisex FiveThirtyEight plot
+
+
+
+Now that you have listed how the data is mapped on to visual elements in the
+figure, you are ready to recreate the figure using ggplot! Please try to make
+the plot as close to the original FiveThirtyEight figure as you can (without
+driving yourself crazy). Partial credit will be given for elements that
+partially match the original figure.
+
+To make it easier for you to create the plot, I have created a data frame below
+called `unisex_names2` which has been wrangled from the original `unisex_names`
+data frame so that the data is in a format that should be easier to create the
+figure. You are welcome to do additional data wrangling before plotting the data
+if it makes plotting the data easier for you, although this is not necessary.
+
+
+
+A few notes that will be helpful when you try to create this figure are:
+
+
+1. For this part of the problem, using the Internet to learn more about how to
+use ggplot to layout different visual elements **will be very helpful**. In
+particular, if you search for a question on Google, you will often be directed
+to the website StackOverflow which has a lot of valuable information. Thus, the
+strategy for creating this figure here is a bit of the opposite of the data
+wrangling strategy of 3.2 where instead of first coming up with a top down plan
+on how to solve the problem, it is best to just experiment and try things out
+until you come up with a good solution.
+
+
+2. A big part of creating this figure will consist of placing text and graphical
+elements to fit appropriately. The final figure size is 8x8, as specified by the
+Markdown chunk options below. If you are working interactively (i.e., not always
+knitting your document to look at the results), your figure layout might look
+different if your figure panel is not set to be approximately 8x8. In
+particular, if you are using a very different figure size, the text in your
+figure might be overlapping, however this overlapping text might go away when
+using an 8x8 figure size. Thus, if you are working interactively, I recommend
+that you click on the zoom icon (magnifying glass in the plots panel on the
+right) and resize that figure to be approximately 8x8 so you can get a sense of
+how layout will look on the final figure.
+
+3. A few pointers/hints to help get the layout correct are:
+
+- Start the figure by creating the basic mapping of percent share male/female
+into a bar graph using `geom_col()`. You can then add additional text layers by
+applying more text mappings using `geom_text()`. The coordinate system of the
+plot will be relative to bar chart creating through the `geom_col()`, so if you
+are placing text to the left of this plot, negative values can be useful.
+
+- Using `coord_flip(clip = 'off')` will be very helpful. In particular, the
+`clip = 'off'` argument makes it so that if you use annotations outside the
+typical coordinate frame (e.g., defined by a boxplot) the text will not be
+clipped off by the title of the plot or other visual elements.
+
+- If you are writing text, say for an annotation, if you include "\\n" in the
+text it will create a line break. For example, we could write "line one \\n line
+two" to create two lines of type. (Note, there should only be a single backslash
+when you use this in your ggplot elements, but I have written two backslashes
+here so that the text compiles with R Markdown. Please look at these
+instructions in the knitted pdf to see this better).
+
+- Using the `theme_fivethirtyeight()` from the `ggthemes` package will be
+incredibly helpful to get the fonts and general theme of the plot correct. You
+can then use general `theme()` arguments to further refine the theme to create a
+better match for The Most Common Unisex Names In America" figure.
+
+- To give you a sense of how much code is needed, my solution consisted of ~20
+calls to ggplot functions and ~30 lines of code, although again it is fine if
+you code ends up being a longer.
+
+
+
+```{r fivethrityeight_data_viz, warning = FALSE, fig.width=8, fig.height=8}
+
+#install.packages("ggthemes")
+library("ggthemes")
+
+
+# loading the unisex_names data frame here so that if you were not able to solve part 3.2 you can 
+#  still complete this part of the homework.
+load("unisex_names.rda")
+
+unisex_names2 <- unisex_names |>
+  head(20) |> ungroup() |>
+  mutate(rowname = factor(1:n(), levels = 20:1)) |> 
+  tidyr::pivot_longer(contains("share"), names_to = "sex", values_to = "share") |>
+  group_by(name) |>
+  mutate(pos_share_text = share[1]) |>
+  ungroup() |>
+  arrange(desc(total)) |>
+  mutate(pos_share_text = pos_share_text + c(c(-5, 4.5), rep(c(-3.5, 3.5), 19)),
+         total = formatC(round(total), format="d", big.mark=","))
+
+
+
+# Recreate the FiveThirtyEight figure here...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
