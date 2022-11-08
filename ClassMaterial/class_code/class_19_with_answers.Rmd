@@ -203,9 +203,11 @@ This equation shows us that:
 factor of $e^{\hat{\beta}_1}$. If we write $\hat{y} = \hat{f}(x)$ can state this
 another way as $\frac{\hat{f}(x + 1)}{\hat{f}(x)} = e^{\hat{\beta}_1}$
 
-For example, if $e^{\hat{\beta}_1} = 0.1$, then if $\hat{f}(x) = 100$,
-$\hat{f}(x + 1) = 1000$, and if $\hat{f}(x) = 1,000,00$, then $\hat{f}(x + 1) =
-10,000,000$
+For example, if $e^{\hat{\beta}_1} = 1.1$, then if $\hat{f}(x) = 100$,
+$\hat{f}(x + 1) = 110$, and if $\hat{f}(x) = 1,000,000$, then $\hat{f}(x + 1) =
+11,000,000$
+
+
 
 
 Let's exponentiate our coefficient values to get the values for when x = 0, and
