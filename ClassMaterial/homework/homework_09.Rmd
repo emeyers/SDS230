@@ -1,0 +1,809 @@
+---
+title: "Homework 9"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+
+
+$\\$
+
+
+
+
+
+The purpose of this homework is to practice fitting logistic regression models,
+to learn how to join data frames, and to learn how to create maps. Please fill
+in the appropriate code and write answers to all questions in the answer
+sections, then submit a compiled pdf with your answers through Gradescope by
+11pm on Sunday November 20th.
+
+As always, if you need help with the homework, please attend the TA office hours
+which are listed on Canvas and/or ask questions on 
+[Ed Discussions](https://edstem.org/us/courses/24940/discussion/). Also, if you have
+completed the homework, please help others out by answering questions on Ed
+Discussions, which will count toward your class participation grade.
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some
+packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+
+# Note: I only have permission to use this data for educational purposes so please do not share the data
+download.file('https://yale.box.com/shared/static/gzu5lhulepp3zsyxptwxoeafpst1ccdv.rda', 'car_transactions.rda')
+
+
+# if you want to download daily covid-19 data from nytimes for 2022 you can run this line
+#download.file('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-2022.csv', "us-counties-2022.csv")
+
+
+# to save disk space on your computer, let's just download of the covid-19 case totals from november 9th
+SDS230::download_data("covid_nov_07_2022_data.rda")
+  
+
+# download a file that has population data from each county in the US
+download.file("https://www2.census.gov/programs-surveys/popest/datasets/2020-2021/counties/totals/co-est2021-alldata.csv", "co-est2021-alldata.csv")
+  
+
+SDS230::download_image("xkcd_map_projections.png")
+
+
+```
+
+
+
+
+<!-- The R chunk below sets some parameters that will be used in the rest of the
+document. Please ignore it and do not modify it. -->
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo = FALSE}
+
+library(knitr)
+library(latex2exp)
+library(dplyr)   
+library(ggplot2)
+
+options(scipen=999)
+
+opts_chunk$set(tidy.opts=list(width.cutoff=60)) 
+set.seed(230)  # set the random number generator to always give the same random numbers
+    
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 1: Logistic regression
+
+
+As we have discussed in class, logistic regression can be used to estimate the
+probability that a response variable `y` belongs to one of two possible
+categories. In these exercises, you will learn how to use logistic regression by
+fitting models that can give the probability that a car is new or used based on
+other predictors, including the car's price.
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.1 (6 points)**: The code below creates a data frame called
+`toyota_data` that has sales information on 500 randomly selected new and used
+Toyota cars. It also changes the order of the levels on the categorical variable
+`new_or_used_bought` which will make the plotting and modeling work better in
+these exercises.
+
+To start, create a visualization of the data using ggplot where price is on the
+x-axis and whether the car is new or used is on the y-axis. Use a
+`geom_jitter()` to plot points that have less overlap, and adjust the amount of
+vertical jitters so that there is a clear separation between the new and used
+cars. Also set the alpha transparency appropriately to also help deal with
+over-plotting.
+
+
+```{r viz_new_used}
+
+load("car_transactions.rda")
+
+# get toyota cars and change the order of the levels of the new_or_used_bought variable
+toyota_data <- filter(car_transactions, make_bought == "Toyota") |>
+  mutate(new_or_used_bought = factor(as.character(new_or_used_bought, levels = c("U", "N")))) |>
+  mutate(new_or_used_bought = relevel(new_or_used_bought, "U")) |>
+  na.omit() |>
+  group_by(new_or_used_bought) |>
+  slice_sample(n = 500)
+
+
+
+# visualize the data
+
+
+
+
+
+
+  
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.2 (8 points)**: Now fit a logistic model to predict the probability a
+car is new based on the price that was paid for the car using the `glm()`
+function. Then extract the offset and slope coefficients and save them to
+objects called `b0` and `b1`. Based on these coefficients, calculate what the
+predicted log-odds, odds and probability are that a car is new if it costs
+$15,000. Print these values out, and in the answer section, report what these
+values are.
+
+A note on R and logistic models: `new_or_used_bought` is a factor variable where
+"U" is the lowest level and "N" is the highest level. This means we can plug the
+variable into the `glm` function without further transformation, since R will
+interpret this dichotomous factor variable as composed of the 1s and 0s that a
+logistic regression expects.
+
+
+
+
+```{r logistic_fit}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer:**
+
+The predicted values that a car is new if it cost $15,000 are:
+
+1. log-odds = 
+
+2. odds = 
+
+3. probability = 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.3 (8 points)**:
+
+
+Now using the `b0` and `b1` coefficients calculated in part 1.2, write a
+function `get_prob_new()` that takes a price a car was sold for as an input
+argument and returns the probability the car was new using the equation:
+
+$$\text{P(new|price)} = \dfrac{\exp(\hat{\beta}_0 + \hat{\beta}_1 \cdot x_{price})}{1 + \exp(\hat{\beta}_0 + \hat{\beta}_1 \cdot x_{price})}$$
+
+Then use the `get_prob_new()` function to predict the probability that a car
+that sold for $10,000 was a new car and report this probability. Comment on
+whether you would expect a predicted probability this high based on the
+visualization of the data you created in part 1.1.
+
+
+```{r logistic_probability_function}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.4 (8 points)**: Next plot the data again as you did in part 1.1, but
+this time you will add a red line showing the logistic regression function for
+predicting the probability a car is new based on its price. In order to plot the
+logistic regression line at the appropriate height on the figure, create a
+function called `plot_prob_new(price)` that returns the value of
+`get_prob_new(price)` plus 1.
+
+Adding 1 is necessary because R understands the "U" level of our factor variable
+to be 1 numerically and "N" to be 2, but `get_prob_new` returns probabilities
+between 0 and 1.
+
+Then, use the `stat_function()` function in the ggplot2 package, in combination
+with the `plot_prob_new()` function, to create a visualization where you create
+the scatter-plot visualization you created in part 1.1. Make sure that you also
+overlay the logistic regression line in red on the plot. Use `xlim` to toggle
+the dimensions of the x-axis appropiate, such that the plot centers the points
+and shows all aspects of the plotted function line.
+
+
+```{r viz_logistic, warning = FALSE}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.5 (10 points)**: Let's now fit a multiple logistic regression to the
+data in order to get the probability a car is new given the price of the car
+(`price_bought`) and the number of miles driven (`mileage_bought`). From the
+model that you fit, extract the regression coefficient estimates and intercept,
+price_bought and mileage_bought coefficients and save them to objects called
+`b0`, `b1` and `b2`. Then write a function called `get_prob_new2()` that uses
+the coefficients to predict the probability a car is new using the equation:
+
+$$\text{P(new|price, mileage)} = \dfrac{\exp(\hat{\beta}_0 + \hat{\beta}_1 \cdot price + \hat{\beta}_2 \cdot mileage)}{1 + \exp(\hat{\beta}_0 + \hat{\beta}_1 \cdot price + \hat{\beta}_2 \cdot mileage)}$$
+
+Finally, use the `get_prob_new2()` function to predict the probability that a
+car that sold for 10,000 and had 500 miles was a new car, and the probability
+that a car that sold for 10,000 and had 5000 miles was a new car. Report these
+probabilities in the answer section.
+
+
+
+```{r multi_logistic, warning = FALSE}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+For a car that sold for $10,000 and had 500 miles, the predicted probability that the car is new is: 
+
+For a car that sold for $10,000 and had 5000 miles, the predicted probability that the car is new is:  
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.6 (5 points)**:
+
+**This is a "challenge problem" that you should try to figure out without getting help from the TAs.**
+
+
+We can also fit logistic regression models with categorical predictors. The code below creates a data set that selects 500 random new and used Toyotas and BMWs. Let's use this data to build a model that predicts whether a car is new or used based on the cars price and whether it is a Toyota and BMW. To start, use ggplot to visualize the data where: `price_bought` is mapped to the x-axis, `new_or_used_bought` is mapped to the y-axis, `make_bought` is mapped to color. Also use the `geom_jitter()` glyph using an appropriate amount of jitter, and as always, label your axes. 
+
+Then, fit a logistic regression model to predict whether a car is new or used based on the price when the car was bought and whether the car was a Toyota or BMW. Finally, print out odds ratio for predicting whether a car is new or used if it is a Toyota relative to a BMW. Report in the answer section what the odds ratio is and how to interpret what it means. 
+
+
+```{r}
+
+set.seed(230)
+
+# get Toyota cars and change the order of the levels of the new_or_used_bought variable
+toyota_bmw_data <- filter(car_transactions, make_bought %in% c("Toyota", "BMW")) |>
+  mutate(new_or_used_bought = factor(as.character(new_or_used_bought), levels = c("U", "N"))) |>
+  mutate(new_or_used_bought = relevel(new_or_used_bought, "U")) |>
+  na.omit() |>
+  group_by(new_or_used_bought, make_bought) |>
+  slice_sample(n = 500) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 2: Joining and mapping data
+
+
+Let's get some practice joining data tables and creating choropleth maps by
+examining COVID-19 data. The data we will look at comes from the New York Times,
+and contains the cumulative number of cases and deaths per date in each county
+in the United States. To make the data be a more manageable size, the code below
+loads a smaller file that has the cumulative total number of cases in each US
+county as of November 7th, 2022. However, there is also code to load the
+cumulative number of cases for each day since the start of the year, so feel
+free to explore the data on your own if you are interested (and you can download
+data since the start of the pandemic from the nytimes GitHub repository).
+
+A file is also loaded below that contains the population of each county in the
+US along with code that cleans this data a little. Please look over these data
+frames to make sure you understand the variables in them, and if you don't
+understand something, please ask questions about them on Ed Discussions.
+
+
+
+
+```{r covid_data}
+
+
+# This will load all daily covid-19 case information from each county in the US
+# for 2022 and then filter the data to get cases on November 7th. It method is a
+# little slow so to save time we will load a file that only has data from
+# November 7th, but the larger data set could be an interesting data set for you
+# to explore further.
+# nov_7_2022 <- read.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-2022.csv') # |> mutate(date = as.Date(date)) |> filter(date == "2022-11-07")
+
+
+# Load total covid-19 cases for each county in the US
+load("covid_nov_07_2022_data.rda")
+
+# Load data with information about the population size for each county in the US
+county_population <- read.csv("co-est2021-alldata.csv") |>
+  filter(COUNTY != 0) |>     # remove state total population information
+  select("STNAME", "CTYNAME", "POPESTIMATE2021") |>
+  rename(county = CTYNAME, 
+         state = STNAME) |>
+  mutate(county = trimws(stringr::str_replace(county, "County", ""))) |>
+  mutate(county = trimws(stringr::str_replace(county, "Parish", "")))
+  
+  
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.1 (8 points):** As we discussed in class, if we just plotted the raw
+counts of COVID-19 cases in each state we would end up with a population map
+which would tell us very little. Instead, if we are interested in knowing which
+counties were hardest hit by COVID-19 it will be more informative to plot the
+proportion of people who were infected.
+
+To calculate the proportion of people who were infected, please create a data
+frame called `covid_pop` that is created by left joining the data frame that has
+the cumulative number of cases (as of November 7th 2022) with the data frame
+that has the population data for each county. Use dplyr to add a new variable to
+this data frame called `covid_per_capita` that has the proportion of people in
+each county that have been infected with COVID-19. Finally, use the `tolower()`
+function to make the data in the `state` and `county` variables be lowercase,
+which will be useful for the next step of the analysis. 
+
+
+
+```{r cases_per_capita}
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.2 (5 points):**  Now we have the proportion of people in each county
+who were infected (i.e., the cases per capita). The next thing we need in order
+to create a map are longitude-latitude coordinates, and a way to join these
+coordinates with the COVID-19 data.
+
+To get the outline coordinates of each county in the US, you can call the
+ggplot2 function `map_data("county")` which will return a data frame with
+longitude and latitude information for the outline of each county. Then left
+join these coordinates on the `covid_pop` data frame you created in step 2.1,
+and save these results to a data frame called `covid_map`.
+
+Note: The `tolower()` function from the previous step helps to resolve potential
+spelling mismatches that join functions might encounter. In particular, the
+state and county names are capitalized in the `nov_7_2022` and
+`county_population` data frames, but they are lower case in the data frame
+returned by the `map_data()` function. This mismatch would cause all the joins
+to fail, so it is important to check for spelling consistency when joining data
+frames. 
+
+
+```{r map_joining}
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.3 (8 points):**  In the process of joining the COVID-19 case rates and
+the geographic coordinates, information about particular counties was not
+captured. Some counties may have had geographic data available, or no COVID-19
+data available. Even differences in spelling may have caused a mismatch in
+counties across the two datasets.
+
+Please write code below that counts the number of counties in the `covid_map`
+data frame that do not have information about COVID-19 cases per capita, and print
+the number of counties out. Note, there are several ways this can be done, so
+there is flexibility in how you solve this problem.
+
+
+```{r missing_data}
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 2.4 (9 points):** Now that we have the map data you are ready to plot it!
+Please use ggplot to create a choropleth map following the steps we discussed in
+class. When creating your map, please set the following properties as well: 
+
+1. Use "polyconic" coordinates for you map.
+
+2. Use a color scale where the lowest COVID-19 rate is in black and the highest
+COVID-19 rate is in red.
+
+3. Set the color and fill `limits` argument to be 0 to 0.6 for both the
+`scale_fill_gradient` and `scale_color_gradient` color scales.
+
+4. Set the color out of bounds argument in the color scale (i.e., `oob`
+argument) to be `scales::squish` for both the `scale_fill_gradient` and
+`scale_color_gradient` color scales.
+
+In the answer section, please answer the following questions. 
+
+1. Report if any regions in the US seems to have been hit harder then others.
+
+2. Report what happens if you do not set the `limits` argument in the
+`scale_fill_gradient` and `scale_color_gradient` color scales.
+
+3. Report what happens if set the `limits` argument to be between 0 to .06, but
+you do not set the `oob` argument in the `scale_fill_gradient` and
+`scale_color_gradient` color scales.
+
+
+```{r county_map}
+
+
+
+
+
+
+
+
+
+
+  
+```
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.5 (10 points)**: Let's also look at trends at a coarser level of
+resolution, namely at the state level. To do this, start by creating a data
+frame called `covid_state_pop` that has the proportion of cases that have
+occurred in each state. To make your life easier, please omit any counties that
+are missing data (although in general this is not a great thing to do).
+
+Once you have the `covid_state_pop` data frame, join this data with state-level
+coordinates retrieved with the `map_data` function, and create a choropleth map
+of the state level COVID-19 cases per capita using the same mapping color
+scheme/parameters as in part 2.4. Also print out information on the 6 states
+that have the highest COVID-19 rates.
+
+```{r state_map}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.6: Create your own map (8 points):** Please create another interesting
+map. There are many website on the internet that have information about
+different regions in the world (counties, states, countries, etc.) where you can
+download data in a data in comma separated value (.csv) format. For example,
+https://howmuch.net/ has articles that are often linked to data that is useful
+for creating maps.
+
+You can make a choropleth map as we did above, or you can create other times of
+maps, such as adding colored points to regions. There are many other mapping
+packages in R, so feel free to explore and use Internet tutorials to find
+something interesting. Include the code you used below and print an output of
+your map. Also describe what your map shows in the answer section below and a
+little bit about how you went about creating the map. Finally, upload an .png
+image file of your map to this week's reflection quiz and briefly describe your
+map on the Canvas reflection (you can copy what you wrote below). We will
+discuss the maps you created in class after the Thanksgiving break.
+
+
+```{r your_map, warning = FALSE}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**:
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 3: Thoughts on your final project (3 points)
+
+Describe what you are thinking of doing for your final project and where you
+will get your data from. If you are not sure yet what you are going to do for
+your final project, that is fine and you can just say that. However, on homework
+10 you will need to load the data you will use for your final project data to
+demonstrate that you have found relevant data, so please start preparing for
+this now. I encourage you to email TA's and ULA's, or to talk to me after class
+for guidance.
+
+
+**Answer**
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Reflection (3 points)
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes link, and clicking on [Reflection on homework 9](https://yale.instructure.com/courses/79947/quizzes/52430).
+
+
+
+$\\$
+
+
+
+
+
+![](xkcd_map_projections.png)
+
+
+
+
+
