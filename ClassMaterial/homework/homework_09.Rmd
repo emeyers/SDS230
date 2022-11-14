@@ -19,7 +19,7 @@ The purpose of this homework is to practice fitting logistic regression models,
 to learn how to join data frames, and to learn how to create maps. Please fill
 in the appropriate code and write answers to all questions in the answer
 sections, then submit a compiled pdf with your answers through Gradescope by
-11pm on Sunday November 20th.
+11pm on Sunday November 27th.
 
 As always, if you need help with the homework, please attend the TA office hours
 which are listed on Canvas and/or ask questions on 
