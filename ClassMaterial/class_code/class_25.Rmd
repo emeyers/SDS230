@@ -396,14 +396,17 @@ $\\$
 ```{r}
 
 
-base_name <- "https://www.foxbusiness.com/politics/energy-groups-sue-biden-admin-failing-hold-oil-gas-lease-sales-again"
+# base_name <- "https://www.foxbusiness.com/politics/energy-groups-sue-biden-admin-fail# ing-hold-oil-gas-lease-sales-again"
+# article_name <- "politics.html"
+# download.file(base_name, article_name)
+
+
+base_name <- "https://www.nytimes.com/2022/12/02/us/politics/rail-strike-biden.html"
 article_name <- "politics.html"
 download.file(base_name, article_name)
 
-
 # viewer <- getOption("viewer")
 # viewer(article_name)
-
 
 
 
