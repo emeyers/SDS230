@@ -44,18 +44,28 @@ Notes:
 SDS230:::initial_setup()
 ```
 
+#### Installing LaTeX 
+
+If you are installing the SDS230 package **on your own computer**, please run the following command to install LaTeX. If you are installing the SDS230 package on the Grace cluster, you should skip this step.
+
+Note: the Grace cluster is an optional way to use RStudio on a remote cluster of computers owned by Yale.  We will discuss the option of using this cluster instead of your own computer in the beginning of the semester, so if we have not discussed this yet in class and you are trying to install the SDS230 package on your computer, then you should run the command below. 
+
+``` r
+tinytex::install_tinytex()
+```
+
+
 #### Testing LaTeX has been installed
 
-To test that LaTeX has correctly installed on your system you can run
-the following command:
+To test that LaTeX is wokring correctly on your system (i.e., on either your own computer or the Grace cluster) you can run the following command:
 
 ``` r
 tinytex:::is_tinytex()
 #> [1] TRUE
 ```
 
-If the function returns TRUE, then you have successfully installed
-LaTeX.
+If the function returns TRUE, then you have successfully installed LaTeX.
+
 
 ## Class material
 
