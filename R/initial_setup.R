@@ -5,7 +5,9 @@
 initial_setup <- function() {
 
   update_installed_packages()
-  tinytex::install_tinytex()
+
+  # removing this so students working on the Grace cluster do no install tinytex
+  # tinytex::install_tinytex()
 
 }
 
