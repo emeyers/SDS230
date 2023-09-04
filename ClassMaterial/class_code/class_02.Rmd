@@ -93,10 +93,17 @@ $\\$
 
 ## R Markdown syntax - LaTeX
 
-We can also LaTeX characters in the document, such as the Greek letter $\theta$, and we can put accents on characters too such as $\hat{p}$ and $\hat{\theta}$.
+We can also LaTeX characters in the document, such as the Greek letter $\theta$, and we can put accents on characters too such as $\hat{p}$
 
 
-$\Delta$ $\Sigma$
+Create:
+
+- theta-hat
+- Sigma
+
+
+$\hat{\theta}$
+$\Sigma$
 
 
 
@@ -112,7 +119,7 @@ We can run R code inside of R chunks
 
 ```{r}
 
-2 + 3
+
 
 ```
 
