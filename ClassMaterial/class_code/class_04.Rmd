@@ -1,0 +1,457 @@
+---
+title: "Class 4 notes and code"
+output:
+  pdf_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+$\\$
+
+
+
+<!--  Please run the code in the  R chunk below once. It will install a packages useful for adding LaTeX to figures and download some data we will use.  -->
+
+```{r, eval = FALSE}
+
+
+# get some data and install a package that is needed
+#install.packages("latex2exp")
+
+
+# download the okcupid data if you don't have it already
+download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/profiles_revised.csv", "profiles_revised.csv", mode = "wb")
+
+
+```
+
+
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(230)
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 0:  For loops
+
+
+For loops are useful when you want to repeat a piece of code many times under similar conditions
+
+Print the numbers from 1 to 50...
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+For loops are particular useful in combination with vectors that can store the results.
+
+Create a vector with the squares of the numbers from 1 to 50. 
+
+
+
+```{r}
+
+
+
+# create a loop that creates a vector with the squares of the numbers from 1 to 50. 
+
+
+for (i in 1:50) {
+  
+  
+  
+}
+
+
+
+
+# plot the results
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+### Try this at home!
+
+Use a for loop to create a vector called `the_results` that holds the values at multiples of 3 from 3 to 300; i.e., `the_results` should hold the numbers 3, 6, 9, ..., 300
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+## Part 1: Probability functions and generating random numbers in R
+
+
+
+
+
+###  Part 1.1a: Generating random numbers in R
+
+R has built in functions to generate data from different distributions. All these functions start with the letter `r`. 
+
+We can set the random number generator **seed** to always get the same sequence of random numbers.
+
+Let's get a sample of n = 200 random points from the uniform distribution using `runif()`
+
+```{r try_runif}
+
+# set the seed to a specific number to always get the same sequence of random numbers
+set.seed(230)
+
+
+# generate n = 100 points from U(0, 1) using runif() function 
+
+
+
+# plot a histogram of these random numbers
+
+
+
+
+```
+
+
+
+### Part 1.1b: Generating random numbers in R
+
+
+There are many other distributions we can get random numbers from including: 
+
+ - Normal distributions: `rnorm()`
+ - Uniform distribution `runif()`
+ - Exponential distributions: `rexp()`
+
+And many more!
+
+
+The first argument to all these functions is the number of random points you want to generate (`n`) and then there are additional arguments that can be used to control the shape of the distribution (i.e., that set the "parameters" of the distribution), 
+
+
+
+```{r try_other_random_data_functions}
+
+
+# generate n = 1000 points from standard normal distribution N(0, 1)
+
+
+
+# plot a histogram of these random numbers
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Part 1.1c: Sampling random values from a vector 
+
+
+We can sample random `n` random values from a vector `v` using the `sample(v, n)` function. 
+
+We can also set the `replace` argument to `TRUE` to sample values with replacement; e.g., to sample with replacement we can use `sample(v, n, replace = TRUE)`.
+
+
+Let's create a vector of numbers from 1 to 100 and sample 30 of them randomly (i.e., n = 30). 
+
+
+
+```{r sample_values}
+
+# set the seed to always get the same results
+# in general, best to just do this once at the top of the RMarkdown document
+set.seed(230)
+
+# create a vector of values from 1 to 100
+
+
+
+# sample 30 random values 
+
+
+
+# plot the values sorted using the sort() function
+
+
+
+
+# sample 30 random values with replacement
+
+
+
+# plot the values sorted using the sort() function
+
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 2: Sampling distributions
+
+
+### Part 2.1
+
+A distribution of statistics is called a **sampling distribution**. 
+
+Can you generate and plot an approximate sampling distribution for:
+ * sample means $\bar{x}$'s 
+ * sample size n = 100
+ * for data that come from uniform distribution
+
+
+Note the shape of the *sampling distribution* can be quite different from the shape of the data distribution (which is uniform here).
+
+
+```{r sampling_dist}
+
+
+# create a sampling distribution of the mean using data from a uniform distribution
+set.seed(67)
+
+
+sampling_dist <- NULL
+
+for (i in 1:10000) {
+  
+
+  
+
+}
+
+
+
+
+
+
+# plot a histogram of the sampling distribution of these means 
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.2: The standard error (SE)
+
+The deviation of a sampling distribution is called the standard error (SE). Can you calculate (an approximate) standard error for the sampling distribution you created above? 
+
+```{r se}
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.3: Approximating a sampling distributions from a data set
+
+
+We generate samples from an actual data set we have using the `sample()` function.  
+
+Let's start by just generate a single sample of size n = 100 from the OkCupid users' heights and calculating the mean of this sample.
+
+
+```{r okcupid_sampling_dist1}
+
+# read in the okcupid data
+profiles <- read.csv("profiles_revised.csv")
+
+
+# get the heights for the OkCupid data
+
+
+
+# get one random sample of heights from 100 people
+
+
+
+# get the mean of this sample
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+We can then create an approximation of a sampling distribution from the OkCupid users' data set by repeating this many times in a for loop.
+
+
+
+```{r okcupid_sampling_dist2}
+
+
+# repeat the process 1,000 times
+sampling_dist <- NULL 
+
+
+
+
+
+
+# plot a histogram of this sampling distribution 
+
+
+
+
+```
+
+
+
+
+**Question:** What would have to be true for this to be an actual sampling distribution? 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.4:  The central limit theorm
+
+
+
+The [central limit theorm (CTL)](https://en.wikipedia.org/wiki/Central_limit_theorem) establishes that (in most situations) when independent random variables are added their (normalized) sum converges to a normal distribution.
+
+Put another way, if we define the average random (i.i.d) sample {$X_1$, $X_2$, ..., $X_n$} of size *n* as: 
+
+$S_{n}:={\frac{X_{1}+\cdots +X_{n}}{n}}$
+
+then the CTL tells us that:
+
+$\sqrt{n}(S_{n} - \mu)$ $\xrightarrow {d} N(0,\sigma^{2})$
+
+
+You will explore this more through simulations on homework 2. 
+
+
+
+
+
+
+$\\$
+
