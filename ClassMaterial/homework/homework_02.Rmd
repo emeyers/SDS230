@@ -37,6 +37,7 @@ Some useful LaTeX symbols for the problem set are: $\mu$, $\sigma$, $\bar{x}$, $
 
 
 # download some data and images
+SDS230::download_data("condos_may_2022.rda")
 SDS230::download_data("avocados_northeast.rda")
 SDS230::download_image("avo_01.jpg")
 
@@ -112,7 +113,7 @@ Note about the data: The data was scraped from the website https://gis.vgsi.com/
 
 
 # load the data and get a vector of condominium apartment prices
-load("creation_pieces/condos_may_2022.rda")
+load("condos_may_2022.rda")
 prices <- condos$assessment
 
 
