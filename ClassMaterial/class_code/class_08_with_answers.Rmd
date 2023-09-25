@@ -1,0 +1,726 @@
+---
+title: "Class 8 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+
+
+options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+
+
+<!--  Please run the code in the R chunk below once. It will install a packages, and and download figures/data we will use.  -->
+
+```{r, eval = FALSE}
+
+# get some images that are used in this document
+SDS230::download_image("which_are_prob_densities.png")
+SDS230::download_image("area_pdf.png")
+SDS230::download_image("probability_area.png")
+SDS230::download_image("Combined_Cumulative_Distribution_Graphs.png")
+
+
+# get some images and data that are used in this document
+SDS230::download_image("student_t.png")
+SDS230::download_data("amazon.rda")
+SDS230::download_data("gingko_RCT.rda")
+SDS230::download_data("alcohol.rda")
+
+
+```
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Overview
+
+ * Randomization test for two means using a t-statistic
+ * Parametric tests for two means
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 1: Permutation tests for comparing two means using a t-statistic
+
+
+Let's us reexamine the randomized controlled trial experiment by Solomon et al
+(2002) to see if there is evidence that taking a gingko pills affects cognition.
+
+
+
+
+
+### Step 1: State the null and alternative hypotheses 
+
+
+$H_0: \mu_{gingko} - \mu_{placebo} = 0$
+$H_A: \mu_{gingko} - \mu_{placebo} \ne 0$
+
+
+$\alpha = 0.05$
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 2a: Plot the data
+
+
+```{r pill_plot}
+
+
+load("gingko_RCT.rda")
+
+
+# plot the data
+boxplot(gingko, placebo, 
+        names = c("Gingko", "Placebo"),
+        ylab = "Memory score")
+
+
+
+# create a stripchart
+data_list <- list(gingko, placebo) 
+  
+
+stripchart(data_list, 
+           group.names = c("Gingko", "Placebo"), 
+           method = "jitter",
+           xlab = "Memory score", 
+           col = c("red", "blue"))
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 2b: Calculate the observed statistic using a t-statistic
+
+
+The formula for a t-statistic is: 
+
+$$t = \frac{\bar{x}_t - \bar{x}_c}{\sqrt{\frac{s^2_t}{n_t} + \frac{s^2_c}{n_c}}}$$
+
+
+
+
+```{r pill_obs_stat}
+
+
+numerator <- mean(gingko) - mean(placebo)
+
+demoninator <- sqrt(   var(gingko)/length(gingko) + var(placebo)/length(placebo)    )
+
+(obs_stat <- numerator/demoninator)
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 3: Create the null distribution using a permutation/randomization test
+
+
+
+```{r null_dist_pill}
+
+
+# combine the data from the treatment and control groups together
+combined_data <- c(gingko, placebo)
+
+n_gingko <- length(gingko)
+total <- length(combined_data)
+
+# use a for loop to create shuffled treatment and control groups and shuffled statistics 
+null_distribution <-  NULL
+for (i in 1:10000) {
+
+       # shuffle data
+        shuff_data <- sample(combined_data)
+
+        # create fake treatment and control groups
+        shuff_gingko   <-  shuff_data[1:n_gingko]
+        shuff_placebo  <-  shuff_data[(n_gingko + 1):total]
+
+        numerator_shuff <- mean(shuff_gingko) - mean(shuff_placebo)
+        
+        demoninator_shuff <- sqrt(var(shuff_gingko)/length(shuff_gingko) + 
+                                  var(shuff_placebo)/length(shuff_placebo))
+
+        # save the statistic of interest
+        null_distribution[i] <- numerator_shuff/demoninator_shuff
+
+        
+}
+
+
+# plot the null distribution as a histogram
+hist(null_distribution, 
+     breaks = 100,
+     main = "Null distribution", 
+     xlab = "t-statistic")
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 4: Calculate a p-value
+
+
+```{r p_value_pill}
+
+
+# plot the null distribution again with a red line a the value of the observed statistic
+hist(null_distribution, 
+     breaks = 100,
+     main = "Null distribution", 
+     xlab = "t-statistic")
+
+
+abline(v = obs_stat, col = "red")
+abline(v = abs(obs_stat), col = "red")
+
+
+
+# calculate the p-value
+(p_value_left_tail <- sum(null_distribution <= obs_stat)/10000)
+(p_value_right_tail <- sum(null_distribution >= abs(obs_stat))/10000)
+
+(p_value <- p_value_left_tail + p_value_right_tail)
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 5: Make a decision
+
+Since `r p_value` is greater than $\alpha = 0.05$ we can not reject the null hypothesis. Thus if we are using the Neyman-Pearson paradigm, we do not have sufficient evidence to say that the pill is effective. 
+
+
+
+When we used a statistic of $\bar{x}_t - \bar{x}_c$ in our randomization test in class 7 we got a p-value of 0.127. How do these results compare? 
+
+
+
+
+
+
+
+
+## Part 2: Probability functions and generating random numbers in R
+
+
+Let's explore probability functions in R...
+
+
+
+###  Part 2.1a: Generating random numbers in R
+
+R has built in functions to generate data from different distributions. All these functions start with the letter `r`. 
+
+We can set the random number generator **seed** to always get the same sequence of random numbers.
+
+Let's get a sample of n = 200 random points from the uniform distribution using `runif()`
+
+```{r try_runif}
+
+# set the seed to a specific number to always get the same sequence of random numbers
+set.seed(530)
+
+# generate n = 100 points from U(0, 1) using runif() function 
+rand_data <- runif(200) 
+
+# plot a histogram of these random numbers
+hist(rand_data)
+
+
+```
+
+
+
+### Part 2.1b: Generating random numbers in R
+
+
+There are many other distributions we can get random numbers from including: 
+
+ - Normal distributions: `rnorm()`
+ - Exponential distributions: `rexp()`
+ - Binomial distributions `rbinom()`
+
+And many more!
+
+
+The first argument to all these functions is the number of random points you want to generate (`n`) and then there are additional arguments that can be used to control the shape of the distribution (i.e., that set the "parameters" of the distribution), 
+
+
+
+```{r try_other_random_data_functions}
+
+
+# generate n = 1000 points from standard normal distribution N(0, 1)
+rand_data <- rnorm(1000) 
+
+
+# plot a histogram of these random numbers
+hist(rand_data, breaks = 50)
+
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.2a: Probability density functions 
+
+
+
+$\\$
+
+
+Probability density functions can be used to model random events. All **probability density functions**, *f(x)*, have these properties:
+
+1. The function are always non-negative.
+2. The area under the function integrates (sums) to 1.
+
+Which of the following are probability density functions? 
+
+
+![](which_are_prob_densities.png)
+
+
+
+
+$\\$
+
+
+
+
+For continuous (quantitative) data, we use density function f(x) to find the probability (e.g., the long run frequency) that a random number X is between two values *a* and *b* using:
+
+
+$P(a < X < b) = \int_{a}^{b}f(x)dx$
+
+
+![](area_pdf.png)
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 2.2b: Probability density functions in R
+
+
+
+
+$\\$
+
+
+
+If we want to plot the true probability density function for the standard uniform distribution U(0, 1) we can use the `dunif()` function. All density function in base R start with `d`. 
+
+
+```{r density_functions}
+
+
+# the x-value domain for the density function f(x)
+x <- seq(-.2, 1.2, by = .001)  
+y <- dunif(x)  # the density function values
+
+
+# plot the probability density function 
+plot(x, y, 
+     type = 'l', 
+     ylab = "f(x)", 
+     main = "Standard uniform density")
+
+
+```
+
+
+
+**Question:** Can you create a density plot for the standard normal distribution? 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.3a: Cumulative probability distribution functions
+
+
+Cumulative probability distribution functions give us the probability of getting a random number X that is less than (or equal to) a particular value x; i.e., they give us $P(X \le x)$.  For example, they could be used to give us the probability that a random number will be less than 2: $P(X \le 2)$.
+
+
+Cumulative probability distribution functions are obtained by integrating a probability density function:
+
+$P(X \le x) = F_X(x) = \int_{-\infty}^x f(x)dx$
+
+where `f(x)` is a probability density function and $F_X(x)$ is the cumulative distribution function.
+
+
+
+![](Combined_Cumulative_Distribution_Graphs.png)
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 2.3b: Cumulative probability distribution functions in R
+
+To get the values that a random number X is less than a particular value x using R, we can use a series of functions that start with the letter `d`. 
+
+For example, to get the probability a random number X generated from the standard uniform distribution U(0, 1) will be less than .25; i.e., $P(X \le .25)$ we can use `dunif()`.
+
+
+
+```{r cumulative_distributions}
+
+punif(.25)
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 3: Parametric tests for comparing two means in R
+
+
+Let's redo this analysis using a parametric probability distribution, which in this case is the t-distribution. The same 5 steps of hypothesis testing apply here as well!
+
+
+
+
+$\\$
+
+
+
+
+### Step 1: State the null and alternative hypotheses 
+
+
+Same as before...
+
+
+$H_0: \mu_{gingko} - \mu_{placebo} = 0$
+
+$H_A: \mu_{gingko} - \mu_{placebo} > 0$
+
+
+$\alpha = 0.05$
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 2b: Calculate the observed statistic using a t-statistic
+
+
+Same as before: 
+
+
+$$t = \frac{\bar{x}_t - \bar{x}_c}{\sqrt{\frac{s^2_t}{n_t} + \frac{s^2_c}{n_c}}}$$
+
+
+
+
+```{r pill_obs_stat2}
+
+
+numerator <- mean(gingko) - mean(placebo)
+
+demoninator <- sqrt(   var(gingko)/length(gingko) + var(placebo)/length(placebo)    )
+
+
+(obs_stat <- numerator/demoninator)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 3: Create the null distribution
+
+
+
+We will now use a parametric t-distribution (i.e., density function) as a null distribution. The t-distribution has one parameter called "degrees of freedom". We will set this parameter as the minimum of $n_t - 1$ or $n_c - 1$. 
+
+
+What are the degrees of freedom for this study? 
+
+
+Let's visualize the t-distribution
+
+
+```{r t_density}
+
+
+# visualize the t-distribution density curve using the dt() function 
+
+(degree_free <- min(length(gingko), length(placebo)) - 1)
+
+x_vals <- seq(-5, 5, by = .01)
+y_vals <- dt(x_vals, degree_free)
+
+plot(x_vals, y_vals, type = "l", col = "blue")
+
+
+
+# how does this compare to our t-distribution created by shuffling? 
+
+hist(null_distribution, freq = FALSE,
+     breaks = 50,
+     main = "Null distribution", 
+     xlab = "t-statistic")
+
+points(x_vals, y_vals, type = "l", col = "blue")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 4: Calculate a p-value
+
+
+We can get $Pr(X < stat)$ for a t-distribution using the `pt()` function.
+
+
+
+```{r p_value_pill2}
+
+
+(p_value_left_tail <-  pt(obs_stat, degree_free, lower.tail = TRUE))
+(p_value_right_tail <-  pt(abs(obs_stat), degree_free, lower.tail = FALSE))
+
+(p_value <- p_value_left_tail + p_value_right_tail)
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 5: Make a decision
+
+
+How does our p-value and decision compare to the p-value decision we got from the permutation test? 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Built in R functions for t-tests
+
+We can use the built in `t.test()` function to run a t-test as well. 
+
+Note: If you want to run one-tailed tests you can use the extra argument `alternative` argument.
+
+
+
+```{r t_test}
+
+t.test(gingko, placebo)
+
+
+```
+
+
+Why is the p-value slightly different than what we got when we used the `pt()` function? 
+
+
+
+$\\$
+
+
+![](student_t.png)
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+
+
+
