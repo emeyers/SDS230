@@ -123,21 +123,21 @@ library(ggplot2)
 
 
 # base R
-plot(mtcars$wt, mtcars$mpg)
+
 
 
 
 
 # ggplot 
-ggplot(mtcars, aes(x = wt, y = mpg)) + 
-  geom_point()
+
+
+
 
 
 
 # ggplot - mapping in the geom
 
-ggplot(mtcars) + 
-  geom_point(aes(x = wt, y = mpg))
+
 
 
 
@@ -169,20 +169,13 @@ If you just want to add x and y labels or a title, you can also use the
 ```{r labels}
 
 
-ggplot(mtcars, aes(x = wt, y = mpg)) + 
-  geom_point() +
-  labs(x = "Weight",
-       y = "Miles per Gallon", 
-       title = "MPG as a function of weight",
-       subtitle = "ggplot is cool!")
 
 
 
-ggplot(mtcars, aes(x = wt, y = mpg)) + 
-  geom_point() +
-  xlab("Mile per Gallon") +
-  ylab("Miles per Gallong") +
-  ggtitle("Hooray!")
+
+
+
+
 
 
 
@@ -209,9 +202,10 @@ We can add annotations to plots using the `annotate("text", x = , y = , label = 
 
 
 
-ggplot(mtcars, aes(x = wt, y = mpg)) + 
-  geom_point() +
-  annotate("text", x = 4, 30, label = "AWESOME!")
+
+
+
+
 
 
 
@@ -242,17 +236,9 @@ We can use other aesthetic mappings beyond position including:
 ```{r mappings}
 
 
-mtcars2 <- mtcars |>
-  mutate(am = factor(am))
-
-
-ggplot(mtcars2, aes(x = wt, y = mpg, color = am)) + 
-  geom_point()
-
-
 # add color based on the transmission type (is automatic or not)
-ggplot(mtcars, aes(x = wt, y = mpg, color = factor(am))) + 
-  geom_point() 
+
+
 
 
 # it is better to treat the transmission type as a categorical variable?
@@ -262,13 +248,11 @@ ggplot(mtcars, aes(x = wt, y = mpg, color = factor(am))) +
 
 
 # can also try mapping transmission type to shape or size 
-ggplot(mtcars, aes(x = wt, y = mpg, size = am)) + 
-  geom_point()
 
 
 
-ggplot(mtcars, aes(x = wt, y = mpg, shape = factor(am))) + 
-  geom_point()
+
+
 
 
 
@@ -308,14 +292,13 @@ Setting an **attribute** set a glyph property to a **fixed value**. This is done
 
 
 # setting an aesthetic mapping
-ggplot(mtcars, aes(x = wt, y = mpg, color = factor(am))) + 
-  geom_point()
+
 
 
 
 # setting an attribute
-ggplot(mtcars) + 
-  geom_point(aes(x = wt, y = mpg), color = "red")
+
+
 
 
 
@@ -342,9 +325,6 @@ categorical variables by splitting a plot into subplots, called facets, using
 
 
 # separate subplots for the two transmission types
-ggplot(mtcars, aes(x = wt, y = mpg)) + 
-  geom_point() + 
-  facet_wrap(~am)
 
 
 
@@ -352,9 +332,7 @@ ggplot(mtcars, aes(x = wt, y = mpg)) +
 
 # One can also do facets in two dimensions
 
-ggplot(mtcars, aes(x = wt, y = mpg)) + 
-  geom_point() + 
-  facet_wrap(am ~ cyl)
+
 
 
 
@@ -385,15 +363,12 @@ library(gapminder)
 
 
 # a lot of overplotting
-ggplot(gapminder, aes(gdpPercap, lifeExp)) + 
-  geom_point()
+
 
 
 
 # changing the transparency levels makes it a bit easier to see how many points are at a given x, y location
 
-ggplot(gapminder, aes(gdpPercap, lifeExp)) + 
-  geom_point(alpha = .05)
 
 
 
@@ -426,18 +401,14 @@ using `scale_color_manual()`.
 
 # changing the scale on the x-axis
 
-ggplot(gapminder, aes(gdpPercap, lifeExp)) + 
-  geom_point() +
-  scale_x_continuous(trans = "log10")
+
 
 
 
 # mapping continents to colors, and adding my own color scale
 
-ggplot(gapminder, aes(gdpPercap, lifeExp, color = continent)) + 
-  geom_point() +
-  scale_x_continuous(trans = "log10") +
-  scale_color_manual(values = c("red", "yellow", "green", "blue", "purple"))
+
+
 
 
 ```
@@ -466,37 +437,20 @@ We can use different geoms to create other types of plots.
 
 # Let's create a plot that shows the GDP in the United States as a function of the year using the geom geom_line()
 
-gapminder |>
-  filter(country == "United States") |>
-  ggplot(aes(year, gdpPercap)) +
-  geom_point()
 
-gapminder |>
-  filter(country == "United States") |>
-  ggplot(aes(year, gdpPercap)) +
-  geom_line() +
-  geom_point()
+
 
 
 # Let's create a plot that shows the GDP in the United States as a function of the year using the geom geom_col()
 
-gapminder |>
-  filter(country == "United States") |>
-  ggplot(aes(year, gdpPercap)) +
-  geom_col()
+
 
 
 
 # Let's MPG as a function of weight using the names of cars rather than just points for each car
 
-mtcars |>
-  ggplot(aes(x = wt)) +
-  geom_histogram(bins = 10)
 
 
-mtcars |>
-  ggplot(aes(x = factor(cyl), y = wt)) +
-  geom_boxplot()
 
 
 # Let's plot a histogram of the weights of cars
@@ -533,22 +487,14 @@ Violin and Joy plots are other ways to view distributions of data
 
 ```{r geoms2}
 
-mtcars |>
-  ggplot(aes(x = factor(cyl), y = wt)) +
-  geom_violin() +
-  geom_boxplot()  # violin plot 
+# violin plot 
+
 
 
 
 library("ggridges")
 
 # joy plot
-mtcars |>
-  ggplot(aes(y = factor(cyl), x = wt)) +
-  geom_density_ridges()
-
-
-
 
 
 
