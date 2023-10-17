@@ -131,10 +131,10 @@ library(ggplot2)
 library(gapminder)
 
 
-ggplot(data = gapminder) +                                                 # create the basic frame
-	geom_point(aes(x = gdpPercap, y = lifeExp, color = continent))  +        # add a geom with 3 aesthetic mappings 
-  scale_x_continuous(trans = "log10") + 			                             # change the scales
-  scale_color_brewer(type = "qua", palette = 2)                     
+                   # create the basic frame
+	                 # add a geom with 3 aesthetic mappings 
+			             # change the scales
+                   # change the color pallet
 
 
 ```
@@ -176,13 +176,10 @@ library(dplyr)
 library(ggthemes)
 
 
-gapminder |>
-  filter(country %in% c("France", "Haiti", "United States")) |>
-ggplot(aes(year, lifeExp)) + 
-  geom_line() + 
-	facet_wrap(~country)  +        # add a geom with 3 aesthetic mappings 
-  geom_vline(xintercept = 1969, col = "red") + 
-  theme_wsj()
+# plot comparing countries with different themes
+
+
+
 
 
 
@@ -227,13 +224,14 @@ Let's create a plot where:
 
 ```{r ggplot3}
 
-gapminder |>
-  filter(year == 2007) |>
-  ggplot(aes(x = gdpPercap, y = lifeExp, label = country, color = continent)) + 
-  geom_text() + 
-  scale_x_continuous(trans = "log10") + 
-  theme(legend.position="none") + 
-  annotate("text", x = 600, y = 80, label = "this plot is messy :(") 
+
+# plot using a text geom...
+
+
+
+
+
+
 
 ```
 
@@ -282,14 +280,18 @@ library(gapminder)
 library(plotly)
 
 
-g <- gapminder |> 
-  filter(year == 2007) |>  	
-  ggplot(aes(x = gdpPercap, y = lifeExp, col = continent, name = country)) + 	  
-  geom_point()   
+
+# plot 2007 gapminder data
+  
+
 
 
 
 # create an interactive version of the plot using plotly
+
+
+
+
 
 
 ```
@@ -474,11 +476,16 @@ library(ggplot2)
 
 load("amazon.rda")
 
-d <- lineup(null_permute("List.Price"), amazon)
 
-ggplot(data=d, aes(x=NumPages, y=List.Price)) + 
-  geom_point() + 
-  facet_wrap(~ .sample)
+
+# create the lineup
+
+
+
+
+# visualize the lineup
+
+
 
 
 ```
