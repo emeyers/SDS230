@@ -1,0 +1,825 @@
+---
+title: "Class 16 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some
+packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+
+# install.packages('car')
+
+SDS230::download_data("IPED_salaries_2016.rda")
+
+SDS230::download_image("tukey_ladder.png")
+
+
+```
+
+
+
+
+
+```{r setup, include=FALSE}
+
+library(latex2exp)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+
+#options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Overview
+
+ * Exploring faculty salary data
+ * Hypothesis tests for regression coefficients
+ * Confidence intervals for regression coefficients
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Part 1: Exploring the faculty salary data
+
+
+To explore linear regression models, we will examine data from the Integrated
+Postsecondary Education Data System (IPEDS) which has information about colleges
+and universities. I have created a subset of this data from 2016 that has
+information about college salaries, endowment sizes and other variables. Full
+datasets from several years are available in Microsoft Access format and 
+[can be downloaded here](https://nces.ed.gov/ipeds/use-the-data/download-access-database).
+
+Below is code that loads the data. You can use the `View()` function from the
+console to look at the data. The `glimpse()` function in dplyr is also useful
+for getting a sense of what is in a data frame.
+
+
+
+```{r load_iped}
+
+# load the data into R
+load("IPED_salaries_2016.rda")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 1.1: Filtering and selecting to get only Assistant Professor data 
+
+
+To look at a more homogeneous data set, let's just look at the data for
+Assistant Professors. To get this subset of the data we can use dplyr's
+`filter()` function. Let's filter that data as follows:
+
+- Get only `rank_name` of Assistant. 
+- Get colleges that have endowments greater than $0
+- Get only data where there is no missing information using the `na.omit()` function.
+
+
+To make things simpler, let's have our data frame only have the following variables: 
+
+- `school`: The name of the school
+- `salary_tot`: The total salary combined for over both men and women.
+- `endowment`: The size of the school's endowment
+- `rank_name`: The faculty rank level
+
+
+```{r filter_salaries}
+
+assistant_data <- filter(IPED_salaries,  endowment > 0,  rank_name == "Assistant") |>
+  select(school, salary_tot, endowment, enroll_total) |>
+  na.omit()     # get only the cases that do not have missing data
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.2: Visualizing relationships
+
+
+What could be driving the differences in faculty salaries across universities?
+Let's use linear models to see if we can find variables that predict differences
+in the salaries professors make at different schools.
+
+One potential factor that could drive differences in faculty salaries is the
+size of a schools endowment. Let's begin by visualizing the relationship between
+endowment size and faculty salaries by using a scatter plot.
+
+
+```{r visualize_salaries}
+
+plot(assistant_data$endowment, assistant_data$salary_tot)
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.3: Transforming the varaibles
+
+
+As we can see from the above plot, the relationship between the explanatory and
+response variables does not appear to be very linear (this non-linear
+relationship is largely driven by schools with very large endowments). One way
+to deal with this non-linear relationship is to apply a transformation to our
+data to make the relationship more linear. If this transformation makes the
+relationship linear, we can go ahead fit a linear model to our data. A
+visualization based on Tukey's bulging rule can help up decide on which
+transformation to use to make the relationship linear.
+
+
+
+![](tukey_ladder.png)
+
+From looking at the plot of our data in part 1.2, we can see it matches the
+shape in the upper left quadrant of the visualization above. Thus this suggests
+if we apply a log transformation to x, the relationship might be more linear.
+Let's try this by taking the $log_{10}$ of the variable endowment which will
+tell us how faculty salaries change with the order of magnitude of a schools
+endowment. To create this transformed variable we can use the dplyr `mutate()`
+function.
+
+
+
+```{r mutate_endowment}
+
+# use the mutate() function to create a variable that has the log10 of the endowment
+assistant_data  <- assistant_data  |>
+  mutate(log_endowment = log10(endowment)) |>
+  arrange(log_endowment)
+
+
+# plot the relationship between salaries and the log10 of a schools endowment
+plot(assistant_data$log_endowment, assistant_data$salary_tot)
+
+```
+
+
+The relationship now appears to curve upward a bit which matches the pattern
+seen in the lower left quadrant of Tukey's bulging rule visualization. We could
+deal with this by also applying a log transformation of y but we will abstain
+from doing this for now.
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 1.4: Fitting a linear model
+
+
+Let's now fit a linear model to our data to predict faculty salaries from the log10 of the endowment. 
+
+
+
+```{r linear_fit}
+
+
+# fit a regression model
+lm_fit <- lm(salary_tot ~ log_endowment, data = assistant_data)
+
+
+# plot the data and add the regression line to the plot
+plot(assistant_data$log_endowment, assistant_data$salary_tot)
+abline(lm_fit, col = "red")
+
+
+# look at the coefficients (beta hat's)
+coef(lm_fit)
+
+
+```
+
+
+**Question:**  How do we interpret these coefficients? 
+
+
+**Answer:** For every order of magnitude change in endowment, the order of
+magnitude of faculty salaries are predicted to go up by `r coef(lm_fit)[2]`.
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 1.5: The residual standard deviation
+
+
+Our theoretical model of the data is: $Y = \beta_0 + \beta_1 x + \epsilon$. In
+this model our errors $\epsilon$ come from a normal distribution with a mean of
+0 and a standard deviation that is denoted $\sigma_{\epsilon}$; i.e., $\epsilon
+\sim N(0, \sigma_{\epsilon})$. The residual standard deviation
+$\hat{\sigma}_{\epsilon}$ is an estimate of the standard deviation of errors
+$\sigma_{\epsilon}$. This gives us a sense of how much the points are spread
+from the regression line.
+
+Let's calculate it in R.
+
+
+```{r}
+
+
+# calculate the residual sum of squares
+SSRes <- sum(lm_fit$residuals^2)
+
+
+# to get an unbiased estimate of the standard deviation of errors
+# our denominator is given by the regression degrees of freedom
+regression_df <- nrow(assistant_data) - 2
+
+
+# estimate the residual standard deviation
+(RSE_hat <- sqrt(SSRes/regression_df))
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 2: Hypothesis tests for regression coefficients using parametric methods
+
+
+Let's use the t-statistic and t-distribution to do parametric inference on
+whether the regression offset $\beta_0$, and the regression slope $\beta_1$, are
+different than 0. This means we are testing the hypotheses:
+
+$H_0: \beta_0 = 0$
+$H_A: \beta_0 \ne 0$
+
+
+and
+
+
+$H_0: \beta_1 = 0$
+$H_A: \beta_1 \ne 0$
+
+
+
+
+### Part 2.1: Assessing the statistical significance of the fit
+
+
+We can calculate the $\hat{SE}_{\hat{\beta}_1}$ and a t-statistic using these equations:  
+
+$\hat{SE}_{\hat{\beta}_1} = \frac{\hat{\sigma}_\epsilon}{\sqrt{\sum_{i=1}^n(x_i - \bar{x})^2}}$
+
+$t = \frac{\hat{\beta}_1}{\hat{SE}_{\hat{\beta}_1}}$
+
+Our t-statistic will then come from a t-distribution with n-2 degrees of freedom (if the assumptions roughly met).
+
+We can use R's built in `summary()` function to see if the regression coefficients are statistically significant.
+
+
+
+```{r}
+
+# Assessing if the regression coefficients are statistically significant
+summary(lm_fit)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: Calculating confidence intervals for regression coefficients
+
+
+
+### Part 3.1: t-distribution based confidence intervals on the regression intercept and slope
+
+ 
+
+We can create confidence intervals for the regression coefficients $\beta_0$ and
+$\beta_1$ using a t-distribution via the `confint()` function.
+
+
+
+```{r}
+
+
+confint(lm_fit, level = .95)
+
+
+```
+
+
+Interpretation? 
+
+
+The true intercept $\beta_0$ and slope $\beta_1$ will be captured by intervals like these most of the time.
+
+
+
+$\\$
+
+
+
+
+
+### Part 3.2: Using the bootstrap to plot confidence intervals for the regression line
+
+
+
+We can also use resampling methods (i.e., the bootstrap) to get confidence intervals. 
+
+Rather than create confidence intervals here, let's instead use the bootstrap to
+plot several bootstrap regression lines which will give us a visualization of a
+range of possible regression lines that could reflect the real underlying
+relationship.
+
+To understand how variable our estimate of the regression line is, we can sample
+rows of a data frame using dplyr's `sample_n()` function. We will use this
+function (setting the `replace = TRUE` argument) and fit regression lines for
+100 different bootstrap samples. By plotting all these regression lines, we can
+get a sense of the variability of our estimate of the regression line, and hence
+an understanding of the precision of approximately where the true regression
+line lies.
+
+
+```{r}
+
+
+# let's start by plotting the data
+plot(assistant_data$log_endowment, 
+     assistant_data$salary_tot,
+     xlab = "Log endowment size (log($))", 
+     ylab = "Salary ($)", 
+     main = "Relationship between log endowment and salary")
+
+
+# get the number of cases
+n_cases <- dim(assistant_data)[1]
+
+# use a loop to plot 100 regression lines that are consistent 
+for (i in 1:100) {
+  
+  # get a bootstrap sample the same size as the original sample
+  boot_sample <- sample_n(assistant_data, size = n_cases, replace = TRUE)
+  
+  # fit the regression model on the bootstrap sample and plot it
+  boot_fit <- lm(salary_tot ~ log_endowment, data = boot_sample)
+  
+  abline(boot_fit, col = "red")
+  
+}
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+### Part 3.3: Plotting confidence intervals and prediction intervals for the regression line
+
+We can also use parametric methods to plot confidence and prediction intervals for the regression line. 
+
+```{r}
+
+
+# confidence intervals for the betas
+(CI_betas <- confint(lm_fit))
+
+
+# confidence interval for the regression line mu_y
+CI_regression_line <- predict(lm_fit, interval="confidence", level = 0.95)
+
+
+# prediction interval for the regression line
+prediction_interval <- predict(lm_fit, interval="predict")
+
+
+# # plot both confidence interval and the prediction interval
+# let's start by plotting the data
+plot(assistant_data$log_endowment, 
+     assistant_data$salary_tot,
+     xlab = "Log endowment size (log($))", 
+     ylab = "Salary ($)", 
+     main = "Relationship between log endowment and salary")
+
+
+# plot confidence interval
+points(assistant_data$log_endowment, CI_regression_line[, 1], col = "red", type = "l")
+points(assistant_data$log_endowment, CI_regression_line[, 2], col = "green", type = "l")
+points(assistant_data$log_endowment, CI_regression_line[, 3], col = "green", type = "l")
+
+
+# plot prediction interval
+points(assistant_data$log_endowment, prediction_interval[, 2], col = "blue", type = "l")
+points(assistant_data$log_endowment, prediction_interval[, 3], col = "blue", type = "l")
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Part 4: Regression diagnostics
+
+
+
+When making inferences about regression coefficients, there are a number of
+assumptions that need to be met to make these tests/confidence intervals valid.
+The (LINE) assumptions are:
+
+1. **Linearity**: A line can describe the relationship between x and y.
+2. **Independence**: Each data point is independent from the other points.
+3. **Normality**: The errors (are normally distributed.
+4. **Equal variance (homoscedasticity)**: The variance of the errors is constant over the whole range of x values.
+
+
+To check whether these assumptions seem to be met by creating a set of diagnostic plots. 
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 4.1:** To check for linearity and homoscedasticity (conditions 1 and 4),
+we can create a plot of the residuals as a function of the fitted values.
+
+```{r}
+
+
+plot(lm_fit$fitted.values, lm_fit$residuals,
+     xlab = "Fitted values (y-hat)", 
+     ylab = "Residuals")
+
+
+
+```
+
+
+
+
+**Question** Does it appear that the data is homoscedastic and linear? 
+
+
+**Answer** A bit hard to tell but there might be curvature to the data. 
+
+
+
+
+$\\$
+
+
+
+
+
+
+We can examine this further some more of R's built in functions and well as
+other functions from the `car` package and getting the studentized residuals
+using the `Mass` package.
+
+
+
+```{r}
+
+par(mfrow = c(2, 2))
+plot(lm_fit)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+**Part 4.2:** To check whether the residuals are normally distributed (condition
+3) we can use create a Q-Q plot. The `car` package has a nice function to create
+these plots called `qqPlot()` to create these plots that uses the residuals from
+model fit with the lm() function, i.e, the `lm_fit` object.
+
+
+```{r}
+
+# install.packages('car')
+library(car)
+
+# create a Q-Q plot of the residuals
+qqPlot(lm_fit)
+
+
+# we can also create a histogram of the residuals
+hist(lm_fit$residuals, breaks = 100)
+
+
+```
+
+
+**Question:** Do the residuals seem normal? 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+**Part 4.3:** To check if the data points are independent (condition 2) requires
+knowledge of how the data was collected. Do you think the data is independent
+here? i.e., do you think that the salary of one school effects the salaries at
+another school?
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Part 5: Assessing unusual points
+
+
+Let's continue to use the faculty salary data to explore how unusual points can
+affect our regression model. As we discussed, points can be usual by being:
+
+1. **High leverage**: unusual explanatory variable values (i.e. points with unusual x-values)
+2. **Outliers**: unusual response variable values (i.e., points with unusual y-values)
+3. **Influential points**: High leverage and outlier points (i.e., points with unusual x and y values)
+
+
+There are different statistics, and consequently R functions, to examine if data points are unusual along these dimensions.
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 5.1:** Let's explore high leverage points using the `hatvalues()` function which takes a linear model as the input argument.
+
+Are any points greater than 4/n (high leverage), or 6/n (very high leverage)?
+
+
+
+```{r}
+
+# plot a histogram of the hat values
+hist(hatvalues(lm_fit), breaks = 100)
+abline(v = 6/nrow(assistant_data), col = "red")
+
+
+
+# mutate the hat-values onto the original data and plot them in color
+assistant_data |>
+  mutate(hatvalues = hatvalues(lm_fit)) |>
+  ggplot(aes(endowment, salary_tot)) + 
+  geom_point(aes(name = school, color = hatvalues)) + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  scale_x_log10() + 
+  scale_y_log10() +
+  scale_color_continuous(low = "black", high = "red")
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 5.2:** Let's explore the standardized and studentized residuals using the
+`rstandard()` and `rstudent()` functions. Are any of the standardized or
+studentized residuals greater than 3?
+
+
+
+
+```{r}
+
+# plot a histogram of the standarized residuals
+hist(rstandard(lm_fit), breaks = 100)
+abline(v = c(-3, 3), col = "red")
+
+
+# plot a histogram of the studentized residuals
+hist(rstudent(lm_fit), breaks = 100)
+abline(v = c(-3, 3), col = "red")
+
+
+
+# mutate on the absolute value of studentized residuals and plot them in color
+assistant_data |>
+  mutate(studentized = abs(rstudent(lm_fit))) |>
+  ggplot(aes(endowment, salary_tot)) + 
+  geom_point(aes(name = school, color = studentized )) + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  scale_x_log10() + 
+  scale_y_log10() +
+  scale_color_continuous(low = "black", high = "red")
+
+
+# we can explore this in plotly too!
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 5.3:** Let's also examine Cook's distance to see which points are influential.
+
+
+
+```{r}
+
+# use the base R regression diagostic plots to show Cooke's distance
+plot(lm_fit, 4)
+
+
+# let's examine the points with the high Cook's distance
+assistant_data |>
+  slice(c(202, 668, 779))
+
+
+# mutate on the Cook's distance and plot in color
+assistant_data |>
+  mutate(cooks = cooks.distance(lm_fit)) |>
+  ggplot(aes(endowment, salary_tot)) + 
+  geom_point(aes(name = school, color = cooks)) + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  scale_x_log10() + 
+  scale_y_log10() +
+  scale_color_continuous(low = "black", high = "red")
+  
+  
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
