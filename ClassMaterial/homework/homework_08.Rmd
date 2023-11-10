@@ -486,10 +486,8 @@ Model degree  |    R^2
 
 
 
-The highest $R^2$ value occurs with the degree 5 polynomial. However, since
-$R^2$ only increase with more variables, this is expected. We will need to use
-some of the techniques we will discuss next week to really decide which model to
-use (and plotting the models below will give us some insight too).
+
+
 
 
 
