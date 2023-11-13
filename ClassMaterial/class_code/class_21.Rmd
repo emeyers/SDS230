@@ -1,0 +1,540 @@
+---
+title: "Class 21 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some
+packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+
+SDS230::download_data("IPED_salaries_2016.rda")
+
+SDS230::download_data("x_y_join.rda")
+
+
+```
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+library(dplyr)
+library(ggplot2)
+
+#options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+ * Visualizing multiple regression models with ggplot
+ * Logistic regression
+ * Poisson regression
+
+
+
+$\\$
+
+
+
+
+## Part 1: Visualizing multiple regression models with ggplot
+
+In prior classes we have visualized multiple regression models with categorical
+predictors using base R graphics. In particular, we created scatter plots for
+data in different categories using the `plot()` and `points()` and used the
+`col` argument to color the points. We then added on regression lines using the
+`abline()` function. This method was useful for educational purposes so that we
+could see the connection between the model parameters that were estimated using
+the `lm()` function, and the underlying data. However, if we want to create
+better looking visualizations in a more efficient manner, then it is better to
+use ggplot.
+
+Let's now use ggplot to visualize a multiple regression model that has one
+quantitative and one categorical variable. In particular, let's recreate the
+plot from class 19 part 3.6 where we display faculty salaries as a function of
+log endowment separately for different faculty ranks.
+
+
+
+```{r}
+
+
+# load the data into R
+load("IPED_salaries_2016.rda")
+
+
+# create the IPED data subset used in class 19 part 3
+IPED_2 <- IPED_salaries |>
+filter(endowment > 0) |>
+mutate(log_endowment = log10(endowment)) |>
+filter(CARNEGIE %in% c(15, 31)) |>
+filter(rank_name %in% c("Assistant", "Associate", "Full"))
+dim(IPED_2)
+
+
+# using ggplot
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 2: Logistic regression
+
+
+Let us fit a logistic regression model that gives the probability that a
+professor is a Full professor (compared to an Assistant Professor) based on the
+professor's salary; i.e., the model is giving P(Full professor | salary).
+
+Note: In the IPED data, the cases are actually individual universities, and the
+salaries are averages over all professors of a particular rank, so what the
+model is really doing is giving P(Full professor rank | average salary) which is
+a little different than the variability that would be seen at the individual
+professor level.
+
+Let's start by loading the data, doing a little data cleaning, and plotting the
+data.
+
+
+
+```{r}
+
+
+# get assistant and full professor salaries 
+assistant_full_data <- IPED_salaries |>
+  filter(endowment > 0, rank_name %in% c("Assistant", "Full")) |>
+  select(school, salary_tot, endowment, enroll_total, rank_name) |>
+  na.omit() |>
+  mutate(log_endowment = log10(endowment)) |>
+  mutate(rank_name = relevel(rank_name, "Assistant"))
+
+
+# visualize the data
+
+
+
+
+
+  
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 2.1.: Fitting a logistic model to the data
+
+
+Let's now fit a logistic regression model using the `glm()` function. To fit a
+logistic regression model, we will use the family = "binomial" argument. What
+this function is doing is finding the "maximum likelihood" values for
+$\hat{\beta}_0$ and $\hat{\beta}_1$.
+
+We can use the coefficients from the model to build a function that can give the
+probability of that the faculty rank is Full professor based on the salary
+value:
+
+$$P(\text{Full professor} | \text{salary}) = \frac{e^{\hat{\beta}_0 + \hat{\beta}_1 \cdot \text{salary}}}{1 + e^{\hat{\beta}_0 + \hat{\beta}_1 \cdot \text{salary}}}$$
+
+
+
+```{r}
+
+
+# build the logistic regression function 
+
+
+
+
+# extract the coefficients
+
+
+
+
+# create the prediction function 
+
+
+
+  
+
+# what is the probability that if a school is paying $80,000 on average to a 
+# particular faculty rank, this rank corresponds to the Full professor rank
+# (instead of the Assistant Professor rank)? 
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 2.2.: Plotting the logistic regression function 
+
+
+Let's now plot the fitted logistic regression function to see how the
+probability that the rank corresponds to Full professor changes as a function of
+the salary amount.
+
+
+
+```{r, warning = FALSE}
+
+
+
+# to plot this function we add 1 to it
+
+
+
+
+
+
+# plot the logistic regression function  
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+### Part 2.3: Checking the model fit
+
+As we discussed the logistic regression model fits a model of the form: $log(odds) = \hat{\beta}_0 + \hat{\beta}_1 \cdot x_1$. Thus if this model is appropriate, there should be a linear relationship between the $x$ and the log odds. 
+
+We can examine this by estimating probabilities in evenly spaced regions of the range of the x values and the proportion fo points in each neighborhood. We can then convert these proportions (i.e., estimated probabilities) into log(odds) and see if they are a linear function of the x values. Let's try this now with our simple logistic regression model.
+
+
+```{r}
+
+
+# Breaking the data into salary groups at $10,000 increments and calculating the proportion
+#  of full professors in each group (which is an estimate of the probability in each group).
+#  Also adding the log-odds of the probability in each group
+
+bin_ends <- seq(30000, 140000, by = 10000) 
+bin_centers <- bin_ends + 10000/2
+
+assistant_full_data_augmented <- assistant_full_data |>
+  mutate(salary_group = cut(salary_tot, bin_ends, labels = FALSE)) |>
+  group_by(salary_group) |>
+  mutate(prob_rank = mean(rank_name == "Full"), n = n()) |>
+  mutate(log_odds_rank = log(prob_rank/(1 - prob_rank))) |>
+  mutate(bin_center = bin_centers[salary_group])
+
+
+
+# Plotting the log-odds as a linear function of the salary in each group to see if
+# the logistic regression model is a good fit to the data
+
+
+
+
+
+
+# Can add a direct linear fit of log-odds as a function of salary to the plot
+# (not exactly the same because we are not using exactly the same data but very close
+# (i.e., omitting data, not using full range of data, taking the mean in each group to estimate probs etc.))
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+### Part 2.3: Multiple logistic regression
+
+
+We can use multiple predictors in our logistic regression function as well.
+Let's create a function that gives the probability that the rank corresponds to
+Full professor given a salary amount a log10 endowment size.
+
+
+
+```{r}
+
+
+# fit the model
+
+
+
+# extract the regression coefficients
+
+
+
+
+
+# build a function that can predict faculty rank based on salary and endowment
+
+
+
+
+# predict probability Full professor if average salary is $80,000 
+# and the school has a $10 million endowment ($10^7)
+
+
+
+
+# predict probability Full professor if average salary is $80,000 
+# and the school has a $10 billion endowment ($10^10)
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.4: Visualzing the multiple logistic regression function
+
+
+Let's now visualize the probability function P(Full professor | salary, log_endowment)!
+
+
+
+```{r}
+
+
+# create a 2D plot of the probability that a car is new as a function of price and mileage
+salary_intervals <- seq(10000, 120000, by = 100)
+log_endowment_intervals <- seq(5, 10, by = .1)
+
+
+
+# there are more efficient ways to do this using apply or mapping functions
+
+
+
+
+
+
+
+# create the plot
+
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: Poission regression
+
+In Poisson regression, we try to predict count data; i.e., our predictions are non-negative integers: 0, 1, 2, 3, ...
+
+To explore Poisson regression, let's model how many times the Roy Kent said the word f.ck on each episode of the TV show Ted Lasso. In particular, we will assess whether he said f.ck at a higher rate during episodes when: 
+  a. He was coaching soccer.  
+  b. When he was dating Keeley Jones.   
+
+This analysis is based on the work of Deepsha Menghani and Julia Silge. 
+
+
+$\\$
+
+
+### Part 3.1: Loading the data
+
+The R chunk below loads the data we will need for our analyses. In particular, the data is in a package packaged created by Deepsha Menghani which we will install from GitHub and then load the data into R.
+
+The variables that are of interest for our analysis are: 
+
+1. `F_count_RK`: How many times Roy Kent said F.ck in an episode.   
+2. `Coaching_flag`: Whether Roy Kent was coaching in an episode.  
+3. `Dating_flag`: Whether Roy Kent was dating Keeley in an episode.  
+
+
+```{r load_richmond_data}
+
+# devtools::install_github("deepshamenghani/richmondway")
+
+library(richmondway)
+
+data(richmondway)
+
+
+```
+
+
+
+$\\$
+
+
+
+
+### Part 3.2: Visualizing the data
+
+Let's start by visualizing the data. 
+
+
+```{r viz_richmond}
+
+
+
+
+
+
+
+```
+
+
+
+
+### Part 3.3: Building a GLM
+
+Let's now fit a Geralized Linear Model to the data, were we try to predict the number of times Roy Kent say f.ck as a function of whether he was coaching and or dating Keeley. To do this we will use the `glm()` function and set the family to be poisson.  
+
+
+```{r}
+
+
+
+
+```
+
+
+Does there appear to be a statistically significant relationship between how many times Roy Kent said f.ck and whether he was coaching and/or dating Keeley? 
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 3.4: Bootstrap confidence intervals for regression parameters
+
+We can also use the bootstrap to create confidence intervals for the regression parameters. 
+
+
+```{r boot_richmond}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
