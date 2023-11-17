@@ -644,7 +644,7 @@ below extracts a data frame with just this relevant condo, and you can use the
 
 Then in the answer section below please do the following:
 
-1. Write down the predicted price for the property at 869 Orange St Unit 8E
+1. Write down the predicted price for the property at 869 Orange St Unit 5E
 and whether you think this is a reasonable prediction or if you think
 it is too high or too low.
 
