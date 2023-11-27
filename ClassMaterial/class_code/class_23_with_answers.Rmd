@@ -1,0 +1,477 @@
+---
+title: "Class 23 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some
+packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+SDS230::download_data("IPED_salaries_2016.rda")
+
+
+```
+
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+library(dplyr)
+library(ggplot2)
+
+#options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+ * One-way ANOVA
+ * Connections between ANOVA and linear regression
+ * Pairwise comparisons after running an ANOVA
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 1: One-way ANOVA to analyze if the mean salary differs for different faculty ranks
+
+
+
+Let's assess an obvious question: do professors of different ranks have different salaries on average?
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.1: State the null and alternative hypotheses 
+
+
+Let's start as always by stating the null and alternative hypotheses:
+
+$H_0: \mu_{assistant} = \mu_{associate} = \mu_{full}$
+
+$H_A: \mu_{i} \ne \mu_{j}$ for some pair of i, j
+
+
+$\alpha = 0.05$
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.2a: Plot the data
+
+
+```{r IPED_plot}
+
+library(dplyr)
+
+load("IPED_salaries_2016.rda")
+
+IPED_2 <- IPED_salaries |>
+  filter(endowment > 0) |>
+  mutate(log_salary = log10(salary_tot)) |>
+  filter(CARNEGIE %in% c(15, 31)) |>
+  filter(rank_name %in% c("Assistant", "Associate", "Full")) |>
+  group_by(school) |>
+  mutate(num_ranks = n()) |>
+  filter(num_ranks == 3)     # only use schools that have all three ranks
+
+dim(IPED_2)
+
+
+
+# could look at the log salary instead...
+# IPED_2$salary_tot <- IPED_2$log_salary
+
+
+# create a boxplot of the data using ggplot
+IPED_2 |>
+  ggplot(aes(rank_name, salary_tot, fill = rank_name)) + 
+  geom_boxplot() + 
+  ylab("Salary ($)") + 
+  xlab("Rank")
+
+
+```
+
+
+
+
+```{r}
+
+# let's get summary statistics of the data
+faculty_summary <- IPED_2 |>
+  group_by(rank_name) |>
+  summarize(SD_salary = sd(salary_tot), 
+            # SD_log_salary = sd(log_salary),   # if we are really worried about heteroscedasticity we could analyze the log of salaries
+            salary_tot = mean(salary_tot))
+
+
+faculty_summary
+
+
+# let's create another visualization of the data
+IPED_2 |>
+  ggplot(aes(rank_name, salary_tot, col = rank_name)) + 
+  geom_jitter(position = position_jitter(width = .2)) + 
+  xlab("Faculty rank") + 
+  ylab("Salary ($)") + 
+  geom_crossbar(data = faculty_summary, mapping = aes(ymin = salary_tot, ymax = salary_tot, col = rank_name), size=.5, width = .5)
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 1.2b: Calculate the observed statistic
+
+Our observed statistic is an F-statistic:
+
+$$F = \frac{\frac{1}{K-1}\sum_{i=1}^K n_i(\bar{x}_i - \bar{x}_{tot})^2}{\frac{1}{N-K}\sum_{i=1}^K \sum_{j=1}^{n_i} (x_{ij} - \bar{x}_i)^2}$$
+
+
+We will cheat and use the `lm()` and `anova()` functions to get the F-statistic.
+On the homework you will need to calculate this statistic from the data using
+dplyr!
+
+
+```{r IPED_obs_stat}
+
+
+# Getting the observed F-statistic for the IPED data using built in R functions
+# On the homework be sure to use dplyr to actually calculate this statistic!
+
+(obs_stat <- anova(lm(salary_tot ~ rank_name, data = IPED_2))$F[1])
+
+
+  
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 3: Create the null distribution
+
+
+Let's visualize the null distribution.
+
+
+```{r IPED_null_dist, message = FALSE}
+
+# calculate the degrees of freedom
+N <- nrow(IPED_2)
+K <- 3
+
+(df1 <- K - 1)
+(df2 <- N - K)
+
+
+# visualize the null distribution 
+x <- seq(-.5, 5, by = 0.01)
+y <- df(x, df1, df2)
+
+plot(x, y, type = "l")
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Part 1.4: Calculate a p-value
+
+
+```{r IPED_pvalue}
+
+
+# calculate the p-value
+(p_value <- pf(obs_stat, df1, df2, lower.tail = FALSE))
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 1.5: Make a decision
+
+
+Since `r p_value` is less than $\alpha = 0.05$ we can reject the null
+hypothesis, although we should really check the model assumptions before making
+this claim. We will do this next...
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+## Part 2: Connections between ANOVA and regression 
+
+
+Let's look at connections between the least squares fit we used when fitting
+linear regression models and our one-way ANOVA.
+
+
+
+$\\$
+
+
+
+### Step 2.1: Least squares offsets are the group means
+
+
+Let's look at the mean salary for each rank and compare it to the
+least squares offsets that the `lm()` function finds.
+
+
+```{r least_squares_means}
+
+# get the mean and sd of the salary for each faculty rank
+IPED_stats <- IPED_2 |>
+  group_by(rank_name) |>
+  summarize(mean_salary = mean(salary_tot),
+            sd_salary = sd(salary_tot))
+
+
+# fit a linear model 
+fit_salary <- lm(salary_tot ~ rank_name, data = IPED_2)
+
+
+
+# check that the least squares fit offsets are the means of each group
+(summary_salary <- summary(fit_salary))
+
+fit_coefs <- coef(fit_salary)
+
+
+c(fit_coefs[1], fit_coefs[1] + fit_coefs[2], fit_coefs[1] + fit_coefs[3])
+
+IPED_stats$mean_salary
+
+```
+
+
+
+$\\$
+
+
+
+
+### Step 2.2: Using R to get an ANOVA table and to look at diagnostic plots
+
+
+We can use the `anova()` function to create an ANOVA table, and we can use the
+`plot()` function to look at diagnostic plots to make sure our ANOVA conditions
+have been met.
+
+
+
+```{r}
+
+# an easy way to get the ANOVA table using the ANOVA function 
+(anova_table <- anova(fit_salary))
+
+# check that SST = SSG + SSE
+(SST <- sum((IPED_2$salary_tot - mean(IPED_2$salary_tot))^2))   # SST
+
+sum(anova_table$`Sum Sq`)  #  SSG + SSE
+
+
+
+# we can use regression diagnostic plots to assess if ANOVA conditions have been met
+par(mfrow = c(2, 2))
+plot(fit_salary)
+
+
+# we should also check that the maximum and minimum standard deviations are not greater 
+# than a factor of 2 apart
+IPED_stats$sd_salary
+max(IPED_stats$sd_salary)/min(IPED_stats$sd_salary)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+###  Part 2.3 Kruskal–Wallis test to see if any of our groups stochastically dominate another group. 
+
+If we are concerned that our one-way ANOVA conditions are not met, we can run a
+Kruskal–Wallis test which does not rely on the assumptions of normality and
+homoscedasticity. We could also run a permutation test which does not rely on
+these assumptions either.
+
+
+```{r}
+
+#Kruskal–Wallis test
+kruskal.test(salary_tot ~ rank_name, data = IPED_2)
+
+
+# compare to the ANOVA 
+# anova(fit_salary)
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 3: Pairwise comparisons after running a one-way ANOVA
+
+
+
+
+
+###  Part 3.1 Pairwise comparisons in R
+
+If we run a one-way ANOVA and the results are statistically significant, there
+are a number of tests we can run to see which pairs of results are significantly
+different.
+
+
+
+```{r}
+
+
+# test with no multiple comparisons adjustment (not great)
+(pairwise_ttests <- pairwise.t.test(IPED_2$salary_tot, IPED_2$rank_name, p.adj = "none"))
+
+
+# with the Bonferroni correction
+(bonferroni <- pairwise.t.test(IPED_2$salary_tot, IPED_2$rank_name, p.adj = "bonferroni"))
+
+
+# Note, the Bonferroni p-values are 3 times larger than the p-values with no adjustment
+bonferroni$p.value/pairwise_ttests$p.value
+
+
+# Tukey's HSD test using the TukeyHSD() function 
+# It is giving results similar to the Bonferroni correction
+fit_salary_aov <- aov(salary_tot ~ rank_name, data = IPED_2)
+TukeyHSD(fit_salary_aov)
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+
+
+
+
