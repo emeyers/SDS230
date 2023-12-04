@@ -1,0 +1,1015 @@
+---
+title: "Class 25 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+
+
+$\\$
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some
+packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+SDS230::download_data("freshman-15.txt")
+
+SDS230::download_data("metal_bands.rda")
+
+SDS230::download_data("IPED_salaries_2016.rda")
+
+
+```
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(plotly)
+
+#options(scipen=999)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Overview
+
+ * A few additional topics on the ANOVA
+ * String manipulation
+
+
+
+$\\$
+
+
+
+## Part 1: A few additional topics on the ANOVA
+
+
+
+Let's briefly discuss a few last topics on the analysis of variance. 
+
+
+
+
+### Part 1.1: Examening unbalanced data
+
+
+In an unbalanced data, there are different numbers of measured responses at the
+different variable levels. When running an ANOVA on unbalanced data, one needs
+to be careful because there are different ways to calculate the sum of squares
+for the different factors, and this can lead to different results about which
+factors are statistically significant. Let's examine this using the IPED faculty
+salary data.
+
+
+```{r}
+
+load("IPED_salaries_2016.rda")
+
+# Factor A: lecturer, assistant, associate, full professor
+# Factor B: liberal arts vs research university 
+
+IPED_3 <- IPED_salaries |>
+  filter(rank_name %in% c("Lecturer", "Assistant", "Associate", "Full")) |>
+  mutate(rank_name  = droplevels(rank_name)) |>
+  filter(CARNEGIE %in% c(15, 31)) |>
+ # na.omit() |>
+  mutate(Inst_type = dplyr::recode(CARNEGIE, "31" = "Liberal arts", "15" = "Research extensive"))
+
+
+# examine properties of the data 
+table(IPED_3$Inst_type, IPED_3$rank_name)
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 1.2: Examening unbalanced data - Type I sum of squares
+
+In type I sum of squares, the sum of squares are calculated sequentially, where
+first SSA is taken into account, and then SSB is consider. In particular:
+
+* Factor A sum of squares is: SS(A) from fitting `lm(y ~ A)`
+* Factor B sum of squares is: SS(B|A) from fitting `lm(y ~ A + B)` and subtracting this from SS(A)
+* The interaction AB sum of squares is: SS(A, B, AB) - SS(A, B); i.e., the model is fit will `lm(y ~ A*B)` and then SS(A, B) is subtracted. 
+
+
+```{r}
+
+# Create a main effects and interaction model
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+### Part 1.3: Examening unbalanced data - Type III sum of squares
+
+
+In type III sum of squares, the sum of squares the full model is fit SS(A, B, AB) and then the sum of squares for each factor is determined by taking the full model SS(A, B, AB) and subtracting out the fit when a given factor is missing.
+
+* Factor A sum of squares is: SS(A, B, AB) - SS(B, AB)
+* Factor B sum of squares is: SS(A, B, AB) - SS(A, AB)
+* The interaction AB sum of squares is: SS(A, B, AB) - SS(A, B)
+
+
+```{r}
+
+# type III sum of squares the order that variables are added does not matter
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 1.4: Repeated measures ANOVA
+
+
+In a repeated measures ANOVA, the same case/observational units are measured at
+each factor level. For example, we might want to understand if people prefer
+chocolate, butterscotch or caramel sauce on their ice cream. Rather than doing a
+"between subjects" experiment, where we would have different people taste ice
+cream with chocolate, butterscotch or caramel sauce, instead we can use a
+"within subjects" design where the each person in the experiment tastes and
+gives ratings for all three toppings.
+
+To run a repeated measures ANOVA, one gives each observational unit a unique ID,
+and then one treats this ID as another factor in the analysis; i.e., one runs a
+factorial analysis where one of the factors is the observational unit ID.
+
+An advantage of repeated measures ANOVA is similar to the advantage to running a
+paired samples t-test, namely it can reduce a lot of the between observational
+unit variability making it easier to see effects that are present. In fact,
+running a repeated measures ANOVA with a factor that only has two levels is
+equivalent to running a paired samples t-test. Let's explore this using the
+example of Freshman gaining weight from homework 4.
+
+
+```{r}
+
+# load the data
+freshman <- read.table("freshman-15.txt", header = TRUE) |>
+  mutate(Subject = as.factor(Subject))
+
+
+# run a paired t-test testing H0: mu_diff = 0 vs. HA: mu_diff > 0, 
+#   where mu_diff = mu_end_i - mu_start_i 
+
+
+
+
+
+# let's transform to put it in a long format
+
+
+
+
+
+# let's run run a repeated measures ANOVA 
+# we have the same p-value, and F = t^2
+
+
+
+
+
+```
+
+
+
+If you want more practice running a repeated measures ANOVA, you can analyze the
+popout attention data from homework 10, where you treat the participants in the
+study as a factor in the analysis.
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 2: String manipulation using stringr
+
+
+The package stringr allows you to manipulate character strings. Many of the
+functions in the stringr package are available in base R but the naming
+conventions and arguments in stringr are more consistent which makes them easier
+to use.
+
+
+All stringr functions: 
+
+* start with `str_`
+* take a (vector of) string(s) as the first argument
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 2.1: Base R and stringr
+
+
+Let's start by putting a string in lower case using both base R and stringr. 
+
+
+
+```{r}
+
+library(stringr)
+
+
+# base R
+
+
+
+# stringr
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+### Part 2.2: Trimming and padding a string
+
+
+We can trim and pad strings using `str_trim()` and `str_pad()`
+
+
+```{r}
+
+
+
+# trim a string 
+
+
+
+
+# pad a string
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+### Part 2.3: Concatenating strings
+
+
+We can concatenate strings using `str_c`. 
+
+The base R function `paste()` and `paste0()` are also useful for this. 
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 2.4: Detecting a substring
+
+
+We can detect whether a substring exists in a longer string using `str_detect()`
+
+
+
+```{r}
+
+
+load("metal_bands.rda")
+
+
+# How many bands come from the USA?
+# On homework 1 ignored bands that came from the USA and another country
+
+
+
+
+
+# Let's find all the bands that have some origin in the USA
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.5: Replacing a piece of a string
+
+
+We can replace the first occurrence of a string using `str_replace("String", "old", "new")`
+
+We can replace all occurrences of a string using `str_replace_all()`
+
+
+
+```{r}
+
+
+# replace an occurrence of a substring
+#str_replace("String", "old", "new")
+
+
+
+
+
+
+
+
+# Example: let's download an article from the internet
+
+#base_name <-  "https://www.wsj.com/politics/elections/why-biden-touts-jobs-when-americans-care-about-prices-37dc7013?mod=Searchresults_pos14&page=1"
+
+base_name <- "https://www.nytimes.com/2023/11/27/climate/biden-cop28-climate-dubai.html?searchResultPosition=3"
+
+article_name <- "politics.html"
+download.file(base_name, article_name)
+
+
+# viewer <- getOption("viewer")
+# viewer(article_name)
+
+
+# read the whole article as a single string
+the_article <- readChar(article_name, file.info(article_name)$size)
+
+
+
+# replace all occurrences of a string
+
+
+
+
+# write the new article
+
+
+
+
+#viewer("sleepy_article.html")
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.6:  Regular expressions
+
+
+We can use regular expressions to do a lot more complex string matching!
+
+
+This topic is a bit beyond the scope of the class, but if you need to do more
+complex string manipulation for your final project I recommend you look more
+into this topic using Google to find tutorials, chatGPT to help with the code,
+and/or talk to me or the TAs to get additional help.
+
+
+As one example of using regular, let's examine how we can match string that
+start or end with particular letters. In particular we can:
+
+
+* Match the start of a string using the ^ symbol
+* Match the end of a string using the $ symbol
+* [Aa] detects a lower or upper case A
+
+
+
+
+```{r start_end}
+
+
+
+fruits <- c("apple", "pineapple", "Pear", "orange",  "peach", "banana")
+
+
+# detect all fruits that end with e
+
+
+
+
+# detect all fruits that start with lower or upper case P
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 3: tidyr for pivoting data
+
+
+We can use the `tidyr` package to pivot data between "long" and "wide" formats.
+
+Having data in different formats can be useful to calculating particular
+statistics and for visualizing data using ggplot.
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 3.1: tidyr for pivoting data longer
+
+
+Let's see if we can compare men and women salary on the same plot using ggplot
+by first pivoting our longer.
+
+
+```{r pivoting_longer}
+
+library(tidyr)
+
+
+# get salaries for men and women
+men_women <- IPED_salaries |>
+  filter(rank_name == "Full") |>
+  select(school, endowment, salary_men, salary_women) |>
+  na.omit()
+
+# how can plot men and women salaries on the same plot using ggplot? 
+
+# let's pivot the data longer
+
+
+
+
+
+
+# visualize as a boxplot
+
+
+
+
+
+
+
+# visualize as a density plot
+
+
+
+
+
+
+
+```
+
+
+Does it appear that men and women are being paid differently? 
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 3.2: tidyr for pivoting data wider
+
+
+Let's pivot back wider to see if we can come up with more informative plots using ggplot. 
+
+
+
+```{r pivoting_wider}
+
+
+# create the data longer again and mutate on salary difference
+
+
+
+
+
+
+# visualize as a boxplot
+
+
+
+
+
+
+# visualize as a density
+
+
+
+
+
+
+```
+
+
+Does it appear that men and women are being paid differently? 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+## Part 4: Joining data frames
+
+
+Often data of interest is spread across multiple data frames that need to be
+joined together into a single data frame for further analyses. We will explore
+how to do this using dplyr.
+
+
+Let's look at a very simple data set to explore joining data frames. 
+
+
+```{r}
+
+library(dplyr)
+
+
+load('x_y_join.rda')
+
+x
+y
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 4.1: Left join
+
+Left joins keep all rows in the left table.  
+
+Data from right table added when there is the key matches, otherwise NA as added. 
+
+Try to do a left join of the data frames x and y using their keys.
+
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 4.2: Right join
+
+
+Right joins keep all rows in the right table.  
+
+Data from left table added when there is the key matches, otherwise NA as added. 
+
+Try to do a right join of the data frames x and y using their keys.
+
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 4.3: Inner join
+
+
+Inner joins only keep rows in which there are matches between the keys in both tables
+
+Try to do an inner join of the data frames x and y using their keys.
+
+
+```{r}
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 4.4: Full join
+
+Full joins keep all rows in both table.  
+
+NAs are added where there are no matches.
+
+
+
+
+```{r}
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 4.5a: Duplicate keys
+
+
+Duplicate keys are useful if there is a one-to-many relationship (duplicates are usually in the left table). 
+
+Let's look at two other tables that have duplicate keys
+
+
+
+```{r}
+
+x2
+y2
+
+nrow(x2)
+nrow(y2)
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 4.5b: Duplicate keys
+
+
+If both tables have duplicate keys you get all possible combinations (Cartesian
+product). This is almost always an error! Always check the output dimension
+after you join a table because even if there is not a syntax error you might not
+get the table you are expecting!
+
+
+Try doing a left join on the data frames x2 and y2 using only their first keys
+(i.e., key1_x and key1_y). Save the joined data frame to an object called
+`x2_joined`. Note that `x2_joined` has more rows than the original `x2` data
+frame despite the fact that you did a left join!  This is due to duplicate keys
+in both x2 and y2.
+
+Usually a mistake was made when a data frame ends up having more rows after a
+left join. It is good to check how many rows a data frame has before and after a
+join to catch any possible errors.
+
+
+
+```{r}
+
+# initial left data frame only has 3 rows
+
+
+
+# left join when both the left and right tables have duplicate keys
+
+
+
+
+# output now has more rows than the initial table
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 4.5c: Duplicate keys
+
+
+To deal with duplicate keys in both tables, we can join the tables **using
+multiple keys** in order to make sure that each row is uniquely specified.
+
+Try doing a left join on the data frames x2 and y2 using both the keys. Save the
+joined data frame to an object called `x2_joined_mult_keys`. Note that
+`x2_joined_mult_keys` has the same number of rows as the original `x2` data
+frame which is usually what we want when we do a left join.
+
+
+
+
+```{r}
+
+
+# initial left data frame only has 3 rows
+
+
+
+
+# join the data frame using multiple keys
+
+
+
+
+# output now only has 3 rows
+
+
+
+
+```
+
+
+
+
+
+$\\$ 
+
+
+
+
+### Part 4.5: Exploring the flight delays data
+
+
+Let's look at three data frames from the NYC flights delays data set:
+
+- `flights`: information on flights  
+- `airlines`: information on the airlines  
+- `weather`: information about the weather  
+
+
+
+```{r}
+
+
+library(nycflights13)
+
+data(flights)
+data(airlines)
+
+
+# get the names from the data frames
+
+
+
+
+
+# join airlines on to the flights data frame
+
+
+
+
+
+# delays for each airline
+
+
+
+
+
+
+
+
+# let's look at the weather too
+
+
+
+
+
+# join the flights and the weather selecting only arrival delay and time 
+
+
+
+
+
+
+# join also including the airport location 
+
+
+
+
+
+
+
+# visualize the regression line to the data predicting delay from wind speed
+
+
+
+
+
+
+
+```
+
+
+
+
