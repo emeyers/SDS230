@@ -65,7 +65,7 @@ $\\$
 
  * Pivoting data
  * Joining data frames
- * Shiny
+ * Interactive Shiny apps
 
 
 
