@@ -1,0 +1,209 @@
+---
+title: "Class 5 notes and code"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+$\\$
+
+
+
+
+```{r setup, include=FALSE}
+
+# install.packages("latex2exp")
+
+library(latex2exp)
+
+knitr::opts_chunk$set(echo = TRUE)
+
+set.seed(123)
+
+```
+
+
+
+
+
+<!--  Please run the code in the R chunk below once. It will install a packages, and and download figures/data we will use.  -->
+
+```{r, eval = FALSE}
+
+
+# download the okcupid profile data again
+download.file("https://raw.githubusercontent.com/emeyers/SDS230/master/ClassMaterial/data/profiles_revised.csv", "profiles_revised.csv", mode = "wb")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+## Overview
+
+ * The central limit theorem 
+ * Confidence intervals
+ * The bootstrap
+ * Using the bootstrap to calculate confidence intervals in R
+
+
+
+$\\$
+
+
+
+
+
+## Part 0:  The central limit theorm
+
+The [central limit theorm (CTL)](https://en.wikipedia.org/wiki/Central_limit_theorem) establishes that (in most situations) when independent random variables are added their (normalized) **sum** converges to a normal distribution.
+
+Put another way, if we definte the average random (i.i.d) sample {$X_1$, $X_2$, ..., $X_n$} of size *n* as: 
+
+$S_{n}:={\frac{X_{1}+\cdots +X_{n}}{n}}$
+
+then the CTL tells us that:
+
+$\sqrt{n}(S_{n} - \mu)$ $\xrightarrow {d} N(0,\sigma^{2})$
+
+
+You will explore this more through simulations on homework 2. 
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 1: Confidence intervals
+
+
+$\\$
+
+
+Confidence intervals are ranges of values that capture a parameter a fix proportion of time.
+
+Let's explore this more through the class slides...
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 2: The bootstrap
+
+The bootstrap is a method that can be used to create confidence intervals for a large range of parameters. 
+
+The central concept behind the bootstrap is the "plug-in principle" where we treat our sample of data as if it were the population. We then sample *with replacement* from **our sample** to create a *bootstrap distribution* which is a proxy for (the spread of) the sampling distribution. 
+
+
+
+
+$\\$
+
+
+
+
+#### Part 2.1: Creating a bootstrap distribution in R
+
+
+To sample data in R we can use the `sample(the_data)` function. To sample data with replacement we use the `replace = TRUE` argument, i.e., `sample(the_data, replace = TRUE)`.  
+
+Below we calculate the bootstrap distribution for mean age of OkCupid users using just the first 20 OkCupid users in the data set. 
+
+
+```{r boot_dist}
+
+
+# read in the okcupid data
+profiles <- read.csv("profiles_revised.csv")
+
+
+# get the ages from the first 20 OkCupid profiles
+the_ages <- profiles$age[1:20] 
+
+# create the bootstrap distribution
+bootstrap_dist <- NULL
+for (i in 1:10000){
+  boot_sample <- sample(the_ages, replace = TRUE)
+  bootstrap_dist[i] <- mean(boot_sample)
+}
+
+
+# plot the bootstrap distribution to make sure it looks normal
+hist(bootstrap_dist, 
+     breaks = 100, 
+     xlab = TeX("$\\bar{x}$^*"), 
+     main = "Histogram of the bootstrap distribution")
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+#### Part 2.2: Calculating the bootstrap standard error SE*
+
+
+The standard deviation of the *bootstrap distribution* is usually a good approximation of the standard deviation of the sampling distribution - i.e, it is a good approximation of the *standard error SE*.
+
+When our bootstrap distribution is relatively normal, we can use the fact that 95% of values fall within to standard deviations of a normal distribution to calculate 95% confidence intervals as:
+
+$CI_{95} = [stat - 2 \cdot SE^*,  stat + 2 \cdot SE^*]$
+
+For example, for a our bootstrap distribution we have a 95% confidence interval for the mean $\mu$ as: 
+
+$CI_{95} = [\bar{x} - 2 \cdot SE^*,  \bar{x} + 2 \cdot SE^*]$
+
+
+
+
+```{r bootstrap_SE}
+
+# calculate the bootstrap standard error SE* as the standard deviation of the bootstrap distribution 
+(SE_boot <- sd(bootstrap_dist))
+
+# calculate the 95% CI using SE*
+CI_lower <- mean(the_ages) - 2 * SE_boot
+CI_upper <- mean(the_ages) + 2 * SE_boot
+
+c(CI_lower, CI_upper)
+
+
+
+```
+
+
+
+Above we are using the bootstrap to create a 95% confidence interval which should capture the mean age $\mu_{age}$ 95% of the time.
+
+
+
+
+
+
+
+
+
