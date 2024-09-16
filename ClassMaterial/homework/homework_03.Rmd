@@ -1,0 +1,784 @@
+---
+title: "Homework 3"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+
+
+$\\$
+
+
+
+
+The purpose of this homework is to practice using randomization methods to run
+hypothesis tests. Please fill in the appropriate code and write answers to all
+questions in the answer sections, and then submit a compiled pdf with your
+answers through Gradescope by 11pm on Sunday, September 22th.
+
+As always, if you need help with the homework, please attend the TA office hours
+which are listed on Canvas and/or ask questions on Ed Discussions. Also, if you
+have completed the homework, please help others out by answering questions on Ed
+Discussions, which will count toward your class participation grade.
+
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some
+packages and download data needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+download.file("https://www.openintro.org/data/rda/resume.rda", "resume.rda")
+
+SDS230::download_image("diamonds_pressure.jpg")
+
+
+```
+
+
+
+
+<!-- The R chunk below sets some parameters that will be used in the rest of the document. Please ignore it and do not modify it. -->
+```{r options, message=FALSE, warning=FALSE, tidy=TRUE, echo = FALSE}
+
+library(knitr)
+#library(latex2exp)
+
+options(scipen=999)
+
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+set.seed(230)  # set the random number generator to always give the same random numbers
+    
+```
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 1: Examining discrimination in hiring
+
+
+A study by Bertrand and Mullainathan (2004) in the [American Economic
+Review](https://www.nber.org/papers/w9873) examined discrimination in the job
+market. In the study, the researchers randomly generated information such as
+years of experience and education details to create a realistic-looking resumes.
+They then randomly assigned a name to the resume that would communicate the
+applicant's gender and race. The first names chosen for the study were selected
+such that the names would predominantly be recognized as belonging to Black or
+White individuals. For example, Lakisha was a name that their survey indicated
+would be interpreted as a Black woman, while Greg was a name that would
+generally be interpreted to be associated with a White male. They then sent the
+resumes out to jobs posted in Boston and Chicago newspapers and observed whether
+there were differences in how frequently employers gave a callback based on the
+perceived race and gender of the applicant.
+
+In the first exercise, you will use the data collected by Bertrand and
+Mullainathan to run a hypothesis test to assess whether there is evidence
+that applicants that are perceived to be White have a higher callback rate than
+applicants that are perceived to be Black. 
+
+Credit: An analysis of this data was described in the book 'Quantitative Social
+Science An Introduction' by Imai, and the data comes from the [OpenIntro Data
+Sets](https://www.openintro.org/data/). To learn more about the data, including 
+seeing a data dictionary, see https://www.openintro.org/data/index.php?data=lakisha.
+If you are interested in learning more about more recent followup studies, please
+see [this article](https://www.nytimes.com/2024/04/08/upshot/employment-discrimination-fake-resumes.html)
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.1 (5 points)**: To start the analysis, please state the null and
+alternative hypotheses for testing whether applicants whose names are perceived
+to be White have a higher callback rate than applicants whose names are
+perceived to be Black using both words and in the appropriate symbols that we
+have discussed in class. Also, please state whether this study is an
+observational study or an experiment, and why.
+
+Note: We are using the term "callback rate" to mean the proportion of resumes
+that received callbacks from potential employers.
+
+
+
+
+**Answer**: 
+
+
+**The null and alternative hypothesis in words**
+
+
+
+
+
+
+
+**The null and alternative hypothesis in symbols**
+
+
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.2 (8 points) **: The data from the Bertrand and Mullainathan study is
+loaded below. Please complete the following steps to calculate the main observed 
+statistic of interest for our hypothesis test:
+
+1. Create an object called `race` that contains the data in the `race` variable
+in the `resume` data frame. Also create an object called `callback` that has the
+data from `callback_received` variable in the `resume` data frame. For the
+`callback` data, a 1 indicates the resume received a callback from an employer,
+while a 0 indicates that the resume did not receive a callback.
+
+2. Calculate the proportion of resumes that received callbacks from resumes that
+had names that were perceived to be White (i.e, the White name callback rate),
+and the proportion of resumes that received callbacks from resumes that had
+names that were perceived to be Black (i.e., the Black name callback rate).
+Print out these rates and then create an object called `obs_stat` that has the
+difference of the White and Black name callback rates. Report what the value of
+the observed statistic is in the answer section below using the appropriate
+symbol we have used in class. From just looking at this statistic value, state
+whether you believe there will be statistically significant evidence of a
+difference in these rates.
+
+Hint: there are several ways to do calculate the callback rates. Reviewing the
+material from the first three classes could be helpful here. Also, depending on
+the method you use, it could be important to remember that R is case sensitive.
+
+
+
+```{r part_1_2}
+  
+# load the data
+load("resume.rda")
+
+
+# 1. Extract the relevant vectors for the resume data frame
+
+
+
+# 2. Calculate the White and Black name callback rates and the difference of these rates
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.3 (15 points) **: Now let's use the `rbinom()` function to generate a
+null distribution that would be expected if the null hypothesis was true. To do
+this, please complete the following steps:
+
+1. Calculate the overall callback rate that ignores the perceived race of the
+name on the resume. Save this overall callback rate to an object called
+`overall_callback_rate`. This is the callback rate that would be expected if the
+rate was the same for resumes with stereotypical White and Black names (i.e., it
+is the callback rate consistent with the null hypothesis).
+
+2. Calculate the number of resumes in the Bertrand and Mullainathan data that
+have stereotypical White names and save this to an object called `size_white`.
+Likewise, calculate the number of resumes that have stereotypical Black names
+and save this to an object called `size_black`.
+
+3. Use the `rbinom()` to generate 10,000 simulated callback rates for the
+resumes with stereotypical White names that are consistent with the null
+hypothesis and save this an object called `null_white_rates`. Likewise the
+`rbinom()` to generate 10,000 simulated callback rates for the resumes with
+stereotypical Black names that are consistent with the null hypothesis and save
+this an object called `null_black_rates`. Then calculate the null distribution
+by subtracting the `null_black_rates` from the `null_white_rates` and save this
+to an object called `null_distribution`.
+
+4. Plot the null distribution as a histogram and add a vertical line at the
+observed statistic value.
+
+5. In the answer section below, state whether you believe you will be able to
+reject the null hypothesis based on looking at the plot you created in step 4.
+
+
+Hints: 
+
+1. The `rbinom()` returns counts of the number of successes out of "size" coin
+flips. You can turn this into rates (i.e., proportions) by dividing the maximum
+possible value that `rbinom()` can return.
+
+2. If you subtract two vectors of numbers `v1` and `v2` then each element of
+vector `v1` is subtracted from the element of vector `v1` at the same index
+location.
+
+3. The arguments to `rbinom(num_sims, size, prob)` are: 
+
+ * `num_sims`: the number of simulations to run.
+ * `size`:  the number of "coin flips" in each simulation.
+ * `prob`:  the probability of getting heads on each coin flip. 
+
+
+```{r part_1_3}
+
+
+# 1. calculate the `overall_callback_rate`
+
+
+
+# 2. create size_white and size_black objects
+
+
+
+
+# 3. create the null distribution
+
+
+
+
+# 4. plot the null distribution
+
+
+
+
+    
+        
+```
+
+**Answer**
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.4 (5 points)**: Now, use the `null_distribution` and the `obs_stat`
+objects to calculate the number of simulations that had a difference of
+proportion that was as high or higher than the observed statistic. Convert this
+to a p-value by dividing by the total number of simulations. Describe whether
+this p-value provides sufficient evidence that resumes with names generally
+perceived as White receive callbacks at a higher rate than resumes with names
+generally perceived as Black.
+
+
+```{r part_1_4}
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.5 (12 points)**: Now use the bootstrap to calculate a 95% confidence
+interval for the callback rate for resumes with names generally perceived as
+White. In the answer section, report whether your best point estimate for the
+proportion of callback for resumes with names generally perceived as Black falls
+in this confidence interval.
+
+Hint: Creating a vector of the callbacks for White sounding names is a good
+first step in the analysis.
+
+
+```{r part_1_5}
+    
+
+  # create a vector for the callback data for only resumes with stereotypical White names
+
+
+
+
+  # create the bootstrap distribution 
+
+
+
+   
+  
+
+  # plot the bootstrap distribution
+
+
+
+
+  
+  # create the confidence interval
+
+
+
+
+
+  
+  
+   
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.6 (5 points)**: There is also a formula for calculating the standard
+error of a proportion which is:
+
+
+$SE_{\hat{p}} = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$
+
+
+Use this formula to create 95% confidence intervals for the callback rate for
+resumes with names generally perceived as White, and compare it to the 95%
+confidence intervals you calculated in the previous problem. Describe in the
+answer section below whether the two methods for calculating confidence
+intervals lead to similar results.
+
+
+```{r part_1_6}
+
+
+
+
+
+```
+
+
+**Answer** 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Bonus (0 points)**:
+
+Explore the data set further and see if you can discover any other interesting
+results from the study.
+
+
+```{r part_1_7}
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+## Part 2: Do diamond prices differ depending on the quality of the cut? 
+
+
+In 2018, the total global wholesale value of polished diamonds amounted to
+almost [25.3 billion U.S.
+dollars](https://www.statista.com/statistics/612251/wholesale-value-of-polished-diamonds-worldwide/).
+The price of an individual diamond can be affected by several factors including
+the diamond's color, clarity, size and the quality of how it was cut. In this
+exercise, we will examine data from a large set of diamonds to assess whether
+the quality of the cut of a diamond affects the average price.
+
+
+
+$\\$
+
+
+
+
+**Part 2.0 (4 points)** 
+
+The code below loads a data frame called `diamonds` that comes from the ggplot2
+package, which is a package that is used to visualize data (we will discuss this
+package soon). For more information about the data set see [this
+website](https://ggplot2.tidyverse.org/reference/diamonds.html).
+
+In the exercises below we will compare the mean price of diamonds, for two
+different levels of the diamond's cut. The levels of cut we are going to compare
+are the `Fair` cut diamonds (which is the worst cut), and the `Ideal` cut
+diamonds, which is the best cut. To start this analysis, create a object called
+`fair_price` that contains the prices for all the diamonds corresponding to the
+`Fair` cut, and a vector object called `ideal_price` that contains the prices
+for all the diamonds corresponding to the `Ideal` cut. If done correctly, the
+`fair_price` vector should have 1,610 elements, and the `ideal_price` vector
+should have 21,551 elements in it.
+
+Also, report in the answer section below, how many cases and variables the full
+`diamonds` data frame has (the `dim()` function can help with this) and also
+whether you think the prices for the `Ideal` cut diamonds will be higher than
+the prices for `Fair` cut diamonds. Finally, please state whether this study is
+an observational study or an experiment and why.
+
+
+
+```{r diamond_data}
+
+library(ggplot2)
+data(diamonds)
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+In parts 2.1 to 2.5 you will now do the 5 steps to run a hypothesis test!
+
+
+
+$\\$
+
+
+
+
+**Part 2.1 (5 points)** Let's start our hypothesis testing in the usual way by
+stating the null and alternative hypotheses using words and symbols. Although
+you might have a prior expectation that one of the diamonds' cuts will have a
+higher average price than the other, please state the alternative hypothesis in
+a non-directional way, such that you are testing whether the average prices of
+the `Fair` cut and `Ideal` are different, and not that one price is higher than
+the other. When running your hypothesis test below, also do the analysis in such
+a way that you are doing a non-directional test (i.e., you will calculate the
+p-value by looking at both tails of the distribution).
+
+Finally, write down the significance level using the appropriate symbol, and set
+it to the most commonly used value.
+
+
+
+**Answer**:  
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+**Part 2.2 (4 points)**  Now calculate the value of that observed statistic that
+is appropriate for this analysis. In the answer section, write down the value
+for this statistic and use the appropriate notation to denote this statistic.
+Also, visualize the data by creating a side-by-side box plot comparing the two
+groups. Based on this plot, describe in the answer section whether you believe
+there is a difference in mean prices.
+
+
+```{r diamonds_stat}
+
+ 
+
+
+
+
+
+
+```
+
+**Answer**:  
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 2.3 (12 points)**  Now create a null distribution using a permutation
+test. To do this, combine data from both groups, randomly assign the data to a
+fake "fair" and "ideal" groups, calculate a null statistic, and repeat 10,000
+times to get a null distribution. Also, plot a histogram of the null
+distribution and add a red vertical line to the plot at the value of the
+observed statistic. Based on this plot, do you think the average diamond price
+is the same between the two cuts?
+
+Hint: You can randomize using the sample() function.
+
+```{r diamonds_null}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer** 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.4 (5 points)** Now calculate the p-value in the R chunk below. Be sure
+that you calculate the p-value using both tails (which should be consistent with
+how you stated the null hypothesis). Is this the p-value you would expect based
+on the plot of the null distribution and observed statistic in part 2.3?
+
+```{r diamonds_pvalue}
+
+
+
+
+
+
+
+
+```
+
+
+**Answer** 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 2.5 (4 points)** Are the results statistically significant? Do you
+believe there is a difference between these groups? Are these results surprising
+at all? Please answer these questions below.
+
+
+
+**Answers**:  
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+**Part 2.6 (5 points)** 
+
+
+From looking at the observed statistic, we notice that the fair cut diamonds
+actually have a higher price than the ideal cut diamonds! This is strange since
+one would expect diamonds that have a better cut would cost more. Try examining
+the full diamonds data frame and see if you can come up with a reason why it
+might be the case that fair cut diamonds cost more.
+
+Once you have identified another reason why the prices might be higher for the
+fair cut diamonds, create a plot (or two) that gives evidence that your
+explanation makes sense, and describe in the answer section below what is
+causing these strange results. Hint: use boxplots, scatterplots and/or other
+types of plots you see fit to explain the price difference.
+
+
+```{r challenge}
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+**Answers**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+![](diamonds_pressure.jpg)
+
+
+
+
+$\\$
+
+
+
+## Reflection (3 points)
+
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes
+link, and clicking on Reflection on homework 3.
+
+
+
+
