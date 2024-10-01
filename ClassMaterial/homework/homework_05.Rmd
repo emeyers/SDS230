@@ -45,6 +45,7 @@ packages and download data and images needed for these exercises.  -->
 ```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
 
 SDS230::download_data("ne_forecasts.rda")
+SDS230::download_data("freshman-15.txt")
 
 ```
 
