@@ -1,10 +1,10 @@
 ---
 title: "Class 14 notes and code"
 output:
+  html_document: default
   pdf_document: 
    fig_width: 7
    fig_height: 5
-  html_document: default
 editor_options: 
   chunk_output_type: console
 ---
