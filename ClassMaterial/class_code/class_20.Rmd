@@ -448,6 +448,54 @@ where a smaller MSPE is better.
 
 
 
+$\\$
+
+
+
+## Part 3: Visualizing multiple regression models with ggplot
+
+In prior classes we have visualized multiple regression models with categorical
+predictors using base R graphics. In particular, we created scatter plots for
+data in different categories using the `plot()` and `points()` and used the
+`col` argument to color the points. We then added on regression lines using the
+`abline()` function. This method was useful for educational purposes so that we
+could see the connection between the model parameters that were estimated using
+the `lm()` function, and the underlying data. However, if we want to create
+better looking visualizations in a more efficient manner, then it is better to
+use ggplot.
+
+Let's now use ggplot to visualize a multiple regression model that has one
+quantitative and one categorical variable. In particular, let's recreate the
+plot from class 19 part 3.6 where we display faculty salaries as a function of
+log endowment separately for different faculty ranks.
+
+
+
+```{r}
+
+# load the data into R
+load("IPED_salaries_2016.rda")
+
+
+# create the IPED data subset used in class 19 part 3
+IPED_2 <- IPED_salaries |>
+  filter(endowment > 0) |>
+  mutate(log_endowment = log10(endowment)) |>
+  filter(CARNEGIE %in% c(15, 31)) |>
+  filter(rank_name %in% c("Assistant", "Associate", "Full"))
+
+dim(IPED_2)
+
+
+
+# using ggplot
+
+
+
+
+
+
+```
 
 
 
