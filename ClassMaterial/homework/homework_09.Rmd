@@ -1,0 +1,753 @@
+---
+title: "Homework 9"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+
+
+$\\$
+
+
+
+
+
+The purpose of this homework is to learn how to fitting logistic regression
+models, and to gain additional practice creating regression models. Please fill in
+the appropriate code and write answers to all questions in the answer sections,
+then submit a compiled pdf with your answers through Gradescope by 11pm on
+Sunday November 17th.
+
+As always, if you need help with the homework, please attend the TA office hours
+which are listed on Canvas and/or ask questions on Ed Discussions). Also, if you 
+have completed the homework, please help others out by answering questions on Ed
+Discussions, which will count toward your class participation grade.
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will install some
+packages and download data and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+
+# Note: I only have permission to use this data for educational purposes so please do not share the data
+download.file('https://yale.box.com/shared/static/gzu5lhulepp3zsyxptwxoeafpst1ccdv.rda', 'car_transactions.rda')
+
+
+SDS230::download_data("condos_may_2022.rda")
+
+
+
+```
+
+
+
+
+<!-- The R chunk below sets some parameters that will be used in the rest of the
+document. Please ignore it and do not modify it. -->
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo = FALSE}
+
+library(knitr)
+library(latex2exp)
+library(dplyr)   
+library(ggplot2)
+
+options(scipen=999)
+
+opts_chunk$set(tidy.opts=list(width.cutoff=60)) 
+set.seed(230)  # set the random number generator to always give the same random numbers
+    
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 1: Logistic regression
+
+
+As we have discussed in class, logistic regression can be used to estimate the
+probability that a response variable `y` belongs to one of two possible
+categories. In these exercises, you will learn how to use logistic regression by
+fitting models that can give the probability that a car is new or used based on
+other predictors, including the car's price.
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 1.1 (6 points)**: The code below creates a data frame called
+`toyota_data` that has sales information on 500 randomly selected new and used
+Toyota cars. It also changes the order of the levels on the categorical variable
+`new_or_used_bought` which will make the plotting and modeling work better in
+these exercises.
+
+To start, create a visualization of the data using ggplot where price is on the
+x-axis and whether the car is new or used is on the y-axis. Use a
+`geom_jitter()` to plot points that have less overlap, and adjust the amount of
+vertical jitters so that there is a clear separation between the new and used
+cars (using `position_jitter()` inside the `geom_jitter()` could be useful). Also
+set the alpha transparency appropriately to also help deal with over-plotting.
+
+
+```{r viz_new_used}
+
+load("car_transactions.rda")
+
+# get toyota cars and change the order of the levels of the new_or_used_bought variable
+toyota_data <- filter(car_transactions, make_bought == "Toyota") |>
+  mutate(new_or_used_bought = factor(as.character(new_or_used_bought, levels = c("U", "N")))) |>
+  mutate(new_or_used_bought = relevel(new_or_used_bought, "U")) |>
+  na.omit() |>
+  group_by(new_or_used_bought) |>
+  slice_sample(n = 500)
+
+
+
+# visualize the data
+
+
+
+
+
+
+  
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.2 (8 points)**: Now fit a logistic model to predict the probability a
+car is new based on the price that was paid for the car using the `glm()`
+function. Then extract the offset and slope coefficients and save them to
+objects called `b0` and `b1`. Based on these coefficients, calculate what the
+predicted log-odds, odds and probability are that a car is new if it costs
+$15,000. Print these values out, and in the answer section, report what these
+values are.
+
+A note on R and logistic models: `new_or_used_bought` is a factor variable where
+"U" is the lowest level and "N" is the highest level. This means we can plug the
+variable into the `glm` function without further transformation, since R will
+interpret this dichotomous factor variable as composed of the 1s and 0s that a
+logistic regression expects.
+
+
+
+
+```{r logistic_fit}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer:**
+
+The predicted values that a car is new if it cost $15,000 are:
+
+1. log-odds = 
+
+2. odds = 
+
+3. probability = 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.3 (8 points)**:
+
+
+Now using the `b0` and `b1` coefficients calculated in part 1.2, write a
+function `get_prob_new()` that takes a price a car was sold for as an input
+argument and returns the probability the car was new using the equation:
+
+$$\text{P(new|price)} = \dfrac{\exp(\hat{\beta}_0 + \hat{\beta}_1 \cdot x_{price})}{1 + \exp(\hat{\beta}_0 + \hat{\beta}_1 \cdot x_{price})}$$
+
+Then use the `get_prob_new()` function to predict the probability that a car
+that sold for $10,000 was a new car and report this probability. 
+
+In the answer section, comment on whether you think this predicted probability
+is too high or too low. In particular, provide some evidence, either via
+statistics calculated from the data set, or via looking at a visualization of
+the data (e.g., the visualization in part 1.1), as to whether the probability
+returned by the model is to high or too low.
+
+
+
+```{r logistic_probability_function}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.4 (8 points)**: Next plot the data again as you did in part 1.1, but
+this time you will add a red line showing the logistic regression function for
+predicting the probability a car is new based on its price. In order to plot the
+logistic regression line at the appropriate height on the figure, create a
+function called `plot_prob_new(price)` that returns the value of
+`get_prob_new(price)` plus 1.
+
+Adding 1 is necessary because R understands the "U" level of our factor variable
+to be 1 numerically and "N" to be 2, but `get_prob_new` returns probabilities
+between 0 and 1.
+
+Then, use the `stat_function()` function in the ggplot2 package, in combination
+with the `plot_prob_new()` function, to create a visualization where you create
+the scatter-plot visualization you created in part 1.1. Make sure that you also
+overlay the logistic regression line in red on the plot. Use `xlim` to toggle
+the dimensions of the x-axis appropiate, such that the plot centers the points
+and shows all aspects of the plotted function line.
+
+
+```{r viz_logistic, warning = FALSE}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 1.5 (10 points)**: Let's now fit a multiple logistic regression to the
+data in order to get the probability a car is new given the price of the car
+(`price_bought`) and the number of miles driven (`mileage_bought`). From the
+model that you fit, extract the regression coefficient estimates and intercept,
+price_bought and mileage_bought coefficients and save them to objects called
+`b0`, `b1` and `b2`. Then write a function called `get_prob_new2()` that uses
+the coefficients to predict the probability a car is new using the equation:
+
+$$\text{P(new|price, mileage)} = \dfrac{\exp(\hat{\beta}_0 + \hat{\beta}_1 \cdot price + \hat{\beta}_2 \cdot mileage)}{1 + \exp(\hat{\beta}_0 + \hat{\beta}_1 \cdot price + \hat{\beta}_2 \cdot mileage)}$$
+
+Finally, use the `get_prob_new2()` function to predict the probability that a
+car that sold for 10,000 and had 500 miles was a new car, and the probability
+that a car that sold for 10,000 and had 5000 miles was a new car. Report these
+probabilities in the answer section.
+
+
+
+```{r multi_logistic, warning = FALSE}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+For a car that sold for $10,000 and had 500 miles, the predicted probability that the car is new is: 
+
+For a car that sold for $10,000 and had 5000 miles, the predicted probability that the car is new is:  
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 1.6 (5 points)**:
+
+We can also fit logistic regression models with categorical predictors. The code below creates a data set that selects 500 random new and used Toyotas and BMWs. Let's use this data to build a model that predicts whether a car is new or used based on the cars price and whether it is a Toyota and BMW. To start, use ggplot to visualize the data where: `price_bought` is mapped to the x-axis, `new_or_used_bought` is mapped to the y-axis, `make_bought` is mapped to color. Also use the `geom_jitter()` glyph using an appropriate amount of jitter, and as always, label your axes. 
+
+Then, fit a logistic regression model to predict whether a car is new or used based on the price when the car was bought and whether the car was a Toyota or BMW. Finally, print out odds ratio for predicting whether a car is new or used if it is a Toyota relative to a BMW. Report in the answer section what the odds ratio is and how to interpret what it means. 
+
+
+```{r}
+
+set.seed(230)
+
+# get Toyota cars and change the order of the levels of the new_or_used_bought variable
+toyota_bmw_data <- filter(car_transactions, make_bought %in% c("Toyota", "BMW")) |>
+  mutate(new_or_used_bought = factor(as.character(new_or_used_bought), levels = c("U", "N"))) |>
+  mutate(new_or_used_bought = relevel(new_or_used_bought, "U")) |>
+  na.omit() |>
+  group_by(new_or_used_bought, make_bought) |>
+  slice_sample(n = 500) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+## Part 2: Practice building regression models
+
+
+To help consolidate what you have learned this semester, and to prepare for the
+final project, let's practice building another regression model trying to
+predict the price of a condominium in New Haven. In particular, you will go through 
+the full model building process of choosing, fitting, assessing, and using a model.
+
+**Motivation**: In May 2022, I was interested in buying a condominium in New
+Haven. One condominium I was interested in was located at 869 Orange St, Unit
+5E. The asking price for the condominium was $475,000. However, usually buyers
+don't put in offers that are exactly at the asking price, but instead put in
+offers above or below. The advantage of putting in a lower offer is that one
+could save money, but there is a risk someone else could put in a higher offer
+that would be taken instead of your offer. 
+
+In order to help get a sense of how much money I should offer, I scraped data on
+all the house prices in New Haven from the New Haven online assessment website
+(https://gis.vgsi.com/newhavenct/). The goal of this exercise is to use this
+data to create visualizations and regression models in order to come up a offer
+that you think will be very likely to be accepted, but that will not be way more
+than the property is really worth (i.e., more than you could resell the property
+for in the future).
+
+When building regression models below, the response variable you will try to
+predict is `sale_price` which is the price that different condominium in New
+Haven sold for. Explanatory variables that might be useful to include in your
+model include:
+
+1. `zone`: Contains information about the neighborhood where condominiums are
+located.
+
+2. `year_built`: The year the condominium was built.
+
+3. `building_area`, `living_area` and `size_acres`: Information about the size of the property. 
+
+4. `appraisal`: How much tax collectors assess that the property was worth.
+
+5. `sale_date`: The year the property was sold. 
+
+You can also use other variables that in the data that are not listed above. For
+more information about different variables, see the online assessment website
+https://gis.vgsi.com/newhavenct/ (I don't know much more about these variables
+than the information that is listed on this site).
+
+
+Finally, note that there is no one "correct answers" to the exercises below.
+Rather, just use visualizations and modeling to come up with "useful" models
+that can given insight into the question of interest and we can discuss more
+about the models everyone has developed in class.
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Part 2.1 (5 points)**: Before building regression models, it is almost always
+useful to apply transformations of the data. For example, it could be useful to
+filter the data to use only subsets of the data that are most relevant. It could
+also be useful to apply transformations to variables in the dataset. For
+example, the price a property sold for is going to be heavily influenced on how
+long ago the property sold, so converting `sale_date` into a variable such as
+`year_old_sold` which indicates how many years ago the property was sold (and
+hence the year the is from `sale_price`) could also be useful.
+
+In the R chunk below, please transform the data in anyway you think would be
+useful for subsequent analyses and save your transformed data to a data frame
+called `property_data` (3-5 transformations/filtering operations should be fine,
+but there is flexibility here to do what you think is best).  Then in the answer
+section please **briefly** describe the rationale behind any data you removed
+(i.e., rationale behind any data filtered out of the dataset).
+
+Hints: the `lubridate` library contains many useful functions for dealing with
+dates. For example, the `year()` function can take a date and extract the year
+from it, etc.
+
+
+
+
+```{r condo_transformations}
+
+library(dplyr)
+library(lubridate)
+
+
+load("condos_may_2022.rda")
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Part 2.2 (5 points)**: Before modeling the data, one should almost always 
+visualize the data. Please go ahead to create 2 visualizations that give insight
+into the housing market and/or into how to begin to model the data. In the
+answer section briefly describe what your plot(s) are showing and how they given
+insight into the question of interest.
+
+
+
+```{r condo_viz, message = FALSE}
+
+
+library(ggplot2)
+# library(GGally)
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 2.3 (5 points)**:  Now please go ahead and create a regression model for 
+predicting the sales price of condos (i.e., the `sale_price` variable) from
+other explanatory variables. You can include however many terms in the model
+that you think leads to a good model (our model ended up using 5 variables and
+an interaction term, but you might be able to come up with a better model so
+please do what you think is best).
+
+Also, in the R chunk below, print out a few relevant statistics about the model,
+and show appropriate diagnostic plots that give an indication of whether you
+model is fitting the data well (again, there is not one "right answer" here but
+just use a few of the methods we have discussed).
+
+In the answer section, describe whether you think your model does a reasonable
+job fitting the data.
+
+Note, in the process of creating your regression model you might fit several
+intermediate models, but only show your final model in the code chunk below.
+
+
+```{r condo_modeling}
+
+
+
+
+
+
+  
+
+
+
+
+```
+
+
+**Answer** 
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Part 2.4 (3 points)**: Now that you've done your analyses, you are ready to 
+make an offer on the condominium! 
+
+In the R chunk below, please use the model you created in part 2.3 to make a
+prediction for what the price is for the 896 Orange ST 5E condo. Hint: the code
+below extracts a data frame with just this relevant condo, and you can use the
+`predict()` using the `newdata` argument to get a prediction from your model.
+
+
+Then in the answer section below please do the following:
+
+1. Write down the predicted price for the property at 869 Orange St Unit 5E
+and whether you think this is a reasonable prediction or if you think
+it is too high or too low.
+
+2. Write down what you think the best offer would be to put in for trying
+to buy this condominium and in 1-3 sentences explain how you came to this
+number.  Remember, you definitely want your offer accepted, but you do not want
+to over pay so that you are "underwater" on the condominium and you would lose a
+lot of money if you had to sell it.
+
+3. Enter these values in the homework 9 reflection and we will examine the
+distribution of offers the class comes up with. When you enter your numbers,
+please make sure to enter them a single numbers without any commas. For example
+if you think the fair price is the asking price of $475,000 then enter the
+number 475000 into the homework 9 reflection.
+
+
+
+
+```{r condo_predictions}
+
+# get a data frame with just the 869 ORANGE ST #5E condo
+# orange_st_condo <- filter(property_data, street_number == "869 ORANGE ST #5E")
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+**Answer**:
+
+1. 
+
+
+
+
+
+2. 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+
+## Part 3: Thoughts on your final project (3 points)
+
+Describe what you are thinking of doing for your final project and where you
+will get your data from. If you are not sure yet what you are going to do for
+your final project, that is fine and you can just say that. However, on homework
+10 you will need to load the data you will use for your final project data to
+demonstrate that you have found relevant data, so please start preparing for
+this now. I encourage you to email TA's and ULA's, or to talk to me after class
+for guidance.
+
+
+**Answer**
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Reflection (3 points)
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes 
+link, and clicking on Reflection on homework 9
+
+
+
+
+
+
+
+
