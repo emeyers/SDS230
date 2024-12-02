@@ -1,0 +1,156 @@
+---
+title: Experiment with Closeread
+format: closeread-html
+
+---
+
+
+To get the [Closeread](https://closeread.dev/) extension to work, you need to run the following command in the terminal (bottom tab near the console).
+
+1. Make sure the terminal is in the same directory as this .qmd file.
+2. Run the following command in the terminal: `quarto add qmd-lab/closeread`
+
+This should create a `_extensions` directory that has the javascript code needed to run the closeread document.
+
+
+
+If this doesn't work you might have to start a new terminal by going to Tools at the top of the RStudio menu, then click on terminal, then click on new terminal. 
+
+You might also need to install Quarto if it has not already been installed with RStudio. You can install Quarto from [this webpage](https://quarto.org/docs/download/)
+
+
+
+
+<!--  Please run the code in the  R chunk below once. This will download data 
+and images needed for these exercises.  -->
+
+```{r message=FALSE, warning = FALSE, echo = FALSE, eval = FALSE}
+
+SDS230::download_image("waldo.jpg")
+
+```
+
+
+
+
+$\\$
+
+
+
+## Closeread basics
+
+
+Let's start with a basic close read section `{.cr-section}` where we scroll text over an R graphic.
+
+
+
+
+::::{.cr-section}
+
+
+
+
+
+
+
+
+::::
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+## Highlighting
+
+
+Let's now explore highlighting text and code. 
+
+As always, we start by wrapping everything in a `{.cr-section}`.
+
+Let's first highlight some code, and then let's highlight some text. 
+
+
+
+
+::::{.cr-section}
+
+
+
+
+
+
+
+:::{#cr-dplyr}
+```{r, message=FALSE, warning= FALSE, echo = TRUE}
+
+library(dplyr)
+
+  group_by(mtcars, am) |>
+    summarize(avg_wt = mean(wt))
+
+```
+
+:::
+
+
+
+
+
+| {#cr-limerick}
+| There once was a coder named [Claire]{#cr-claire},
+| Whose scripts worked by luck and a [prayer]{#cr-prayer}.
+|   When she coded in R,
+|   Her results were bizarre—
+| But her plots were a work of great [flair]{#cr-flair}!
+
+
+::::
+
+
+
+$\\$
+
+
+
+## Zooming
+
+
+Let's now explore zooming in on a specific part an image.
+
+
+As always, we start by wrapping everything in a `{.cr-section}`.
+
+Let's first zoom in on the histogram from the previous section.
+
+
+
+
+::::{.cr-section}
+
+
+
+
+
+
+
+:::{#cr-waldo}
+![](waldo.jpg)
+:::
+
+
+
+
+::::
+
+
+
+
+
+
