@@ -17,7 +17,7 @@ download_homework <- function(homework_number) {
   file_name <- paste0("homework_", sprintf("%02d", homework_number), ".Rmd")
 
   # if a file already exists with this name, don't download the file
-  #  but instead give an error message
+  #  but instead give an warning message
   check_file_exists(file_name)
 
   full_path <- paste0(base_path, file_name)
@@ -85,7 +85,7 @@ download_class_code <- function(class_number, with_answers = FALSE) {
   })
 
   # if a file already exists with this name, don't download the file
-  #  but instead give an error message
+  #  but instead give an warning message
   check_file_exists(file_name)
 
   # if the file does not already exist, download it
@@ -118,7 +118,7 @@ download_data <- function(file_name, mode = "wb") {
   full_path <- paste0(base_path, file_name)
 
   # if a file already exists with this name, don't download the file
-  #  but instead give an error message
+  #  but instead give an warning message
   check_file_exists(file_name)
 
   # check the file exists on GitHub and if not throw and error
@@ -227,9 +227,9 @@ download_any_file <- function(file_path_and_name, force_download = FALSE, mode =
 check_file_exists <- function(file_name) {
 
   if (file.exists(file_name)){
-    stop(paste("The class code file you are trying to download", file_name,
-               "already exists. Please rename the file", file_name,
-               "and then rerun this function to download a new copy"))
+    warning(paste("The class code file you are trying to download", file_name,
+               "already exists, so the file will not be downloaded again. Please rename the file",
+               file_name, "and then rerun this function if you would like to download a new copy of this file.\n"))
   }
 
 }
